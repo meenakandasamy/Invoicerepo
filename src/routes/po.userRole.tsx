@@ -6,10 +6,10 @@ import {
 } from '@tanstack/react-router';
 import {Poloa} from '@/components/poloa/poloa';
 import { getAccessPermissions } from '@/utils/common/permissions';
-import { vendorSearchSchema } from '@/utils/Validators/schema/SearchSchemas';
+import {ticketSearchSchema} from '@/utils/Validators/schema/SearchSchemas';
 
 export const Route = createFileRoute('/po/userRole')({
-  validateSearch: (search) => vendorSearchSchema.parse(search),
+  validateSearch: (search) => ticketSearchSchema.parse(search),
   beforeLoad(ctx) {
     const {
       context: { session },

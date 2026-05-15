@@ -121,45 +121,75 @@ export default function Sidebar({
 
   if (isHidden) return null;
 
-  return (
-    <div
-      ref={sidebarRef}
-      onMouseEnter={() => !isExpanded && toggleSidebar()}
-      onMouseLeave={() => isExpanded && toggleSidebar()}
-      className={`h-screen bg-white dark:bg-black text-sidebar-foreground
-    shadow-sm transition-all duration-300 z-30
-    ${isExpanded ? 'w-52 border-r border-sidebar-border' : 'w-16'}`}
-    >
-      {/* Header */}
-      <div className="p-5 flex items-center justify-between">
-        {isExpanded ? (
-          <div className="flex justify-center w-full">
-            <img src={LogoSrc} alt="Eira" className="w-10" />
+ return (
+  <div
+    ref={sidebarRef}
+    onMouseEnter={() => !isExpanded && toggleSidebar()}
+    onMouseLeave={() => isExpanded && toggleSidebar()}
+    className={`
+      h-screen transition-all duration-300 z-30
+      ${isExpanded ? 'w-[260px]' : 'w-[88px]'}
+      bg-white border-r border-slate-200
+      flex flex-col
+      shadow-sm
+      overflow-hidden
+    `}
+  >
+    {/* Header */}
+    <div className="h-[65px] border-b border-slate-200 flex items-center px-5">
+      {isExpanded ? (
+        <div className="flex items-center gap-3">
+          <div className="h-11 w-11 rounded-2xl bg-violet-100 flex items-center justify-center">
+            <img
+              src={LogoSrc}
+              alt="logo"
+              className="w-7 h-7 object-contain"
+            />
           </div>
-        ) : (
-          <Menu size={24} className="text-sidebar-foreground" />
-        )}
-      </div>
 
-      {/* Scroll */}
-      <div className="px-2 pb-4 overflow-y-auto max-h-[calc(100vh-80px)] custom-scrollbar">
-        {finalRenderList.map((entry, idx) => {
-          // ---------------- SECTION ----------------
-          if (entry.type === 'section') {
-            const section = entry.name;
+          <div>
+            <h2 className="text-[20px] font-semibold text-slate-800">
+              Eira Ticketing
+            </h2>
 
-            if (accessMap && accessMap[section] === false) return null;
+           
+          </div>
+        </div>
+      ) : (
+        <button
+          className="
+            mx-auto h-10 w-10 rounded-xl
+            hover:bg-slate-100
+            flex items-center justify-center
+            transition
+          "
+        >
+          <Menu size={20} className="text-slate-700" />
+        </button>
+      )}
+    </div>
 
-            const items = sectionMap[section].filter(
-              (i) => i.allowAccess !== false,
-            );
-            if (items.length === 0) return null;
+    {/* Menu */}
+    <div className="flex-1 overflow-y-auto px-3 py-5 custom-scrollbar">
+      {finalRenderList.map((entry, idx) => {
+        // ---------------- SECTION ----------------
+        if (entry.type === 'section') {
+          const section = entry.name;
 
-            const meta = sectionMeta[section] ?? {};
-            const Icon = meta.icon;
-            const label = meta.label || section;
+          if (accessMap && accessMap[section] === false) return null;
 
-            return (
+          const items = sectionMap[section].filter(
+            (i) => i.allowAccess !== false,
+          );
+
+          if (items.length === 0) return null;
+
+          const meta = sectionMeta[section] ?? {};
+          const Icon = meta.icon;
+          const label = meta.label || section;
+
+          return (
+            <div key={'sec-wrap-' + section} className="mb-3">
               <SidebarSection
                 key={'sec-' + section}
                 section={section}
@@ -171,49 +201,125 @@ export default function Sidebar({
                 sectionLabel={label}
                 currentPath={currentPath}
               />
-            );
-          }
-
-          // ---------------- UNGROUPED ITEM ----------------
-          const item = entry.item;
-          if (item.allowAccess === false) return null;
-
-          const currentSegments = currentPath.split('/');
-          const lastSegment = item.to.split('/').at(-1);
-          const isActive = currentSegments.at(-1) === lastSegment;
-
-          return (
-            <div
-              key={'item-' + idx}
-              className={`mb-4 ${isExpanded ? 'ml-2' : ''}`}
-            >
-              {/* <TooltipProvider delayDuration={200}> */}
-                 <Tooltip>
-                  {/* <TooltipTrigger asChild> */}
-                    <Link to={item.to}>
-                      <div
-                        className={`
-                          flex items-center rounded-md text-sm transition-colors
-                          ${isExpanded ? 'justify-start gap-2' : 'justify-center'}
-                          ${isActive ? 'text-primary' : 'text-muted-foreground'}
-                          ${!isActive ? 'hover:bg-muted' : ''}
-                        `}
-                      >
-                        <item.icons size={22} />
-                        {isExpanded && <span>{item.label}</span>}
-                      </div>
-                    </Link>
-                  {/* </TooltipTrigger> */}
-
-                  {!isExpanded && (
-                    <TooltipContent side="right">{item.label}</TooltipContent>
-                  )}
-                </Tooltip>
-              {/* </TooltipProvider> */}
             </div>
           );
-        })}
-      </div>
+        }
+
+        // ---------------- UNGROUPED ITEM ----------------
+        const item = entry.item;
+
+        if (item.allowAccess === false) return null;
+
+        const currentSegments = currentPath.split('/');
+        const lastSegment = item.to.split('/').at(-1);
+
+        const isActive =
+          currentSegments.at(-1) === lastSegment;
+
+        return (
+          <div key={'item-' + idx} className="mb-2">
+            <Tooltip>
+              <Link to={item.to}>
+                <div
+                  className={`
+                    group relative flex items-center
+                    rounded-2xl px-4 py-3
+                    transition-all duration-200 cursor-pointer
+
+                    ${
+                      isExpanded
+                        ? 'gap-3'
+                        : 'justify-center'
+                    }
+
+                    ${
+                      isActive
+                        ? `
+                          bg-violet-100
+                          text-violet-700
+                          shadow-sm
+                        `
+                        : `
+                          text-slate-600
+                          hover:bg-slate-100
+                          hover:text-slate-900
+                        `
+                    }
+                  `}
+                >
+                  {/* Active Left Border */}
+                  {isActive && (
+                    <div className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-violet-600" />
+                  )}
+
+                  <item.icons
+                    size={20}
+                    className={`
+                      shrink-0
+                      ${
+                        isActive
+                          ? 'text-violet-700'
+                          : 'text-slate-500 group-hover:text-slate-800'
+                      }
+                    `}
+                  />
+
+                  {isExpanded && (
+                    <span className="font-medium text-[14px] truncate">
+                      {item.label}
+                    </span>
+                  )}
+                </div>
+              </Link>
+
+              {!isExpanded && (
+                <TooltipContent side="right">
+                  {item.label}
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </div>
+        );
+      })}
     </div>
-  );
+
+    {/* Footer */}
+    {isExpanded && (
+      <div className="p-4 border-t border-slate-200">
+        <div className="rounded-2xl bg-slate-50 p-4">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="h-10 w-10 rounded-xl bg-violet-100 flex items-center justify-center">
+              <Settings size={18} className="text-violet-600" />
+            </div>
+
+            <div>
+              <p className="text-sm font-semibold text-slate-700">
+                Need Help?
+              </p>
+
+              <p className="text-xs text-slate-400">
+                Contact support team
+              </p>
+            </div>
+          </div>
+
+          <button
+            className="
+              w-full rounded-xl
+              border border-violet-200
+              bg-white
+              py-2.5
+              text-sm font-medium
+              text-violet-700
+              hover:bg-violet-50
+              transition
+            "
+          >
+            Contact Support
+          </button>
+        </div>
+      </div>
+    )}
+  </div>
+);
 }

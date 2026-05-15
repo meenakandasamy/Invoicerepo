@@ -11,10 +11,7 @@ import CustomBreadcrumbs from '@/utils/common/components/BreadCrumbs';
 import { useNavStore } from '@/stores/navItemsStore';
 import { useNotificationStore } from '@/stores/notificationStore';
 import { useQueryFn } from '@/utils/common/queryUtils';
-import {
-  POInstallmentQuery,
-  poInstallmentServices,
-} from '@/integrations/Services/poInstallmentServices';
+
 import { ModeToggle } from '@/utils/common/components/ModeToggle';
 
 type LayoutProps = {
@@ -153,11 +150,7 @@ export default function Layout({ isHidden, path, children }: LayoutProps) {
 
   return (
     <>
-      {/* Preload persistent notifications only once */}
-      {/* <PreloadNotifications
-        key={response?.length || 0}
-        installmentsData={response}
-      /> */}
+   
 
       <div className={'flex h-screen w-full' + (isHidden ? ' hidden' : '')}>
         <Sidebar
@@ -171,11 +164,11 @@ export default function Layout({ isHidden, path, children }: LayoutProps) {
           accessMap={sectionAccessMap}
         />
 
-        <div className="flex-1 overflow-auto">
+        <div className=" flex-1 overflow-auto">
           <div className="flex-1 flex flex-col h-screen overflow-hidden">
             <div
               className="
-    h-16 bg-white dark:bg-black shadow-md dark:shadow-lg 
+    h-[65px] bg-white dark:bg-black shadow-md dark:shadow-lg 
     flex items-center justify-end px-6 border-b border-gray-200 dark:border-[var(--border)] 
     z-10 space-x-4
   "
@@ -186,7 +179,7 @@ export default function Layout({ isHidden, path, children }: LayoutProps) {
               <UserOptionsMenu />
             </div>
 
-            <div className="flex-1 overflow-auto px-4 pt-4 h-fit">
+            <div className="flex-1 overflow-auto px-5 pt-4 h-fit">
               <CustomBreadcrumbs />
               <div className="h-[80dvh] flex flex-1 m-2">{children}</div>
               <Footer companyName="Eira" version={packageJson.version} />

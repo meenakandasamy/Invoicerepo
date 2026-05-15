@@ -51,6 +51,14 @@ export const NavItems: Array<NavItem> = [
   },
  
   
+  {
+    to: '/ticket/config',
+    label: 'Vendor Registration',
+    icons: Building2,
+    activity: 'ticketConfiguration',
+    mode: 'menu',
+  },
+ 
 ];
 
 export const Route = createRootRouteWithContext<AppRouterContext>()({
