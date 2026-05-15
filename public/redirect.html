@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Redirecting...</title>
+    <script>
+      // Extract path after /saas-po/
+      const rawPath = window.location.pathname.replace(/^\/saas-po\//, '');
+      if (rawPath && rawPath !== 'index.html') {
+        window.location.replace('/saas-po/#/' + rawPath);
+      } else {
+        window.location.replace('/saas-po/#/');
+      }
+    </script>
+  </head>
+  <body>
+    <p>Redirecting to application...</p>
+  </body>
+</html>

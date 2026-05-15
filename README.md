@@ -1,73 +1,93 @@
-# React + TypeScript + Vite
+# 🧾 PO Management
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern Purchase Order (PO) Management web application built with **React 19**, **Vite**, **Tailwind CSS**, and the **TanStack ecosystem** (Query, Router, Table, and Form). Designed to help manage purchase orders efficiently with a clean, component-driven UI.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## React Compiler
+- **React 19** with modern hooks and concurrent features
+- **Vite** for ultra-fast development and build
+- **Tailwind CSS v4** for rapid UI development
+- **Radix UI** for accessible, headless UI primitives
+- **TanStack** tools for forms, routing, tables, and data fetching
+- **Zod** for schema validation
+- **Vitest** and **Testing Library** for unit/integration testing
+- **Prettier** and **ESLint** for consistent code formatting
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 📦 Project Structure
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```tree
+src/
+├── components/       # Reusable UI components
+├── pages/            # Application pages / routes
+├── hooks/            # Custom hooks
+├── lib/              # Utilities and helper functions
+├── styles/           # Tailwind & custom styles
+├── types/            # TypeScript types
+└── main.tsx          # Entry point
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🛠️ Getting Started
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Prerequisites
+
+- Node.js 18+
+- pnpm / npm / yarn
+
+### Installation
+
+```bash
+pnpm install
+# or
+npm install
 ```
+
+### Development
+
+```bash
+pnpm dev
+# or
+npm run dev
+```
+
+### Build
+
+```bash
+pnpm build
+# or
+npm run build
+```
+
+### Preview Production Build
+
+```bash
+pnpm serve
+```
+
+### Lint & Format
+
+```bash
+pnpm check
+```
+
+### Run Tests
+
+```bash
+pnpm test
+```
+
+---
+
+## 🧪 Tech Stack
+
+- **React 19**
+- **Vite 6**
+- **Tailwind CSS 4**
+- **TanStack Query/Router/Table/Form**
+- **Zod**, **Radix UI**, **Lucide Icons**
+- **TypeScript**, **ESLint**, **Prettier**, **Vitest**
