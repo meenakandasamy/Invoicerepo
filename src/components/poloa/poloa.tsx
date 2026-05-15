@@ -14,14 +14,7 @@ import {
   useMutationFn,
   useQueriesFn,
 } from '@/utils/common/queryUtils';
-import { useCostHeaders } from '@/hooks/data/useCostHeader';
-import { useCostCenters } from '@/hooks/data/useCostCenter';
-import { useVendorDropdown } from '@/hooks/data/useVendor';
 import { usePoloalist } from '@/hooks/data/usePoloalist';
-import {
-  CostCentreQueries,
-  CostCentreServices,
-} from '@/integrations/Services/costCentreServices';
 import {
   PoloaQueries,
   PoloaServices,
@@ -43,29 +36,14 @@ export const Poloa = ({
   const { GetSiteListDropdownByCompany, GetSiteListDropdownByCustomer } =
     EirasaasAPIs;
   const [tabsValue, setTabsValue] = useState<'PO' | 'LOA'>('PO');
-  const CostHeaderQuery = useCostHeaders();
-  const CostCenterQuery = useCostCenters();
-  const VendorQuery = useVendorDropdown();
+
   const isOEM = session.userTypeName === 'OEM';
 
   const [tableValue, setTableValue] = useState<Array<Row>>([]);
   const [siteDropdown, setSiteDropdown] = useState<Array<siteDropdownType>>([]);
+  const [toBackend, setToBackend] = useState<boolean>(false);
   const [poloalist, setPouploadlist] = useState<Array<costCentreDropdownTypes>>(
     [],
-  );
-
-  const vendorDropdown = useMemo(
-    () => VendorQuery.data ?? [],
-    [VendorQuery.data],
-  );
-  const [toBackend, setToBackend] = useState<boolean>(false);
-  const costHeadersDropdown = useMemo(
-    () => CostHeaderQuery.data ?? [],
-    [CostHeaderQuery.data],
-  );
-  const costCentersDropdown = useMemo(
-    () => CostCenterQuery.data ?? [],
-    [CostCenterQuery.data],
   );
 
   const queries = [
@@ -76,11 +54,11 @@ export const Poloa = ({
       setState: setSiteDropdown,
       id: isOEM ? session.companyId : session.customerId,
     },
-    {
-      queryKey: CostCentreQueries.GET_COST_CENTRE_DROPDOWN + 'CCM',
-      api: CostCentreServices.fetchCostCentreDropdown,
-      setState: setPouploadlist,
-    },
+    // {
+    //   queryKey: CostCentreQueries.GET_COST_CENTRE_DROPDOWN + 'CCM',
+    //   api: CostCentreServices.fetchCostCentreDropdown,
+    //   setState: setPouploadlist,
+    // },
   ];
   const {
     data: [dependentResponse],
@@ -292,10 +270,10 @@ export const Poloa = ({
       placeholder: 'Enter Vendor Email / Code',
       required: true,
       // disabled: edit || toBackend,
-      onChange: (_name: string, value: any, form: any) => {
-        form.setFieldValue('vendorName', value);
-        validateVendorEmail(value, form, vendorDropdown);
-      },
+      // onChange: (_name: string, value: any, form: any) => {
+      //   form.setFieldValue('vendorName', value);
+      //   validateVendorEmail(value, form,);
+      // },
       styles: {
         wrapper: 'flex flex-col gap-1',
         label: 'text-sm font-medium text-gray-500',
@@ -453,8 +431,8 @@ export const Poloa = ({
   };
   const options = {
     siteName: siteDropdown.map((item) => item.siteName),
-    castCenter: costCentersDropdown.map((item) => item.costCentreName),
-    castHeader: costHeadersDropdown.map((item) => item.costHeaderName),
+    // castCenter: costCentersDropdown.map((item) => item.costCentreName),
+    // castHeader: costHeadersDropdown.map((item) => item.costHeaderName),
     uploadType: ['PO', 'LOA'],
   };
 
@@ -474,62 +452,62 @@ const includedDownloadColumns = HeadCells.filter((headcell) =>
     headcell.view === true)
   .map((headcell) => headcell.id);  
   function onSubmit(data: any) {
-    setToBackend(true);
-    ((data.vendorId = vendorDropdown.find(
-      (ven: any) => ven.vendorCode === data.vendorName,
-    )?.vendorId),
-      (data.costHeaderid = costHeadersDropdown.find(
-        (head: any) => head.costHeaderName === data.castHeader,
-      )?.costHeaderId),
-      (data.costCentreid = costCentersDropdown.find(
-        (head: any) => head.costCentreName === data.castCenter,
-      )?.costCentreId),
-      postMutation.mutate(data, {
-        onSuccess: () => {
-          toast.success('Cost Centre created successfully!');
-          handleClose();
-          setFormFields(defaultValues);
-          setToBackend(false);
-        },
-        onError: (error: any) => {
+  //   setToBackend(true);
+  //   ((data.vendorId = vendorDropdown.find(
+  //     (ven: any) => ven.vendorCode === data.vendorName,
+  //   )?.vendorId),
+  //     (data.costHeaderid = costHeadersDropdown.find(
+  //       (head: any) => head.costHeaderName === data.castHeader,
+  //     )?.costHeaderId),
+  //     (data.costCentreid = costCentersDropdown.find(
+  //       (head: any) => head.costCentreName === data.castCenter,
+  //     )?.costCentreId),
+  //     postMutation.mutate(data, {
+  //       onSuccess: () => {
+  //         toast.success('Cost Centre created successfully!');
+  //         handleClose();
+  //         setFormFields(defaultValues);
+  //         setToBackend(false);
+  //       },
+  //       onError: (error: any) => {
           
-          setToBackend(false);
-              const errors=error.response.data.error
-          if (errors?.includes('unique_po_number')) {
-    toast.error('PO number already exists. Document already uploaded for this PO.');
-  }else{
-    toast.error(error.message);
-  }
-        },
+  //         setToBackend(false);
+  //             const errors=error.response.data.error
+  //         if (errors?.includes('unique_po_number')) {
+  //   toast.error('PO number already exists. Document already uploaded for this PO.');
+  // }else{
+  //   toast.error(error.message);
+  // }
+  //       },
         
-      }));
+  //     }));
   }
 
   function onUpdate(data: any) {
-    ((data.vendorId = vendorDropdown.find(
-      (ven: any) => ven.vendorCode === data.vendorName,
-    )?.vendorId),
-      (data.costHeaderid = costHeadersDropdown.find(
-        (head: any) => head.costHeaderName === data.castHeader,
-      )?.costHeaderId),
-      (data.costCentreid = costCentersDropdown.find(
-        (head: any) => head.costCentreName === data.castCenter,
-      )?.costCentreId),
-      putMutation.mutate(data, {
-        onSuccess: () => {
-          toast.success('Site mapped to Cost Centre successfully!');
-          handleClose();
-          setFormFields(defaultValues);
-        },
-        onError: (error: any) => {
-          const errors=error.response.data.error
-          if (errors?.includes('unique_po_number')) {
-    toast.error('PO number already exists. Document already uploaded for this PO.');
-  }else{
-    toast.error(error.message);
-  }
-        },
-      }));
+  //   ((data.vendorId = vendorDropdown.find(
+  //     (ven: any) => ven.vendorCode === data.vendorName,
+  //   )?.vendorId),
+  //     (data.costHeaderid = costHeadersDropdown.find(
+  //       (head: any) => head.costHeaderName === data.castHeader,
+  //     )?.costHeaderId),
+  //     (data.costCentreid = costCentersDropdown.find(
+  //       (head: any) => head.costCentreName === data.castCenter,
+  //     )?.costCentreId),
+  //     putMutation.mutate(data, {
+  //       onSuccess: () => {
+  //         toast.success('Site mapped to Cost Centre successfully!');
+  //         handleClose();
+  //         setFormFields(defaultValues);
+  //       },
+  //       onError: (error: any) => {
+  //         const errors=error.response.data.error
+  //         if (errors?.includes('unique_po_number')) {
+  //   toast.error('PO number already exists. Document already uploaded for this PO.');
+  // }else{
+  //   toast.error(error.message);
+  // }
+  //       },
+  //     }));
   }
 
   // ----- TABS STATE -----

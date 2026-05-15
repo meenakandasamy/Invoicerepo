@@ -6,27 +6,22 @@ import {
 } from '@/integrations/Services/commonServices';
 
 export const useUserList = (session: Session) => {
-  const isOEM: boolean = session.userTypeName === 'OEM';
+  const Id: number = session.organizationId;
 
   return useQuery<Array<userDropdownType>, Error>({
-    queryKey: [
-      isOEM
-        ? EIRASAAS_API_QUERIES.GET_USERS_BY_COMPANY_ID
-        : EIRASAAS_API_QUERIES.GET_USERS_BY_CUSTOMER_ID,
-    ],
+    queryKey: [EIRASAAS_API_QUERIES.GET_USERS_BY_COMPANY_ID],
     queryFn: async () => {
       try {
-        const api = isOEM
-          ? EirasaasAPIs.FetchUsersByCompanyId
-          : EirasaasAPIs.FetchUsersByCustomerId;
-        return await api(
-          isOEM ? `${session.companyId}` : `${session.customerId}`,
-        );
+        const response = await EirasaasAPIs.FetchUsersByOrganizationId(Id);
+        console.log(response, 'responseTest');
+
+        return response;
       } catch (err: any) {
         throw new Error(err?.message || 'Error fetching cost centers');
       }
     },
     retry: 1,
+    enabled: !!Id,
     meta: {
       successMessage: 'Users loaded successfully!',
       toastSuccess: false,

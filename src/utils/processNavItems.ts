@@ -13,7 +13,7 @@ export function processNavItems(
 
   // Safely build activityViewMap only if session data is present and valid
   const activityViewMap: Record<string, number> =
-    session?.poMapDetails?.userMapDetails?.reduce<Record<string, number>>(
+    session?.userMapDetails?.reduce<Record<string, number>>(
       (acc, item) => {
         acc[item.activityName] = item.view;
         return acc;

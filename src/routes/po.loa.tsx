@@ -19,7 +19,7 @@ export const Route = createFileRoute('/po/loa')({
       view: hasAccess,
       create: hasCreateAccess,
       edit: hasUpdateAccess,
-    } = getAccessPermissions(session, 'poloa');
+    } = getAccessPermissions(session, 'ticketConfiguration');
 
     if (!hasAccess) {
       throw redirect({ to: '/login' });

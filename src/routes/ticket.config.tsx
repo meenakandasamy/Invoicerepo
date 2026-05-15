@@ -1,25 +1,17 @@
-// import { createFileRoute } from '@tanstack/react-router'
 
-// export const Route = createFileRoute('/po/employeeManagement')({
-//   component: RouteComponent,
-// })
-
-// function RouteComponent() {
-//   return <div>Hello "/po/employeeManagement"!</div>
-// }
 import {
   createFileRoute,
   redirect,
   useRouteContext,
   useSearch,
 } from '@tanstack/react-router';
-import {EmployeeManagement} from '@/components/employee/employeeManagement';
+import {Poloa} from '@/components/poloa/poloa';
 import { getAccessPermissions } from '@/utils/common/permissions';
-import { vendorSearchSchema } from '@/utils/Validators/schema/SearchSchemas';
+import { ticketSearchSchema } from '@/utils/Validators/schema/SearchSchemas';
 
 
-export const Route = createFileRoute('/po/employeeManagement')({
-  validateSearch: (search) => vendorSearchSchema.parse(search),
+export const Route = createFileRoute('/ticket/config')({
+  validateSearch: (search) => ticketSearchSchema.parse(search),
   beforeLoad(ctx) {
     const {
       context: { session },
@@ -28,7 +20,7 @@ export const Route = createFileRoute('/po/employeeManagement')({
       view: hasAccess,
       create: hasCreateAccess,
       edit: hasUpdateAccess,
-    } = getAccessPermissions(session, 'poloa');
+    } = getAccessPermissions(session, 'ticketConfiguration');
 
     if (!hasAccess) {
       throw redirect({ to: '/login' });
@@ -41,12 +33,12 @@ export const Route = createFileRoute('/po/employeeManagement')({
 
 function RouteComponent() {
   const { hasCreateAccess, hasUpdateAccess, session } = useRouteContext({
-    from: '/po/employeeManagement',
+    from: '/ticket/config',
   });
   // const search = useSearch({ from: '/po/loa' });
 
   return (
-    <EmployeeManagement
+    <Poloa
       hasCreateAccess={hasCreateAccess}
       hasUpdateAccess={hasUpdateAccess}
       session={session}

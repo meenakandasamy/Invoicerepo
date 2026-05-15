@@ -9,9 +9,9 @@ export function getAccessPermissions(
   session: Session,
   activityName: string,
 ): AccessPermissions {
-  console.log(session.poMapDetails.userMapDetails);
+  console.log(session.userMapDetails);
   
-  const matchedItem = session.poMapDetails.userMapDetails?.find(
+  const matchedItem = session.userMapDetails?.find(
     (item: UserRoleMapDetail) => item.activityName === activityName,
   );
 

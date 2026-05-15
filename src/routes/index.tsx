@@ -10,7 +10,7 @@ export const Route = createFileRoute('/')({
     const context: Session | null = await GetSessionCookie();
 
     if (!context || !context.accesstoken) {
-      throw redirect({ to: '/login' });
+      throw redirect({ to: '/po/loa' });
     }
 
     // const { view: hasAccess } = getAccessPermissions(context, 'poloa');

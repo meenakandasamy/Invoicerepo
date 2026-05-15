@@ -46,7 +46,7 @@ export const NavItems: Array<NavItem> = [
     to: '/po/loa',
     label: 'Vendor Registration',
     icons: Building2,
-    activity: 'poloa',
+    activity: 'ticketConfiguration',
     mode: 'menu',
   },
  
