@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { EllipsisVertical, FileQuestion } from 'lucide-react';
+import { EllipsisVertical, FileQuestion,Trash2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { TabsTrigger } from '@radix-ui/react-tabs';
 import {

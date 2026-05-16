@@ -9,7 +9,7 @@ import { Input } from '../ui/input';
 import { Checkbox } from '../ui/checkbox';
 
 import eiraLogo from '../../assets/images/headerLogo.png';
-import bgImage from '../../assets/images/download.jpg';
+// import bgImage from '../../assets/images/download.jpg';
 import {
   LoginServices,
   loginQueries,
@@ -90,10 +90,10 @@ const Login = () => {
 
   return (
     <div className="relative flex items-center justify-center h-screen overflow-hidden">
-      <div
+      {/* <div
         className="absolute inset-0 bg-cover bg-center blur-[5px] scale-110"
         style={{ backgroundImage: `url(${bgImage})` }}
-      />
+      /> */}
 
       <div className="absolute inset-0 bg-black/40" />
 

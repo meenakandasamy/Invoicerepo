@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { getAccessPermissions } from '@/utils/common/permissions';
-import HomeDashboard from '@/components/dashboard/HomeDashboard';
+import {Poloa }from '@/components/poloa/poloa';
 import { GetSessionCookie } from '@/utils/common/cookieHandler';
 import { EirasaasAPIs } from '@/integrations/Services/commonServices';
 import { GetRoleById } from '@/integrations/Services/roleService';
@@ -49,5 +49,5 @@ export const Route = createFileRoute('/')({
 });
 
 function App() {
-  return <HomeDashboard />;
+  return <Poloa />;
 }

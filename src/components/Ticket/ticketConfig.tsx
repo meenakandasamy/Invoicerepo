@@ -4,17 +4,15 @@ import { Modal } from '@mui/material';
 import { CustomTable } from '../table/customTable';
 import { CustomForm } from '../form/customForm';
 import type { JSX } from 'react';
-import type { BaseProps, siteDropdownType } from '@/types/common';
+import type { BaseProps } from '@/types/common';
 import type { Row } from '@/types/table';
 import type { Field } from '@/types/form';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import debounce from 'lodash/debounce';
 import {
-  useDependentQueriesWithId,
   useMutationFn,
   useQueriesFn,
 } from '@/utils/common/queryUtils';
-import { usePoloalist } from '@/hooks/data/usePoloalist';
 import {
   PoloaQueries,
   PoloaServices,
@@ -25,12 +23,12 @@ import {
   EirasaasAPIs,
 } from '@/integrations/Services/commonServices';
 
-interface PoloaProps extends BaseProps {}
-export const Poloa = ({
+interface ticketProps extends BaseProps {}
+export const TicketConfig = ({
   hasCreateAccess,
   hasUpdateAccess,
   session,
-}: PoloaProps): JSX.Element => {
+}: ticketProps): JSX.Element => {
   const { GET_SITELIST_BY_COMPANY, GET_SITELIST_BY_CUSTOMER } =
     EIRASAAS_API_QUERIES;
   const { GetSiteListDropdownByCompany, GetSiteListDropdownByCustomer } =
@@ -39,7 +37,7 @@ export const Poloa = ({
   const isOEM = session.userTypeName === 'OEM';
 
   const [tableValue, setTableValue] = useState<Array<Row>>([]);
-  const [siteDropdown, setSiteDropdown] = useState<Array<siteDropdownType>>([]);
+  const [siteDropdown, setSiteDropdown] = useState<Array<any>>([]);
   const [toBackend, setToBackend] = useState<boolean>(false);
 
 
@@ -84,15 +82,9 @@ export const Poloa = ({
       view: true,
       filterable: true,
     },
-    { id: 'poNumber', label: tabsValue==="PO"?"PO Number":"LOA Number", view: true, filterable: true },
     { id: 'castHeader', label: 'Cost Header', view: true, filterable: true },
     { id: 'castCenter', label: 'Cost Center', view: true, filterable: true },
-    {
-      id: 'documentName',
-    label: tabsValue==="PO"?"PO Document":"LOA Document",
-      view: true,
-      filterable: true,
-    },
+    
     { id: 'action', label: 'Action', view: true, filterable: false },
   ];
 
@@ -100,9 +92,6 @@ export const Poloa = ({
   const [edit, setEdit] = useState<boolean>(false);
   const clickableColumnList: Array<string> = ['documentName'];
   const [formFields, setFormFields] = useState<poloaFieldType>(defaultValues);
-  console.log(formFields);
-
-
   const fields: Array<Field> = [
     {
       name: 'vendorName',
@@ -136,38 +125,6 @@ export const Poloa = ({
           'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
       },
     },
-    {
-      name: 'poNumber',
-      label: `${labeldata} Number`,
-      type: 'text',
-      placeholder: `${labeldata} Number`,
-  disabled: labeldata==='LOA'?true:false,
-      required: true,
-      styles: {
-        wrapper: 'flex flex-col gap-1',
-        label: 'text-sm font-medium text-gray-500',
-        input:
-          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
-      },
-    },
-
-    {
-      name: 'document',
-      label: `${labeldata}(PDF, JPG, PNG)`,
-      type: 'file',
-      placeholder: 'Choose File',
-      acceptTypes: '.pdf,.jpg,.jpeg,.png',
-      required: true,
-      hidden: edit,
-    
-
-      styles: {
-        wrapper: 'flex flex-col gap-1',
-        label: 'text-sm font-medium text-gray-500',
-        input:
-          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
-      },
-    },
   ];
     const handleDownloadDocument = (row: any) => {
     const fileUrl = row;
@@ -181,7 +138,6 @@ export const Poloa = ({
       link.click();
       document.body.removeChild(link);
     } else {
-      console.log('Invalid document URL');
     }
   };
   const formStyles = {
@@ -210,10 +166,7 @@ export const Poloa = ({
     setEdit(false);
   };
   const options = {
-    siteName: siteDropdown.map((item) => item.siteName),
-    // castCenter: costCentersDropdown.map((item) => item.costCentreName),
-    // castHeader: costHeadersDropdown.map((item) => item.costHeaderName),
-    uploadType: ['PO', 'LOA'],
+
   };
 
   function handleOptionClick(option: string, row: any) {

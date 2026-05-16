@@ -40,7 +40,7 @@ export const Poloa = ({
   const isOEM = session.userTypeName === 'OEM';
 
   const [tableValue, setTableValue] = useState<Array<Row>>([]);
-  const [siteDropdown, setSiteDropdown] = useState<Array<siteDropdownType>>([]);
+  const [siteDropdown, setSiteDropdown] = useState<Array<any>>([]);
   const [toBackend, setToBackend] = useState<boolean>(false);
   const [poloalist, setPouploadlist] = useState<Array<costCentreDropdownTypes>>(
     [],
@@ -269,11 +269,6 @@ export const Poloa = ({
       type: 'text',
       placeholder: 'Enter Vendor Email / Code',
       required: true,
-      // disabled: edit || toBackend,
-      // onChange: (_name: string, value: any, form: any) => {
-      //   form.setFieldValue('vendorName', value);
-      //   validateVendorEmail(value, form,);
-      // },
       styles: {
         wrapper: 'flex flex-col gap-1',
         label: 'text-sm font-medium text-gray-500',
@@ -281,113 +276,7 @@ export const Poloa = ({
           'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
       },
     },
-    {
-      name: 'selectedVendorName',
-      label: 'Vendor Name',
-      type: 'text',
-      placeholder: 'Vendor Name',
-      disabled: true,
-      required: true,
-      styles: {
-        wrapper: 'flex flex-col gap-1',
-        label: 'text-sm font-medium text-gray-500',
-        input:
-          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
-      },
-    },
-    {
-      name: 'uploadType',
-      label: 'Type',
-      type: 'customtoggleButton',
-      onChange: (name: string, value: any, form: any) => {
-        console.log(value);
-
-        setFormFields({ ...formFields, uploadType: value });
-        form.setFieldValue('uploadType', value);
-        validatepoNumber(name, value, form, formFields);
-      },
-      required: true,
-      placeholder: 'Type',
-      styles: {
-        wrapper: 'flex flex-col gap-1',
-        label: 'text-sm font-medium text-gray-500',
-        input:
-          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
-      },
-    },
-    {
-      name: 'castCenter',
-      label: 'Cost Center',
-      type: 'select',
-      placeholder: 'Cost Center',
-      onChange: (name: string, value: any, form: any) => {
-        validatepoNumber(name, value, form, formFields);
-
-        //     form.setFieldValue('uploadType', value);
-        setFormFields({ ...formFields, castCenter: value });
-      },
-      required: true,
-      styles: {
-        wrapper: 'flex flex-col gap-1',
-        label: 'text-sm font-medium text-gray-500',
-        input:
-          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
-      },
-    },
-    {
-      name: 'castHeader',
-      label: 'Cost Header',
-      type: 'select',
-      required: true,
-
-      onChange: (name: string, value: any, form: any) => {
-        setFormFields({ ...formFields, castHeader: value });
-        validatepoNumber(name, value, form, formFields);
-      },
-      placeholder: 'Cost Header',
-      styles: {
-        wrapper: 'flex flex-col gap-1',
-        label: 'text-sm font-medium text-gray-500',
-        input:
-          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
-      },
-    },
-
-    {
-      name: 'poNumber',
-      label: `${labeldata} Number`,
-      type: 'text',
-      placeholder: `${labeldata} Number`,
-  disabled: labeldata==='LOA'?true:false,
-      required: true,
-      styles: {
-        wrapper: 'flex flex-col gap-1',
-        label: 'text-sm font-medium text-gray-500',
-        input:
-          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
-      },
-    },
-
-    {
-      name: 'document',
-      label: `${labeldata}(PDF, JPG, PNG)`,
-      type: 'file',
-      placeholder: 'Choose File',
-      acceptTypes: '.pdf,.jpg,.jpeg,.png',
-      required: true,
-      // disabled: !isValidVendor || toBackend,
-      hidden: edit,
-      // onChange: (_name: string, value: any, form: any) => {
-      //   handleFileChange(value, form, 'poLoiFilePath', 'poLoiFileType');
-      // },
-
-      styles: {
-        wrapper: 'flex flex-col gap-1',
-        label: 'text-sm font-medium text-gray-500',
-        input:
-          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
-      },
-    },
+   
   ];
     const handleDownloadDocument = (row: any) => {
     const fileUrl = row;
@@ -420,7 +309,7 @@ export const Poloa = ({
     setIsOpen(true);
     setFormFields({
       ...formFields,
-      uploadType: tabsValue === 'LOA' ? 'LOA' : 'PO',
+  
     });
   };
   const handleClose = () => {
@@ -430,9 +319,6 @@ export const Poloa = ({
     setEdit(false);
   };
   const options = {
-    siteName: siteDropdown.map((item) => item.siteName),
-    // castCenter: costCentersDropdown.map((item) => item.costCentreName),
-    // castHeader: costHeadersDropdown.map((item) => item.costHeaderName),
     uploadType: ['PO', 'LOA'],
   };
 
@@ -440,8 +326,6 @@ export const Poloa = ({
     if (option === 'Edit') {
       const data = {
         ...row,
-        vendorName: row.vendorCode,
-        selectedVendorName: row.vendorName,
       };
       setFormFields(data);
       setIsOpen(true);
@@ -520,22 +404,7 @@ const includedDownloadColumns = HeadCells.filter((headcell) =>
             <Loader />
           ) : (
       <section className="w-full h-full flex flex-col">
-        {/* Tabs header */}
-        <Tabs
-          value={tabsValue}
-          onValueChange={setTabsValue}
-          className="self-end"
-        >
-          <TabsList className="flex gap-2">
-            <TabsTrigger value="PO">PO</TabsTrigger>
-            <TabsTrigger value="LOA">LOA</TabsTrigger>
-          </TabsList>
-        </Tabs>
-
-        {/* COST CENTRE TAB */}
-
         <>
-         
             <CustomTable
               headcells={HeadCells}
               rows={tabledata}

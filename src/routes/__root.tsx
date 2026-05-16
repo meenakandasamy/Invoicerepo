@@ -53,12 +53,25 @@ export const NavItems: Array<NavItem> = [
   
   {
     to: '/ticket/config',
-    label: 'Vendor Registration',
+    label: 'Ticket Configuration',
     icons: Building2,
     activity: 'ticketConfiguration',
     mode: 'menu',
   },
- 
+   {
+    to: '/ticket/Approval',
+    label: 'Ticket Approval',
+    icons: Building2,
+    activity: 'ticketConfiguration',
+    mode: 'menu',
+  },
+    {
+    to: '/ticket/sop',
+    label: 'Sop',
+    icons: Building2,
+    activity: 'ticketConfiguration',
+    mode: 'menu',
+  },
 ];
 
 export const Route = createRootRouteWithContext<AppRouterContext>()({
