@@ -6,22 +6,9 @@ import {
 } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import {
-  Banknote,
-  BanknoteArrowDown,
-  BanknoteArrowUp,
-  BookOpenCheck,
   Building2,
-  FileCheck,
-  HandCoins,
-  Home,
-  Hotel,
-  MapPinCheck,
-  Monitor,
-  ShieldUser,
-  ShoppingCart,
-  User,
-  UserCog,
-  Users,
+PersonStanding ,
+
 } from 'lucide-react';
 
 import { AnimatePresence, motion } from 'framer-motion';
@@ -42,13 +29,13 @@ interface AppRouterContext {
 
 export const NavItems: Array<NavItem> = [
 
-  {
-    to: '/po/loa',
-    label: 'Vendor Registration',
-    icons: Building2,
-    activity: 'ticketConfiguration',
-    mode: 'menu',
-  },
+  // {
+  //   to: '/po/loa',
+  //   label: 'Vendor Registration',
+  //   icons: Building2,
+  //   activity: 'ticketConfiguration',
+  //   mode: 'menu',
+  // },
  
   
   {
@@ -61,7 +48,7 @@ export const NavItems: Array<NavItem> = [
    {
     to: '/ticket/Approval',
     label: 'Ticket Approval',
-    icons: Building2,
+    icons: PersonStanding,
     activity: 'ticketConfiguration',
     mode: 'menu',
   },

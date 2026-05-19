@@ -1,13 +1,9 @@
 import { useEffect } from 'react';
 import clsx from 'clsx';
-
 import { validationSchema } from './validations';
-import { ProductsViewer } from './productsViewer';
-
 import type { Field } from '@/types/form';
 import { useAppForm } from '@/hooks/app.form';
 import { useFormPageStore } from '@/stores/formPageStore';
-import { Switch } from '@/components/ui/switch';
 
 interface CustomFormProps {
   initialValues: Record<string, any>;
@@ -75,10 +71,6 @@ export function CustomsopForm({
     setEntirePage(label, initialValues);
   }, [label]);
 
-  // console.log(
-  //   fields.filter((f) => f.type === 'multiItems').map((f) => f),
-  //   'testDisable',
-  // );
   const disabledStyle = {
     wrapper: 'flex flex-col gap-1',
     label: 'text-sm font-medium text-gray-500',

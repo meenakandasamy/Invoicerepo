@@ -14,6 +14,9 @@ import {
   TicketApprovalQueries,
   TicketApprovalServices,
 } from '@/integrations/Services/ticketApprovalServices';
+import {
+EIRASAAS_API_QUERIES,EirasaasAPIs
+} from '@/integrations/Services/commonServices';
 
 interface TicketProps extends BaseProps {}
 export const TicketApproval = ({
@@ -22,6 +25,8 @@ export const TicketApproval = ({
   session,
 }: TicketProps): JSX.Element => {
   const [tableValue, setTableValue] = useState<Array<Row>>([]);
+   const [ticketTypes, setTicketTypes] = useState<Array<any>>([]);
+      const [ticketCategory, setTicketCategory] = useState<Array<any>>([]);
   const [toBackend, setToBackend] = useState<boolean>(false);
 
   const queries = [
@@ -29,6 +34,18 @@ export const TicketApproval = ({
       queryKey: TicketApprovalQueries.GET_TICKET_APPROVAL_USERID,
       api: TicketApprovalServices.fetchgetallTicketApproval,
       setState: setTableValue,
+      id: session.userId,
+    },
+        {
+      queryKey: EIRASAAS_API_QUERIES.GET_TICKET_TYPE,
+      api: EirasaasAPIs.FetchTicketType,
+      setState: setTicketTypes,
+      id: session.userId,
+    },
+        {
+      queryKey: EIRASAAS_API_QUERIES.GET_TICKET_CATEGORY,
+      api: EirasaasAPIs.FetchTicketCategory,
+      setState: setTicketCategory,
       id: session.userId,
     },
   ];
@@ -220,6 +237,8 @@ export const TicketApproval = ({
     setEdit(false);
   };
   const options = {
+    ticketTypes: ticketTypes.map((type) => type.ticketTypeName),
+    ticketCategory: ticketCategory.map((category) => category.ticketCategoryName),
     uploadType: ['PO', 'LOA'],
   };
 

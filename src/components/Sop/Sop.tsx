@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Trash2 } from 'lucide-react';
+import { Trash2, ChevronDown } from 'lucide-react';
 import { Modal } from '@mui/material';
 import { CustomTable } from '../table/customTable';
 import { CustomsopForm } from '../form/customsopForm';
@@ -8,7 +8,10 @@ import type { JSX } from 'react';
 import type { BaseProps } from '@/types/common';
 import type { Row } from '@/types/table';
 import type { Field } from '@/types/form';
-
+import {
+  EIRASAAS_API_QUERIES,
+  EirasaasAPIs,
+} from '@/integrations/Services/commonServices';
 import { useQueriesFn } from '@/utils/common/queryUtils';
 import {
   TicketApprovalQueries,
@@ -23,6 +26,9 @@ export const Sop = ({
 }: TicketProps): JSX.Element => {
   const [tableValue, setTableValue] = useState<Array<Row>>([]);
   const [toBackend, setToBackend] = useState<boolean>(false);
+  const [ticketTypes, setTicketTypes] = useState<Array<any>>([]);
+  const [ticketCategory, setTicketCategory] = useState<Array<any>>([]);
+  const [ticketTypeId, setticketTypeId] = useState<number>(2);
   const [sections, setSections] = useState([
     {
       id: 1,
@@ -33,17 +39,47 @@ export const Sop = ({
           header: '',
           fieldTypes: [],
           previousAfter: 'No',
+          options: [],
           remarks: '',
         },
       ],
     },
   ]);
+  console.log(sections);
+  
+ useEffect(() => {
+  if (ticketCategory.length > 0) {
+    setSections((prev:any) =>
+      prev.map((section:any) => ({
+        ...section,
+        steps: section.steps.map((step:any) => ({
+          ...step,
+          options: ticketCategory.map(
+            (item) => item.categoryName,
+          ),
+        })),
+      })),
+    );
+  }
+}, [ticketCategory]);
   const queries = [
     {
       queryKey: TicketApprovalQueries.GET_TICKET_APPROVAL_USERID,
       api: TicketApprovalServices.fetchgetallTicketApproval,
       setState: setTableValue,
       id: session.userId,
+    },
+    {
+      queryKey: EIRASAAS_API_QUERIES.GET_TICKET_TYPE,
+      api: EirasaasAPIs.FetchTicketType,
+      setState: setTicketTypes,
+      id: session.userId,
+    },
+    {
+      queryKey: EIRASAAS_API_QUERIES.GET_TICKET_CATEGORY,
+      api: EirasaasAPIs.FetchTicketCategory,
+      setState: setTicketCategory,
+      id: ticketTypeId,
     },
   ];
   const {
@@ -173,9 +209,17 @@ export const Sop = ({
     {
       name: 'ticketType',
       label: 'Ticket Type',
-      type: 'text',
+      type: 'select',
       placeholder: 'Enter Ticket Type',
       required: true,
+      onChange: (name, value, form) => {
+        form.setFieldValue(name, value);
+
+        const selectedType = ticketTypes.find(
+          (type) => type.ticketTypeName === value,
+        )?.ticketTypeId;
+        setticketTypeId(selectedType);
+      },
       styles: {
         wrapper: 'flex flex-col gap-1',
         label: 'text-sm font-medium text-gray-500',
@@ -186,7 +230,7 @@ export const Sop = ({
     {
       name: 'ticketCategory',
       label: 'Ticket Category',
-      type: 'text',
+      type: 'select',
       placeholder: 'Enter Ticket Category',
       required: true,
       styles: {
@@ -248,50 +292,168 @@ export const Sop = ({
     setFormFields(defaultValues);
     setToBackend(false);
     setEdit(false);
-    setSections([
-      {
-        id: 1,
-        sectionName: '',
-        steps: [
-          {
-            id: 1,
-            header: '',
-            fieldTypes: [],
-            previousAfter: 'No',
-            remarks: '',
-          },
-        ],
-      },
-    ]);
+  
   };
   const options = {
     uploadType: ['PO', 'LOA'],
+    ticketType: ticketTypes.map((type) => type.ticketTypeName),
+    ticketCategory: ticketCategory.map(
+      (category) => category.categoryName,
+    ),
   };
 
-  function handleOptionClick(option: string, row: any) {
-    if (option === 'Edit') {
-      const data = {
-        ...row,
-      };
-      setFormFields(data);
-      setIsOpen(true);
-      setEdit(true);
-    }
+function handleOptionClick(option: string, row: any) {
+  if (option === 'Edit') {
+    console.log(row);
+
+    const mappedSections = row?.sopData?.sections?.map(
+      (section: any, sectionIndex: number) => ({
+        id: sectionIndex + 1,
+        sectionName: section.sectionName,
+
+        steps: section.subSteps.map((step: any, stepIndex: number) => {
+          // Extract field types
+          const fieldTypes = step.fields.map((field: any) => {
+            switch (field.type) {
+              case 'TEXT':
+                return 'TextField';
+
+              case 'DROPDOWN':
+                return 'DropDown';
+
+              case 'CHECKBOX':
+                return 'Checkbox';
+
+              case 'IMAGE':
+                return 'Image';
+
+              default:
+                return field.type;
+            }
+          });
+
+          // Dropdown values
+          const dropdownField = step.fields.find(
+            (field: any) => field.type === 'DROPDOWN',
+          );
+
+          // Image field
+          const imageField = step.fields.find(
+            (field: any) => field.type === 'IMAGE',
+          );
+
+          return {
+            id: stepIndex + 1,
+
+            header: step.workDescription,
+
+            fieldTypes,
+
+            options: dropdownField?.options || [],
+
+            selectValues: dropdownField?.options || [],
+
+            previousAfter: imageField?.imageRequired ? 'Yes' : 'No',
+
+            textCount: imageField?.imageCount || 1,
+
+            remarks: step.remarksEnabled ,
+          };
+        }),
+      }),
+    );
+
+    console.log(mappedSections);
+
+    setSections(mappedSections);
+
+    const data = {
+      ...row,
+    };
+
+    setFormFields(data);
+
+    setIsOpen(true);
+
+    setEdit(true);
   }
+}
   const includedDownloadColumns = headCells
     .filter((headcell) => headcell.view === true)
     .map((headcell) => headcell.id);
   function onSubmit(data: any) {
-    //   setToBackend(true);
-    //   ((data.vendorId = vendorDropdown.find(
-    //     (ven: any) => ven.vendorCode === data.vendorName,
-    //   )?.vendorId),
-    //     (data.costHeaderid = costHeadersDropdown.find(
-    //       (head: any) => head.costHeaderName === data.castHeader,
-    //     )?.costHeaderId),
-    //     (data.costCentreid = costCentersDropdown.find(
-    //       (head: any) => head.costCentreName === data.castCenter,
-    //     )?.costCentreId),
+      setToBackend(true);
+      const payload = {
+    sopName: data.sopName || 'Inverter Maintenance SOP',
+
+    ticketTypeId: ticketTypes.find(
+      (item) => item.ticketTypeName === data.ticketType,
+    )?.ticketTypeId,
+
+    ticketCategoryId: ticketCategory.find(
+      (item) => item.categoryName === data.ticketCategory,
+    )?.ticketCategoryId,
+
+    customerId: 10,
+    companyId: 1,
+    status: 1,
+    createdBy: session.userId,
+
+    sopData: {
+      sections: sections.map((section, sectionIndex) => ({
+        sectionNo: sectionIndex + 1,
+
+        sectionName: section.sectionName,
+
+        subSteps: section.steps.map((step, stepIndex) => {
+          const fields: any[] = [];
+
+          // TEXT FIELD
+          if (step.fieldTypes.includes('TextField')) {
+            fields.push({
+              type: 'TEXT',
+            });
+          }
+
+          // DROPDOWN FIELD
+          if (step.fieldTypes.includes('DropDown')) {
+            fields.push({
+              type: 'DROPDOWN',
+              options: step.selectValues || [],
+            });
+          }
+
+          // CHECKBOX FIELD
+          if (step.fieldTypes.includes('Checkbox')) {
+            fields.push({
+              type: 'CHECKBOX',
+            });
+          }
+
+          // IMAGE FIELD
+          if (step.fieldTypes.includes('Image')) {
+            fields.push({
+              type: 'IMAGE',
+              imageRequired: step.previousAfter === 'Yes',
+              imageCount: step.textCount || 1,
+            });
+          }
+
+          return {
+            stepNo: `${sectionIndex + 1}.${stepIndex + 1}`,
+
+            workDescription: step.header,
+
+            fields,
+
+            remarksEnabled:
+              step.remarks,
+          };
+        }),
+      })),
+    },
+  };
+  
     //     postMutation.mutate(data, {
     //       onSuccess: () => {
     //         toast.success('Cost Centre created successfully!');
@@ -308,7 +470,7 @@ export const Sop = ({
     //   toast.error(error.message);
     // }
     //       },
-    //     }));
+    //     }
   }
 
   function onUpdate(data: any) {
@@ -340,7 +502,7 @@ export const Sop = ({
 
   // ----- TABS STATE -----
   const addSection = () => {
-    setSections((prev) => [
+    setSections((prev:any) => [
       ...prev,
       {
         id: prev.length + 1,
@@ -350,6 +512,9 @@ export const Sop = ({
             id: 1,
             header: '',
             fieldTypes: [],
+             options: ticketCategory.map(
+            (item) => item.categoryName,
+          ),
             previousAfter: 'No',
             remarks: '',
           },
@@ -362,9 +527,10 @@ export const Sop = ({
     setSections((prev) => prev.filter((s) => s.id !== sectionId));
   };
 
+
   const addSubStep = (sectionId: number) => {
-    setSections((prev) =>
-      prev.map((section) =>
+    setSections((prev:any) =>
+      prev.map((section:any) =>
         section.id === sectionId
           ? {
               ...section,
@@ -382,8 +548,6 @@ export const Sop = ({
           : section,
       ),
     );
-  };
-
   const removeSubStep = (sectionId: number, stepId: number) => {
     setSections((prev) =>
       prev.map((section) =>
@@ -623,35 +787,74 @@ export const Sop = ({
 
                                     {/* DROPDOWN OPTIONS */}
                                     {step.fieldTypes.includes('DropDown') && (
-                                      <div className="border rounded-xl bg-gray-50 p-2 space-y-3">
-                                        {/* SELECT */}
-                                        <select
-                                          value={step.selectValues}
-                                          onChange={(e) =>
-                                            handleStepChange(
-                                              section.id,
-                                              step.id,
-                                              'selectValues',
-                                              e.target.value,
-                                            )
-                                          }
-                                          className="w-full border rounded-lg px-2 py-2"
-                                        >
-                                          <option value="">
-                                            Select values
-                                          </option>
+                                      <div className="border rounded-xl w-60  bg-gray-50 p-1 space-y-2">
+                                        {/* CUSTOM MULTI SELECT */}
+                                        <div className="relative">
+                                          <details className="w-full">
+                                            <summary className="list-none cursor-pointer border rounded-lg px-1 py-2 bg-white flex justify-between items-center">
+                                              <span className="text-sm text-gray-700 h-4">
+                                                {step.selectValues?.length > 0
+                                                  ? step.selectValues.join(', ')
+                                                  : 'Select values'}
+                                              </span>
 
-                                          {step.options?.map(
-                                            (option: string, index: number) => (
-                                              <option
-                                                key={index}
-                                                value={option}
-                                              >
-                                                {option}
-                                              </option>
-                                            ),
-                                          )}
-                                        </select>
+                                              <ChevronDown
+                                                size={16}
+                                                className="text-gray-500"
+                                              />
+                                            </summary>
+
+                                            <div className="absolute z-10  w-full bg-white border rounded-lg shadow-lg max-h-52 overflow-y-auto p-1 space-y-1">
+                                              {step.options?.map(
+                                                (
+                                                  option: string,
+                                                  index: number,
+                                                ) => (
+                                                  <label
+                                                    key={index}
+                                                    className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 px-1 py-1 rounded-md"
+                                                  >
+                                                    <input
+                                                      type="checkbox"
+                                                      checked={(
+                                                        step.selectValues || []
+                                                      ).includes(option)}
+                                                      onChange={(e) => {
+                                                        const selectedValues =
+                                                          step.selectValues ||
+                                                          [];
+
+                                                        if (e.target.checked) {
+                                                          handleStepChange(
+                                                            section.id,
+                                                            step.id,
+                                                            'selectValues',
+                                                            [
+                                                              ...selectedValues,
+                                                              option,
+                                                            ],
+                                                          );
+                                                        } else {
+                                                          handleStepChange(
+                                                            section.id,
+                                                            step.id,
+                                                            'selectValues',
+                                                            selectedValues.filter(
+                                                              (item: string) =>
+                                                                item !== option,
+                                                            ),
+                                                          );
+                                                        }
+                                                      }}
+                                                    />
+
+                                                    <span>{option}</span>
+                                                  </label>
+                                                ),
+                                              )}
+                                            </div>
+                                          </details>
+                                        </div>
 
                                         {/* ADD OPTION */}
                                         <div className="flex gap-2">
@@ -667,7 +870,7 @@ export const Sop = ({
                                                 e.target.value,
                                               )
                                             }
-                                            className="flex-1 border rounded-lg px-3 py-2"
+                                            className="w-40 h-8 border rounded-md px-2 text-sm"
                                           />
 
                                           <button
@@ -696,42 +899,6 @@ export const Sop = ({
                                           >
                                             Add
                                           </button>
-                                        </div>
-
-                                        {/* OPTION TAGS */}
-                                        <div className="flex flex-wrap gap-2">
-                                          {step.options?.map(
-                                            (item: string, index: number) => (
-                                              <div
-                                                key={index}
-                                                className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs flex items-center gap-2"
-                                              >
-                                                {item}
-
-                                                <button
-                                                  type="button"
-                                                  onClick={() => {
-                                                    const filtered =
-                                                      step.options.filter(
-                                                        (
-                                                          _: string,
-                                                          i: number,
-                                                        ) => i !== index,
-                                                      );
-
-                                                    handleStepChange(
-                                                      section.id,
-                                                      step.id,
-                                                      'options',
-                                                      filtered,
-                                                    );
-                                                  }}
-                                                >
-                                                  ×
-                                                </button>
-                                              </div>
-                                            ),
-                                          )}
                                         </div>
                                       </div>
                                     )}
