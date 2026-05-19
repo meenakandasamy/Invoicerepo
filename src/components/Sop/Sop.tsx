@@ -527,8 +527,7 @@ function handleOptionClick(option: string, row: any) {
     setSections((prev) => prev.filter((s) => s.id !== sectionId));
   };
 
-
-  const addSubStep = (sectionId: number) => {
+ const addSubStep = (sectionId: number) => {
     setSections((prev:any) =>
       prev.map((section:any) =>
         section.id === sectionId
@@ -548,6 +547,8 @@ function handleOptionClick(option: string, row: any) {
           : section,
       ),
     );
+  };
+
   const removeSubStep = (sectionId: number, stepId: number) => {
     setSections((prev) =>
       prev.map((section) =>
