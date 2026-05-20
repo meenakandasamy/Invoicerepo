@@ -117,13 +117,10 @@ export function CustomsopForm({
         )}
         {/* Scrollable Form Fields */}
         <div className="overflow-y-auto overflow-x-hidden dark:bg-background flex-1 p-4 md:p-6">
-          {/* Extra Summary Preview / Bill / Custom Component */}
-         
-
           <div
             className={
               styles?.grid ||
-              'grid grid-cols-1 sm:grid-cols-3 gap-4  md:gap-6 w-full'
+              'grid grid-cols-1 sm:grid-cols-4 gap-4  md:gap-6 w-full'
             }
           >
             {fields.map((fieldItem: Field) => {

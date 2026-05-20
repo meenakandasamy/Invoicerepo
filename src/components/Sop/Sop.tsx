@@ -40,6 +40,7 @@ export const Sop = ({
           fieldTypes: [],
           previousAfter: 'No',
           options: [],
+          textCount:1,
           remarks: '',
         },
       ],
@@ -194,17 +195,13 @@ export const Sop = ({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
   const defaultValues = {
-    selectedVendorName: '',
-    vendorName: '',
-    poNumber: '',
-    uploadType: '',
-    castHeader: '',
-    castCenter: '',
-    document: '',
-    poId: '',
+    sopName: '',
+    status: '',
+    ticketType: '',
+    ticketCategory: '',
   };
   const clickableColumnList: Array<string> = ['documentName'];
-  const [formFields, setFormFields] = useState<poloaFieldType>(defaultValues);
+  const [formFields, setFormFields] = useState<SopFieldType>(defaultValues);
   const fields: Array<Field> = [
     {
       name: 'ticketType',
@@ -240,10 +237,23 @@ export const Sop = ({
           'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
       },
     },
-    {
-      name: 'ticketStatus',
-      label: 'Status',
+        {
+      name: 'sopName',
+      label: 'SOP Name',
       type: 'text',
+      placeholder: 'Enter SOP Name',
+      required: true,
+      styles: {
+        wrapper: 'flex flex-col gap-1',
+        label: 'text-sm font-medium text-gray-500',
+        input:
+          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
+      },
+    },
+    {
+      name: 'status',
+      label: 'Status',
+      type: 'select',
       placeholder: 'Enter Status',
       required: true,
       styles: {
@@ -295,7 +305,7 @@ export const Sop = ({
   
   };
   const options = {
-    uploadType: ['PO', 'LOA'],
+    status: [ 'Inactive', 'Active'],
     ticketType: ticketTypes.map((type) => type.ticketTypeName),
     ticketCategory: ticketCategory.map(
       (category) => category.categoryName,
@@ -306,75 +316,73 @@ function handleOptionClick(option: string, row: any) {
   if (option === 'Edit') {
     console.log(row);
 
-    const mappedSections = row?.sopData?.sections?.map(
-      (section: any, sectionIndex: number) => ({
-        id: sectionIndex + 1,
-        sectionName: section.sectionName,
+    // const mappedSections = row?.sopData?.sections?.map(
+    //   (section: any, sectionIndex: number) => ({
+    //     id: sectionIndex + 1,
+    //     sectionName: section.sectionName,
 
-        steps: section.subSteps.map((step: any, stepIndex: number) => {
-          // Extract field types
-          const fieldTypes = step.fields.map((field: any) => {
-            switch (field.type) {
-              case 'TEXT':
-                return 'TextField';
+    //     steps: section.subSteps.map((step: any, stepIndex: number) => {
+    //       // Extract field types
+    //       const fieldTypes = step.fields.map((field: any) => {
+    //         switch (field.type) {
+    //           case 'TEXT':
+    //             return 'TextField';
 
-              case 'DROPDOWN':
-                return 'DropDown';
+    //           case 'DROPDOWN':
+    //             return 'DropDown';
 
-              case 'CHECKBOX':
-                return 'Checkbox';
+    //           case 'CHECKBOX':
+    //             return 'Checkbox';
 
-              case 'IMAGE':
-                return 'Image';
+    //           case 'IMAGE':
+    //             return 'Image';
 
-              default:
-                return field.type;
-            }
-          });
+    //           default:
+    //             return field.type;
+    //         }
+    //       });
 
-          // Dropdown values
-          const dropdownField = step.fields.find(
-            (field: any) => field.type === 'DROPDOWN',
-          );
+    //       // Dropdown values
+    //       const dropdownField = step.fields.find(
+    //         (field: any) => field.type === 'DROPDOWN',
+    //       );
 
-          // Image field
-          const imageField = step.fields.find(
-            (field: any) => field.type === 'IMAGE',
-          );
+    //       // Image field
+    //       const imageField = step.fields.find(
+    //         (field: any) => field.type === 'IMAGE',
+    //       );
 
-          return {
-            id: stepIndex + 1,
+    //       return {
+    //         id: stepIndex + 1,
 
-            header: step.workDescription,
+    //         header: step.workDescription,
 
-            fieldTypes,
+    //         fieldTypes,
 
-            options: dropdownField?.options || [],
+    //         options: dropdownField?.options || [],
 
-            selectValues: dropdownField?.options || [],
+    //         selectValues: dropdownField?.options || [],
 
-            previousAfter: imageField?.imageRequired ? 'Yes' : 'No',
+    //         previousAfter: imageField?.imageRequired ? 'Yes' : 'No',
 
-            textCount: imageField?.imageCount || 1,
+    //         textCount: imageField?.imageCount || 1,
 
-            remarks: step.remarksEnabled ,
-          };
-        }),
-      }),
-    );
+    //         remarks: step.remarksEnabled ,
+    //       };
+    //     }),
+    //   }),
+    // );
 
-    console.log(mappedSections);
+    // console.log(mappedSections);
 
-    setSections(mappedSections);
+    // setSections(mappedSections);
 
     const data = {
       ...row,
     };
 
     setFormFields(data);
-
     setIsOpen(true);
-
     setEdit(true);
   }
 }
@@ -938,22 +946,26 @@ function handleOptionClick(option: string, row: any) {
                                     </div>
 
                                     {/* TEXT COUNT */}
+                                    {}
+                                        {step.previousAfter === 'Yes' && (
                                     <div>
                                       <input
                                         type="number"
                                         min={1}
                                         value={step.textCount || 1}
-                                        onChange={(e) =>
-                                          handleStepChange(
-                                            section.id,
-                                            step.id,
-                                            'textCount',
-                                            Number(e.target.value),
-                                          )
-                                        }
+                                       onChange={(e) => {
+    const value = Math.min(5, Math.max(1, Number(e.target.value)));
+
+    handleStepChange(
+      section.id,
+      step.id,
+      'textCount',
+      value,
+    );
+  }}
                                         className="w-24 border rounded-lg px-2 py-1"
                                       />
-                                    </div>
+                                    </div>)}
                                   </div>
                                 </td>
 
