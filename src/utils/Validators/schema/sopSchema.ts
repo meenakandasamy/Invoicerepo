@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 // Base schema (for reuse, not exported directly)
-const BasePoloaSchema = z.object({
+const BaseSopaSchema = z.object({
   sopName: z.string(),
   ticketType: z.string(),
   ticketCategory: z.string(),
@@ -11,12 +11,13 @@ const BasePoloaSchema = z.object({
   lastUpdatedBy: z.number(),
   companyId: z.number(),
   customerId: z.number().optional(),
+  sopId: z.number().optional(),
 });
 
-export const PoloaSaveSchema = BasePoloaSchema;
+export const SopSaveSchema = BaseSopaSchema;
 
-export const PoloaUpdateSchema = BasePoloaSchema.partial();
+export const SopUpdateSchema = BaseSopaSchema.partial();
 
 // ✅ Types
-export type PoloaDTOType = z.infer<typeof PoloaSaveSchema>;
-export type PoloaUpdateDTOType = z.infer<typeof PoloaUpdateSchema>;
+export type SopDTOType = z.infer<typeof SopSaveSchema>;
+export type SopUpdateDTOType = z.infer<typeof SopUpdateSchema>;

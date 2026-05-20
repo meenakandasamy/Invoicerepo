@@ -12,11 +12,15 @@ import {
   EIRASAAS_API_QUERIES,
   EirasaasAPIs,
 } from '@/integrations/Services/commonServices';
-import { useQueriesFn } from '@/utils/common/queryUtils';
+import {useMutationFn , useQueriesFn} from '@/utils/common/queryUtils';
 import {
   TicketApprovalQueries,
   TicketApprovalServices,
 } from '@/integrations/Services/ticketApprovalServices';
+import {
+  TicketSopQueries,
+  TicketSopServices,
+} from '@/integrations/Services/ticketSopServices';
 
 interface TicketProps extends BaseProps {}
 export const Sop = ({
@@ -42,6 +46,7 @@ export const Sop = ({
           options: [],
           textCount:1,
           remarks: '',
+          selectValues: [],
         },
       ],
     },
@@ -65,10 +70,10 @@ export const Sop = ({
 }, [ticketCategory]);
   const queries = [
     {
-      queryKey: TicketApprovalQueries.GET_TICKET_APPROVAL_USERID,
-      api: TicketApprovalServices.fetchgetallTicketApproval,
+      queryKey: TicketSopQueries.GET_TICKET_SOP,
+      api: TicketSopServices.fetchgetallTicketSop,
       setState: setTableValue,
-      id: session.userId,
+      // id: session.userId,
     },
     {
       queryKey: EIRASAAS_API_QUERIES.GET_TICKET_TYPE,
@@ -88,14 +93,14 @@ export const Sop = ({
     status,
   } = useQueriesFn(queries);
 
-  // const postMutation = useMutationFn(
-  //   PoloaServices.AddNewpoloa,
-  //   PoloaQueries.GET_ALL,
-  // );
-  // const putMutation = useMutationFn(
-  //   PoloaServices.UpdatePoloaById,
-  //   PoloaQueries.GET_ALL,
-  // );
+  const postMutation = useMutationFn(
+    TicketSopServices.AddNewSop,
+    TicketSopQueries.GET_TICKET_SOP,
+  );
+  const putMutation = useMutationFn(
+  TicketSopServices.UpdateSopById,
+    TicketSopQueries.GET_TICKET_SOP,
+  );
   // const HeadCells = [
   //   {
   //     id: 'vendorCode',
@@ -107,9 +112,21 @@ export const Sop = ({
   // ];
   const headCells = [
     {
-      label: 'Ticket No',
-      id: 'ticketCode',
+      label: 'TicketType',
+      id: 'ticketTypeId',
 
+      view: true,
+      filterable: true,
+    },
+    {
+      label: 'Ticket Category',
+      id: 'ticketCategoryId',
+      view: true,
+      filterable: true,
+    },
+      {
+      label: 'Sop Name',
+      id: 'sopName',
       view: true,
       filterable: true,
     },
@@ -120,70 +137,8 @@ export const Sop = ({
       filterable: true,
     },
 
-    {
-      label: 'Ticket Category',
-      id: 'categoryName',
-      view: true,
-      filterable: false,
-    },
-    {
-      label: 'Equipment Name',
-      id: 'displayName',
-      view: true,
-      filterable: true,
-    },
 
-    {
-      label: 'Priority',
-      id: 'priority',
-      view: true,
-      filterable: false,
-    },
-
-    {
-      label: 'Created Date',
-      id: 'createdDate',
-      view: true,
-      filterable: false,
-    },
-    {
-      label: 'Assigned To',
-      id: 'assignedBy',
-      view: true,
-      filterable: true,
-    },
-    {
-      label: 'Schedule  On',
-      id: 'scheduleOn',
-      view: true,
-      filterable: true,
-    },
-    {
-      label: 'State',
-      id: 'stateName',
-      view: true,
-      filterable: true,
-    },
-    {
-      label: 'Status',
-      id: 'statusName',
-      view: true,
-      filterable: true,
-    },
-    {
-      label: 'Current Level',
-      id: 'currentLevel',
-      headerStyle: { width: '100px' },
-
-      view: true,
-      filterable: true,
-    },
-    {
-      label: 'Subject',
-      id: 'subject',
-      view: true,
-      filterable: true,
-    },
+   
     {
       label: 'Action',
       id: 'action',
@@ -199,6 +154,7 @@ export const Sop = ({
     status: '',
     ticketType: '',
     ticketCategory: '',
+    sopId:''
   };
   const clickableColumnList: Array<string> = ['documentName'];
   const [formFields, setFormFields] = useState<SopFieldType>(defaultValues);
@@ -291,12 +247,32 @@ export const Sop = ({
       'border bg-red-500 text-white py-1 px-2 rounded cursor-pointer hover:bg-red-600 hover:text-white dark:bg-[var(--destructive)] dark:hover:bg-red-500 dark:text-[var(--destructive-foreground)]',
   };
 
-  const handleOpen = () => {
-    setIsOpen(true);
-    setFormFields({
-      ...formFields,
-    });
-  };
+ const handleOpen = () => {
+  setIsOpen(true);
+
+  setFormFields({
+    ...formFields,
+  });
+
+  setSections([
+    {
+      id: 1,
+      sectionName: '',
+      steps: [
+        {
+          id: 1,
+          header: '',
+          fieldTypes:[],
+          previousAfter: 'No',
+          options: [],
+          textCount: 1,
+          remarks: '',
+          selectValues: [],
+        },
+      ],
+    },
+  ]);
+};
   const handleClose = () => {
     setIsOpen(false);
     setFormFields(defaultValues);
@@ -316,66 +292,66 @@ function handleOptionClick(option: string, row: any) {
   if (option === 'Edit') {
     console.log(row);
 
-    // const mappedSections = row?.sopData?.sections?.map(
-    //   (section: any, sectionIndex: number) => ({
-    //     id: sectionIndex + 1,
-    //     sectionName: section.sectionName,
+    const mappedSections = row?.sopData?.sections?.map(
+      (section: any, sectionIndex: number) => ({
+        id: sectionIndex + 1,
+        sectionName: section.sectionName,
 
-    //     steps: section.subSteps.map((step: any, stepIndex: number) => {
-    //       // Extract field types
-    //       const fieldTypes = step.fields.map((field: any) => {
-    //         switch (field.type) {
-    //           case 'TEXT':
-    //             return 'TextField';
+        steps: section.subSteps.map((step: any, stepIndex: number) => {
+          // Extract field types
+          const fieldTypes = step.fields.map((field: any) => {
+            switch (field.type) {
+              case 'TEXT':
+                return 'TextField';
 
-    //           case 'DROPDOWN':
-    //             return 'DropDown';
+              case 'DROPDOWN':
+                return 'DropDown';
 
-    //           case 'CHECKBOX':
-    //             return 'Checkbox';
+              case 'CHECKBOX':
+                return 'Checkbox';
 
-    //           case 'IMAGE':
-    //             return 'Image';
+              case 'IMAGE':
+                return 'Image';
 
-    //           default:
-    //             return field.type;
-    //         }
-    //       });
+              default:
+                return field.type;
+            }
+          });
 
-    //       // Dropdown values
-    //       const dropdownField = step.fields.find(
-    //         (field: any) => field.type === 'DROPDOWN',
-    //       );
+          // Dropdown values
+          const dropdownField = step.fields.find(
+            (field: any) => field.type === 'DROPDOWN',
+          );
 
-    //       // Image field
-    //       const imageField = step.fields.find(
-    //         (field: any) => field.type === 'IMAGE',
-    //       );
+          // Image field
+          const imageField = step.fields.find(
+            (field: any) => field.type === 'IMAGE',
+          );
 
-    //       return {
-    //         id: stepIndex + 1,
+          return {
+            id: stepIndex + 1,
 
-    //         header: step.workDescription,
+            header: step.workDescription,
 
-    //         fieldTypes,
+            fieldTypes,
 
-    //         options: dropdownField?.options || [],
+            options: dropdownField?.options || [],
 
-    //         selectValues: dropdownField?.options || [],
+            selectValues: dropdownField?.options || [],
 
-    //         previousAfter: imageField?.imageRequired ? 'Yes' : 'No',
+            previousAfter: imageField?.imageRequired ? 'Yes' : 'No',
 
-    //         textCount: imageField?.imageCount || 1,
+            textCount: imageField?.imageCount || 1,
 
-    //         remarks: step.remarksEnabled ,
-    //       };
-    //     }),
-    //   }),
-    // );
+            remarks: step.remarksEnabled ,
+          };
+        }),
+      }),
+    );
 
-    // console.log(mappedSections);
+    console.log(mappedSections);
 
-    // setSections(mappedSections);
+    setSections(mappedSections);
 
     const data = {
       ...row,
@@ -402,8 +378,8 @@ function handleOptionClick(option: string, row: any) {
       (item) => item.categoryName === data.ticketCategory,
     )?.ticketCategoryId,
 
-    customerId: 10,
-    companyId: 1,
+    customerId: session.customerId,
+    companyId: session.companyId,
     status: 1,
     createdBy: session.userId,
 
@@ -461,51 +437,114 @@ function handleOptionClick(option: string, row: any) {
       })),
     },
   };
+  console.log(payload);
   
-    //     postMutation.mutate(data, {
-    //       onSuccess: () => {
-    //         toast.success('Cost Centre created successfully!');
-    //         handleClose();
-    //         setFormFields(defaultValues);
-    //         setToBackend(false);
-    //       },
-    //       onError: (error: any) => {
-    //         setToBackend(false);
-    //             const errors=error.response.data.error
-    //         if (errors?.includes('unique_po_number')) {
-    //   toast.error('PO number already exists. Document already uploaded for this PO.');
-    // }else{
-    //   toast.error(error.message);
-    // }
-    //       },
-    //     }
-  }
+        postMutation.mutate(payload, {
+          onSuccess: () => {
+            toast.success('sop created successfully!');
+            handleClose();
+            setFormFields(defaultValues);
+            setToBackend(false);
+          },
+          onError: (error: any) => {
+            setToBackend(false);
+                const errors=error.response.data.error
+            if (errors?.includes('unique_po_number')) {
+      toast.error('PO number already exists. Document already uploaded for this PO.');
+    }else{
+      toast.error(error.message);
+    }
+          },
+        }
+      )}
 
   function onUpdate(data: any) {
-    //   ((data.vendorId = vendorDropdown.find(
-    //     (ven: any) => ven.vendorCode === data.vendorName,
-    //   )?.vendorId),
-    //     (data.costHeaderid = costHeadersDropdown.find(
-    //       (head: any) => head.costHeaderName === data.castHeader,
-    //     )?.costHeaderId),
-    //     (data.costCentreid = costCentersDropdown.find(
-    //       (head: any) => head.costCentreName === data.castCenter,
-    //     )?.costCentreId),
-    //     putMutation.mutate(data, {
-    //       onSuccess: () => {
-    //         toast.success('Site mapped to Cost Centre successfully!');
-    //         handleClose();
-    //         setFormFields(defaultValues);
-    //       },
-    //       onError: (error: any) => {
-    //         const errors=error.response.data.error
-    //         if (errors?.includes('unique_po_number')) {
-    //   toast.error('PO number already exists. Document already uploaded for this PO.');
-    // }else{
-    //   toast.error(error.message);
-    // }
-    //       },
-    //     }));
+      setToBackend(true);
+          const payload = {
+    sopName: data.sopName || 'Inverter Maintenance SOP',
+sopId: data.sopId,
+    ticketTypeId: ticketTypes.find(
+      (item) => item.ticketTypeName === data.ticketType,
+    )?.ticketTypeId,
+
+    ticketCategoryId: ticketCategory.find(
+      (item) => item.categoryName === data.ticketCategory,
+    )?.ticketCategoryId,
+
+    customerId: session.customerId,
+    companyId: session.companyId,
+    status: 1,
+    createdBy: session.userId,
+
+    sopData: {
+      sections: sections.map((section, sectionIndex) => ({
+        sectionNo: sectionIndex + 1,
+
+        sectionName: section.sectionName,
+
+        subSteps: section.steps.map((step, stepIndex) => {
+          const fields: any[] = [];
+
+          // TEXT FIELD
+          if (step.fieldTypes.includes('TextField')) {
+            fields.push({
+              type: 'TEXT',
+            });
+          }
+
+          // DROPDOWN FIELD
+          if (step.fieldTypes.includes('DropDown')) {
+            fields.push({
+              type: 'DROPDOWN',
+              options: step.selectValues || [],
+            });
+          }
+
+          // CHECKBOX FIELD
+          if (step.fieldTypes.includes('Checkbox')) {
+            fields.push({
+              type: 'CHECKBOX',
+            });
+          }
+
+          // IMAGE FIELD
+          if (step.fieldTypes.includes('Image')) {
+            fields.push({
+              type: 'IMAGE',
+              imageRequired: step.previousAfter === 'Yes',
+              imageCount: step.textCount || 1,
+            });
+          }
+
+          return {
+            stepNo: `${sectionIndex + 1}.${stepIndex + 1}`,
+
+            workDescription: step.header,
+
+            fields,
+
+            remarksEnabled:
+              step.remarks,
+          };
+        }),
+      })),
+    },
+  };
+        putMutation.mutate(payload, {
+          onSuccess: () => {
+            toast.success('SOP updated successfully!');
+            handleClose();
+            setFormFields(defaultValues);
+          },
+          onError: (error: any) => {
+            const errors=error.response.data.error
+            if (errors?.includes('unique_po_number')) {
+      toast.error('PO number already exists. Document already uploaded for this PO.');
+    }else{
+      toast.error(error.message);
+    }
+          },
+        });
   }
 
   // ----- TABS STATE -----
@@ -736,7 +775,7 @@ function handleOptionClick(option: string, row: any) {
                                 </td>
 
                                 {/* HEADER */}
-                                <td className="p-4">
+                                <td className="p-3">
                                   <input
                                     type="text"
                                     value={step.header}
@@ -754,7 +793,7 @@ function handleOptionClick(option: string, row: any) {
                                 </td>
 
                                 {/* FIELD TYPE */}
-                                <td className="p-4">
+                                <td className="p-3">
                                   <div className="space-y-4">
                                     {/* CHECKBOXES */}
                                     <div className="grid grid-cols-2 gap-3">
@@ -915,7 +954,7 @@ function handleOptionClick(option: string, row: any) {
                                 </td>
 
                                 {/* AFTER IMAGE */}
-                                <td className="p-4">
+                                <td className="p-3">
                                   <div className="space-y-4">
                                     {/* YES / NO */}
                                     <div className="flex gap-2">
@@ -938,6 +977,7 @@ function handleOptionClick(option: string, row: any) {
                                                 option,
                                               )
                                             }
+                                              // className="h- w-3"
                                           />
 
                                           {option}
@@ -970,7 +1010,7 @@ function handleOptionClick(option: string, row: any) {
                                 </td>
 
                                 {/* REMARKS */}
-                                <td className="p-2">
+                                <td className="p-3">
                                   <input
                                     type="text"
                                     value={step.remarks}
