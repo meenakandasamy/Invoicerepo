@@ -4,7 +4,7 @@ import { z } from 'zod';
 const BasePoloaSchema = z.object({
   sopName: z.string(),
   ticketType: z.string(),
-  ticketCategory: z.string(),
+  ticketCategory: z.number(),
   ticketTypeId: z.number(),
   ticketCategoryId: z.number(),
   status: z.number(),

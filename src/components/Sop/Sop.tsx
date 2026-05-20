@@ -43,7 +43,9 @@ export const Sop = ({
           header: '',
           fieldTypes: [],
           previousAfter: 'No',
-          options: [],
+    options: ticketCategory.map(
+            (item) => item.categoryName,
+          ),
           textCount:1,
           remarks: '',
           selectValues: [],
@@ -840,11 +842,25 @@ sopId: data.sopId,
                                         <div className="relative">
                                           <details className="w-full">
                                             <summary className="list-none cursor-pointer border rounded-lg px-1 py-2 bg-white flex justify-between items-center">
-                                              <span className="text-sm text-gray-700 h-4">
-                                                {step.selectValues?.length > 0
-                                                  ? step.selectValues.join(', ')
-                                                  : 'Select values'}
-                                              </span>
+         <span className="text-sm text-gray-700 h-4 flex items-center">
+  {step.selectValues?.length > 0 ? (
+    step.selectValues.length === 1 ? (
+      <span className="max-w-24 truncate inline-block">
+        {step.selectValues[0]}
+      </span>
+    ) : (
+      <span className="flex items-center gap-1">
+        <span className="max-w-40 truncate inline-block">
+          {step.selectValues[0]}
+        </span>
+
+        <span>+{step.selectValues.length - 1}</span>
+      </span>
+    )
+  ) : (
+    'Select values'
+  )}
+</span>
 
                                               <ChevronDown
                                                 size={16}
