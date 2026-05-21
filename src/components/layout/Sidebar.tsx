@@ -136,7 +136,7 @@ export default function Sidebar({
     `}
   >
     {/* Header */}
-    <div className="h-[65px] border-b border-slate-200 flex items-center px-5">
+    <div className="h-[65px] border-b border-slate-200 flex items-center ">
       {isExpanded ? (
         <div className="flex items-center gap-3">
           <div className="h-11 w-11 rounded-2xl bg-violet-100 flex items-center justify-center">
@@ -282,44 +282,7 @@ export default function Sidebar({
         );
       })}
     </div>
-
-    {/* Footer */}
-    {isExpanded && (
-      <div className="p-4 border-t border-slate-200">
-        <div className="rounded-2xl bg-slate-50 p-4">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="h-10 w-10 rounded-xl bg-violet-100 flex items-center justify-center">
-              <Settings size={18} className="text-violet-600" />
-            </div>
-
-            <div>
-              <p className="text-sm font-semibold text-slate-700">
-                Need Help?
-              </p>
-
-              <p className="text-xs text-slate-400">
-                Contact support team
-              </p>
-            </div>
-          </div>
-
-          <button
-            className="
-              w-full rounded-xl
-              border border-violet-200
-              bg-white
-              py-2.5
-              text-sm font-medium
-              text-violet-700
-              hover:bg-violet-50
-              transition
-            "
-          >
-            Contact Support
-          </button>
-        </div>
-      </div>
-    )}
+   
   </div>
 );
 }

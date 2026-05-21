@@ -168,14 +168,14 @@ export default function Layout({ isHidden, path, children }: LayoutProps) {
           <div className="flex-1 flex flex-col h-screen overflow-hidden">
              
             <div
-  className="h-[65px] flex items-center justify-between"
-  style={{
-    paddingLeft: isExpanded ? '13rem' : '5rem',
-  }}
+  className="h-[65px] flex items-center  p-5 justify-between"
+  // style={{
+  //   paddingLeft: isExpanded ? '3rem' : '2rem',
+  // }}
 >
   {/* LEFT SIDE */}
-  <div >
-    <CustomBreadcrumbs />
+  <div className="pl-0" >
+    <CustomBreadcrumbs  />
   </div>
 
   {/* RIGHT SIDE */}

@@ -8,7 +8,7 @@ import rollupNodeResolve from '@rollup/plugin-node-resolve';
 import rollupBabel from '@rollup/plugin-babel';
 
 export default defineConfig({
-  base: '/saas-po/',
+  base: '/saas-ticket/',
   plugins: [
     tanstackRouter({ autoCodeSplitting: true }),
     react({

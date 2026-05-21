@@ -363,6 +363,15 @@ export const Sop = ({
     .map((headcell) => headcell.id);
   function onSubmit(data: any) {
     setToBackend(true);
+      const emptySection = sections.find(
+    (section) => !section.sectionName?.trim(),
+  );
+
+  if (emptySection) {
+    toast.error('Section name is required');
+    setToBackend(false);
+    return;
+  }
     const payload = {
       sopName: data.sopName || 'Inverter Maintenance SOP',
 
@@ -370,9 +379,9 @@ export const Sop = ({
         (item) => item.ticketTypeName === data.ticketType,
       )?.ticketTypeId,
 
-      ticketCategoryId: ticketCategory.find(
+        ticketCategoryId: ticketCategory.find(
         (item) => item.categoryName === data.ticketCategory,
-      )?.ticketCategoryId,
+      )?.categoryId,
 
       customerId: session.customerId,
       companyId: session.companyId,
@@ -457,6 +466,15 @@ export const Sop = ({
 
   function onUpdate(data: any) {
     setToBackend(true);
+      const emptySection = sections.find(
+    (section) => !section.sectionName?.trim(),
+  );
+
+  if (emptySection) {
+    toast.error('Section name is required');
+      setToBackend(false);
+    return;
+  }
     const payload = {
       sopName: data.sopName || 'Inverter Maintenance SOP',
       sopId: data.sopId,
