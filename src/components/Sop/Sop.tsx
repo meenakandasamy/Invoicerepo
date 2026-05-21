@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Trash2, ChevronDown } from 'lucide-react';
 import { Modal } from '@mui/material';
@@ -12,11 +12,11 @@ import {
   EIRASAAS_API_QUERIES,
   EirasaasAPIs,
 } from '@/integrations/Services/commonServices';
-import {useMutationFn , useQueriesFn} from '@/utils/common/queryUtils';
 import {
-  TicketApprovalQueries,
-  TicketApprovalServices,
-} from '@/integrations/Services/ticketApprovalServices';
+  useMutationFn,
+  useQueriesFn,
+  useQueriesFnWithId,
+} from '@/utils/common/queryUtils';
 import {
   TicketSopQueries,
   TicketSopServices,
@@ -32,7 +32,9 @@ export const Sop = ({
   const [toBackend, setToBackend] = useState<boolean>(false);
   const [ticketTypes, setTicketTypes] = useState<Array<any>>([]);
   const [ticketCategory, setTicketCategory] = useState<Array<any>>([]);
+  const [dropdowndata, setDropdowndata] = useState<Array<any>>([]);
   const [ticketTypeId, setticketTypeId] = useState<number>(2);
+  const [categoryId, setCategoryId] = useState<number>(0);
   const [sections, setSections] = useState([
     {
       id: 1,
@@ -43,10 +45,8 @@ export const Sop = ({
           header: '',
           fieldTypes: [],
           previousAfter: 'No',
-    options: ticketCategory.map(
-            (item) => item.categoryName,
-          ),
-          textCount:1,
+          options: dropdowndata,
+          textCount: 1,
           remarks: '',
           selectValues: [],
         },
@@ -54,22 +54,20 @@ export const Sop = ({
     },
   ]);
   console.log(sections);
-  
- useEffect(() => {
-  if (ticketCategory.length > 0) {
-    setSections((prev:any) =>
-      prev.map((section:any) => ({
-        ...section,
-        steps: section.steps.map((step:any) => ({
-          ...step,
-          options: ticketCategory.map(
-            (item) => item.categoryName,
-          ),
+
+  useEffect(() => {
+    if (dropdowndata.length > 0) {
+      setSections((prev: any) =>
+        prev.map((section: any) => ({
+          ...section,
+          steps: section.steps.map((step: any) => ({
+            ...step,
+            options: dropdowndata,
+          })),
         })),
-      })),
-    );
-  }
-}, [ticketCategory]);
+      );
+    }
+  }, [dropdowndata]);
   const queries = [
     {
       queryKey: TicketSopQueries.GET_TICKET_SOP,
@@ -94,24 +92,23 @@ export const Sop = ({
     data: [dependentResponse],
     status,
   } = useQueriesFn(queries);
-
+  const query = [
+    {
+      queryKey: TicketSopQueries.GET_TICKET_SOP_DROPDOWN,
+      api: TicketSopServices.fetchGetallSopdropdown,
+      setState: setDropdowndata,
+      id: [ticketTypeId, categoryId],
+    },
+  ];
+  useQueriesFnWithId(query);
   const postMutation = useMutationFn(
     TicketSopServices.AddNewSop,
     TicketSopQueries.GET_TICKET_SOP,
   );
   const putMutation = useMutationFn(
-  TicketSopServices.UpdateSopById,
+    TicketSopServices.UpdateSopById,
     TicketSopQueries.GET_TICKET_SOP,
   );
-  // const HeadCells = [
-  //   {
-  //     id: 'vendorCode',
-  //     label: 'Vendor Code',
-  //     view: true,
-  //     filterable: true,
-  //   },
-  //   { id: 'action', label: 'Action', view: true, filterable: false },
-  // ];
   const headCells = [
     {
       label: 'TicketType',
@@ -126,21 +123,12 @@ export const Sop = ({
       view: true,
       filterable: true,
     },
-      {
+    {
       label: 'Sop Name',
       id: 'sopName',
       view: true,
       filterable: true,
     },
-    {
-      label: 'Site Name',
-      id: 'siteName',
-      view: true,
-      filterable: true,
-    },
-
-
-   
     {
       label: 'Action',
       id: 'action',
@@ -156,7 +144,8 @@ export const Sop = ({
     status: '',
     ticketType: '',
     ticketCategory: '',
-    sopId:''
+    sopId: '',
+    status: 'Active',
   };
   const clickableColumnList: Array<string> = ['documentName'];
   const [formFields, setFormFields] = useState<SopFieldType>(defaultValues);
@@ -186,7 +175,15 @@ export const Sop = ({
       name: 'ticketCategory',
       label: 'Ticket Category',
       type: 'select',
+      disabled: formFields.ticketType,
       placeholder: 'Enter Ticket Category',
+      onChange: (name, value, form) => {
+        form.setFieldValue(name, value);
+        const selectedcategory = ticketCategory.find(
+          (type) => type.categoryName === value,
+        )?.categoryId;
+        setCategoryId(selectedcategory);
+      },
       required: true,
       styles: {
         wrapper: 'flex flex-col gap-1',
@@ -195,7 +192,7 @@ export const Sop = ({
           'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
       },
     },
-        {
+    {
       name: 'sopName',
       label: 'SOP Name',
       type: 'text',
@@ -249,309 +246,309 @@ export const Sop = ({
       'border bg-red-500 text-white py-1 px-2 rounded cursor-pointer hover:bg-red-600 hover:text-white dark:bg-[var(--destructive)] dark:hover:bg-red-500 dark:text-[var(--destructive-foreground)]',
   };
 
- const handleOpen = () => {
-  setIsOpen(true);
+  const handleOpen = () => {
+    setIsOpen(true);
 
-  setFormFields({
-    ...formFields,
-  });
+    setFormFields({
+      ...formFields,
+    });
 
-  setSections([
-    {
-      id: 1,
-      sectionName: '',
-      steps: [
-        {
-          id: 1,
-          header: '',
-          fieldTypes:[],
-          previousAfter: 'No',
-          options: [],
-          textCount: 1,
-          remarks: '',
-          selectValues: [],
-        },
-      ],
-    },
-  ]);
-};
+    setSections([
+      {
+        id: 1,
+        sectionName: '',
+        steps: [
+          {
+            id: 1,
+            header: '',
+            fieldTypes: [],
+            previousAfter: 'No',
+            options: [],
+            textCount: 1,
+            remarks: '',
+            selectValues: [],
+          },
+        ],
+      },
+    ]);
+  };
   const handleClose = () => {
     setIsOpen(false);
     setFormFields(defaultValues);
     setToBackend(false);
     setEdit(false);
-  
   };
   const options = {
-    status: [ 'Inactive', 'Active'],
+    status: ['Inactive', 'Active'],
     ticketType: ticketTypes.map((type) => type.ticketTypeName),
-    ticketCategory: ticketCategory.map(
-      (category) => category.categoryName,
-    ),
+    ticketCategory: ticketCategory.map((category) => category.categoryName),
   };
 
-function handleOptionClick(option: string, row: any) {
-  if (option === 'Edit') {
-    console.log(row);
+  function handleOptionClick(option: string, row: any) {
+    if (option === 'Edit') {
+      console.log(row);
 
-    const mappedSections = row?.sopData?.sections?.map(
-      (section: any, sectionIndex: number) => ({
-        id: sectionIndex + 1,
-        sectionName: section.sectionName,
+      const mappedSections = row?.sopData?.sections?.map(
+        (section: any, sectionIndex: number) => ({
+          id: sectionIndex + 1,
+          sectionName: section.sectionName,
 
-        steps: section.subSteps.map((step: any, stepIndex: number) => {
-          // Extract field types
-          const fieldTypes = step.fields.map((field: any) => {
-            switch (field.type) {
-              case 'TEXT':
-                return 'TextField';
+          steps: section.subSteps.map((step: any, stepIndex: number) => {
+            // Extract field types
+            const fieldTypes = step.fields.map((field: any) => {
+              switch (field.type) {
+                case 'TEXT':
+                  return 'TextField';
 
-              case 'DROPDOWN':
-                return 'DropDown';
+                case 'DROPDOWN':
+                  return 'DropDown';
 
-              case 'CHECKBOX':
-                return 'Checkbox';
+                case 'CHECKBOX':
+                  return 'Checkbox';
 
-              case 'IMAGE':
-                return 'Image';
+                case 'IMAGE':
+                  return 'Image';
 
-              default:
-                return field.type;
-            }
-          });
+                default:
+                  return field.type;
+              }
+            });
 
-          // Dropdown values
-          const dropdownField = step.fields.find(
-            (field: any) => field.type === 'DROPDOWN',
-          );
+            // Dropdown values
+            const dropdownField = step.fields.find(
+              (field: any) => field.type === 'DROPDOWN',
+            );
 
-          // Image field
-          const imageField = step.fields.find(
-            (field: any) => field.type === 'IMAGE',
-          );
+            // Image field
+            const imageField = step.fields.find(
+              (field: any) => field.type === 'IMAGE',
+            );
 
-          return {
-            id: stepIndex + 1,
+            return {
+              id: stepIndex + 1,
 
-            header: step.workDescription,
+              header: step.workDescription,
 
-            fieldTypes,
+              fieldTypes,
 
-            options: dropdownField?.options || [],
+              options: dropdowndata,
 
-            selectValues: dropdownField?.options || [],
+              selectValues: dropdownField?.options || [],
 
-            previousAfter: imageField?.imageRequired ? 'Yes' : 'No',
+              previousAfter: imageField?.imageRequired ? 'Yes' : 'No',
 
-            textCount: imageField?.imageCount || 1,
+              textCount: imageField?.imageCount || 1,
 
-            remarks: step.remarksEnabled ,
-          };
+              remarks: step.remarksEnabled,
+            };
+          }),
         }),
-      }),
-    );
+      );
 
-    console.log(mappedSections);
+      console.log(mappedSections);
 
-    setSections(mappedSections);
+      setSections(mappedSections);
 
-    const data = {
-      ...row,
-    };
+      const data = {
+        ...row,
+      };
 
-    setFormFields(data);
-    setIsOpen(true);
-    setEdit(true);
+      setFormFields(data);
+      setIsOpen(true);
+      setEdit(true);
+    }
   }
-}
   const includedDownloadColumns = headCells
     .filter((headcell) => headcell.view === true)
     .map((headcell) => headcell.id);
   function onSubmit(data: any) {
-      setToBackend(true);
-      const payload = {
-    sopName: data.sopName || 'Inverter Maintenance SOP',
+    setToBackend(true);
+    const payload = {
+      sopName: data.sopName || 'Inverter Maintenance SOP',
 
-    ticketTypeId: ticketTypes.find(
-      (item) => item.ticketTypeName === data.ticketType,
-    )?.ticketTypeId,
+      ticketTypeId: ticketTypes.find(
+        (item) => item.ticketTypeName === data.ticketType,
+      )?.ticketTypeId,
 
-    ticketCategoryId: ticketCategory.find(
-      (item) => item.categoryName === data.ticketCategory,
-    )?.ticketCategoryId,
+      ticketCategoryId: ticketCategory.find(
+        (item) => item.categoryName === data.ticketCategory,
+      )?.ticketCategoryId,
 
-    customerId: session.customerId,
-    companyId: session.companyId,
-    status: 1,
-    createdBy: session.userId,
+      customerId: session.customerId,
+      companyId: session.companyId,
+      status: 1,
+      createdBy: session.userId,
 
-    sopData: {
-      sections: sections.map((section, sectionIndex) => ({
-        sectionNo: sectionIndex + 1,
+      sopData: {
+        sections: sections.map((section, sectionIndex) => ({
+          sectionNo: sectionIndex + 1,
 
-        sectionName: section.sectionName,
+          sectionName: section.sectionName,
 
-        subSteps: section.steps.map((step, stepIndex) => {
-          const fields: any[] = [];
+          subSteps: section.steps.map((step, stepIndex) => {
+            const fields: any[] = [];
 
-          // TEXT FIELD
-          if (step.fieldTypes.includes('TextField')) {
-            fields.push({
-              type: 'TEXT',
-            });
-          }
+            // TEXT FIELD
+            if (step.fieldTypes.includes('TextField')) {
+              fields.push({
+                type: 'TEXT',
+              });
+            }
 
-          // DROPDOWN FIELD
-          if (step.fieldTypes.includes('DropDown')) {
-            fields.push({
-              type: 'DROPDOWN',
-              options: step.selectValues || [],
-            });
-          }
+            // DROPDOWN FIELD
+            if (step.fieldTypes.includes('DropDown')) {
+              fields.push({
+                type: 'DROPDOWN',
+                options: step.selectValues || [],
+              });
+            }
 
-          // CHECKBOX FIELD
-          if (step.fieldTypes.includes('Checkbox')) {
-            fields.push({
-              type: 'CHECKBOX',
-            });
-          }
+            // CHECKBOX FIELD
+            if (step.fieldTypes.includes('Checkbox')) {
+              fields.push({
+                type: 'CHECKBOX',
+              });
+            }
 
-          // IMAGE FIELD
-          if (step.fieldTypes.includes('Image')) {
-            fields.push({
-              type: 'IMAGE',
-              imageRequired: step.previousAfter === 'Yes',
-              imageCount: step.textCount || 1,
-            });
-          }
+            // IMAGE FIELD
+            if (step.fieldTypes.includes('Image')) {
+              fields.push({
+                type: 'IMAGE',
+                imageRequired: step.previousAfter === 'Yes',
+                imageCount: step.textCount || 1,
+              });
+            }
 
-          return {
-            stepNo: `${sectionIndex + 1}.${stepIndex + 1}`,
+            return {
+              stepNo: `${sectionIndex + 1}.${stepIndex + 1}`,
 
-            workDescription: step.header,
+              workDescription: step.header,
 
-            fields,
+              fields,
 
-            remarksEnabled:
-              step.remarks,
-          };
-        }),
-      })),
-    },
-  };
-  console.log(payload);
-  
-        postMutation.mutate(payload, {
-          onSuccess: () => {
-            toast.success('sop created successfully!');
-            handleClose();
-            setFormFields(defaultValues);
-            setToBackend(false);
-          },
-          onError: (error: any) => {
-            setToBackend(false);
-                const errors=error.response.data.error
-            if (errors?.includes('unique_po_number')) {
-      toast.error('PO number already exists. Document already uploaded for this PO.');
-    }else{
-      toast.error(error.message);
-    }
-          },
+              remarksEnabled: step.remarks,
+            };
+          }),
+        })),
+      },
+    };
+    console.log(payload);
+
+    postMutation.mutate(payload, {
+      onSuccess: () => {
+        toast.success('sop created successfully!');
+        handleClose();
+        setFormFields(defaultValues);
+        setToBackend(false);
+      },
+      onError: (error: any) => {
+        setToBackend(false);
+        const errors = error.response.data.error;
+        if (errors?.includes('unique_po_number')) {
+          toast.error(
+            'PO number already exists. Document already uploaded for this PO.',
+          );
+        } else {
+          toast.error(error.message);
         }
-      )}
+      },
+    });
+  }
 
   function onUpdate(data: any) {
-      setToBackend(true);
-          const payload = {
-    sopName: data.sopName || 'Inverter Maintenance SOP',
-sopId: data.sopId,
-    ticketTypeId: ticketTypes.find(
-      (item) => item.ticketTypeName === data.ticketType,
-    )?.ticketTypeId,
+    setToBackend(true);
+    const payload = {
+      sopName: data.sopName || 'Inverter Maintenance SOP',
+      sopId: data.sopId,
+      ticketTypeId: ticketTypes.find(
+        (item) => item.ticketTypeName === data.ticketType,
+      )?.ticketTypeId,
 
-    ticketCategoryId: ticketCategory.find(
-      (item) => item.categoryName === data.ticketCategory,
-    )?.ticketCategoryId,
+      ticketCategoryId: ticketCategory.find(
+        (item) => item.categoryName === data.ticketCategory,
+      )?.categoryId,
 
-    customerId: session.customerId,
-    companyId: session.companyId,
-    status: 1,
-    createdBy: session.userId,
+      customerId: session.customerId,
+      companyId: session.companyId,
+      status: 1,
+      createdBy: session.userId,
 
-    sopData: {
-      sections: sections.map((section, sectionIndex) => ({
-        sectionNo: sectionIndex + 1,
+      sopData: {
+        sections: sections.map((section, sectionIndex) => ({
+          sectionNo: sectionIndex + 1,
 
-        sectionName: section.sectionName,
+          sectionName: section.sectionName,
 
-        subSteps: section.steps.map((step, stepIndex) => {
-          const fields: any[] = [];
+          subSteps: section.steps.map((step, stepIndex) => {
+            const fields: any[] = [];
 
-          // TEXT FIELD
-          if (step.fieldTypes.includes('TextField')) {
-            fields.push({
-              type: 'TEXT',
-            });
-          }
+            // TEXT FIELD
+            if (step.fieldTypes.includes('TextField')) {
+              fields.push({
+                type: 'TEXT',
+              });
+            }
 
-          // DROPDOWN FIELD
-          if (step.fieldTypes.includes('DropDown')) {
-            fields.push({
-              type: 'DROPDOWN',
-              options: step.selectValues || [],
-            });
-          }
+            // DROPDOWN FIELD
+            if (step.fieldTypes.includes('DropDown')) {
+              fields.push({
+                type: 'DROPDOWN',
+                options: step.selectValues || [],
+              });
+            }
 
-          // CHECKBOX FIELD
-          if (step.fieldTypes.includes('Checkbox')) {
-            fields.push({
-              type: 'CHECKBOX',
-            });
-          }
+            // CHECKBOX FIELD
+            if (step.fieldTypes.includes('Checkbox')) {
+              fields.push({
+                type: 'CHECKBOX',
+              });
+            }
 
-          // IMAGE FIELD
-          if (step.fieldTypes.includes('Image')) {
-            fields.push({
-              type: 'IMAGE',
-              imageRequired: step.previousAfter === 'Yes',
-              imageCount: step.textCount || 1,
-            });
-          }
+            // IMAGE FIELD
+            if (step.fieldTypes.includes('Image')) {
+              fields.push({
+                type: 'IMAGE',
+                imageRequired: step.previousAfter === 'Yes',
+                imageCount: step.textCount || 1,
+              });
+            }
 
-          return {
-            stepNo: `${sectionIndex + 1}.${stepIndex + 1}`,
+            return {
+              stepNo: `${sectionIndex + 1}.${stepIndex + 1}`,
 
-            workDescription: step.header,
+              workDescription: step.header,
 
-            fields,
+              fields,
 
-            remarksEnabled:
-              step.remarks,
-          };
-        }),
-      })),
-    },
-  };
-        putMutation.mutate(payload, {
-          onSuccess: () => {
-            toast.success('SOP updated successfully!');
-            handleClose();
-            setFormFields(defaultValues);
-          },
-          onError: (error: any) => {
-            const errors=error.response.data.error
-            if (errors?.includes('unique_po_number')) {
-      toast.error('PO number already exists. Document already uploaded for this PO.');
-    }else{
-      toast.error(error.message);
-    }
-          },
-        });
+              remarksEnabled: step.remarks,
+            };
+          }),
+        })),
+      },
+    };
+    console.log(payload);
+    putMutation.mutate(payload, {
+      onSuccess: () => {
+        toast.success('SOP updated successfully!');
+        handleClose();
+        setFormFields(defaultValues);
+      },
+      onError: (error: any) => {
+        const errors = error.response.data.error;
+        if (errors?.includes('unique_po_number')) {
+          toast.error(
+            'PO number already exists. Document already uploaded for this PO.',
+          );
+        } else {
+          toast.error(error.message);
+        }
+      },
+    });
   }
 
   // ----- TABS STATE -----
   const addSection = () => {
-    setSections((prev:any) => [
+    setSections((prev: any) => [
       ...prev,
       {
         id: prev.length + 1,
@@ -561,9 +558,7 @@ sopId: data.sopId,
             id: 1,
             header: '',
             fieldTypes: [],
-             options: ticketCategory.map(
-            (item) => item.categoryName,
-          ),
+            options: dropdowndata,
             previousAfter: 'No',
             remarks: '',
           },
@@ -576,9 +571,9 @@ sopId: data.sopId,
     setSections((prev) => prev.filter((s) => s.id !== sectionId));
   };
 
- const addSubStep = (sectionId: number) => {
-    setSections((prev:any) =>
-      prev.map((section:any) =>
+  const addSubStep = (sectionId: number) => {
+    setSections((prev: any) =>
+      prev.map((section: any) =>
         section.id === sectionId
           ? {
               ...section,
@@ -588,6 +583,7 @@ sopId: data.sopId,
                   id: section.steps.length + 1,
                   header: '',
                   fieldTypes: [],
+                  options: dropdowndata,
                   previousAfter: 'No',
                   remarks: '',
                 },
@@ -618,7 +614,25 @@ sopId: data.sopId,
       ),
     );
   };
+const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+const dropdownRef = useRef<HTMLDivElement | null>(null);
 
+useEffect(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
+      setOpenDropdown(null);
+    }
+  };
+
+  document.addEventListener('mousedown', handleClickOutside);
+
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+  };
+}, []);
   const handleStepChange = (
     sectionId: number,
     stepId: number,
@@ -713,7 +727,7 @@ sopId: data.sopId,
                       className="border rounded-2xl overflow-hidden bg-white shadow-sm"
                     >
                       {/* SECTION HEADER */}
-                      <div className="flex items-center justify-between px-8 py-5 bg-gray-50 border-b">
+                      <div className="flex items-center justify-between px-8 py-3 bg-gray-50 border-b">
                         <div className="flex items-center gap-4">
                           <h2 className="font-semibold text-blue-600 text-lg">
                             Section {sectionIndex + 1}
@@ -827,6 +841,24 @@ sopId: data.sopId,
                                                 'fieldTypes',
                                                 updated,
                                               );
+                                              if (
+                                                type === 'Image' &&
+                                                !e.target.checked
+                                              ) {
+                                                handleStepChange(
+                                                  section.id,
+                                                  step.id,
+                                                  'previousAfter',
+                                                  'No',
+                                                );
+
+                                                handleStepChange(
+                                                  section.id,
+                                                  step.id,
+                                                  'textCount',
+                                                  1,
+                                                );
+                                              }
                                             }}
                                           />
 
@@ -842,48 +874,35 @@ sopId: data.sopId,
                                         <div className="relative">
                                           <details className="w-full">
                                             <summary className="list-none cursor-pointer border rounded-lg px-1 py-2 bg-white flex justify-between items-center">
-         <span className="text-sm text-gray-700 h-4 flex items-center">
-  {step.selectValues?.length > 0 ? (
-    step.selectValues.length === 1 ? (
-      <span className="max-w-24 truncate inline-block">
-        {step.selectValues[0]}
-      </span>
-    ) : (
-      <span className="flex items-center gap-1">
-        <span className="max-w-40 truncate inline-block">
-          {step.selectValues[0]}
-        </span>
+                                              <span className="text-sm text-gray-700 h-4 flex items-center">
+                                                {step.selectValues?.length >
+                                                0 ? (
+                                                  step.selectValues.length ===
+                                                  1 ? (
+                                                    <span className="max-w-24 truncate inline-block">
+                                                      {step.selectValues[0]}
+                                                    </span>
+                                                  ) : (
+                                                    <span className="flex items-center gap-1">
+                                                      <span className="max-w-40 truncate inline-block">
+                                                        {step.selectValues[0]}
+                                                      </span>
 
-        <span>+{step.selectValues.length - 1}</span>
-      </span>
-    )
-  ) : (
-    'Select values'
-  )}
-</span>
+                                                      <span>
+                                                        +
+                                                        {step.selectValues
+                                                          .length - 1}
+                                                      </span>
+                                                    </span>
+                                                  )
+                                                ) : (
+                                                  'Select values'
+                                                )}
+                                              </span>
 
                                               <ChevronDown
                                                 size={16}
-                                                className="text-gray-500"
-                                              />
-                                            </summary>
-
-                                            <div className="absolute z-10  w-full bg-white border rounded-lg shadow-lg max-h-52 overflow-y-auto p-1 space-y-1">
-                                              {step.options?.map(
-                                                (
-                                                  option: string,
-                                                  index: number,
-                                                ) => (
-                                                  <label
-                                                    key={index}
-                                                    className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 px-1 py-1 rounded-md"
-                                                  >
-                                                    <input
-                                                      type="checkbox"
-                                                      checked={(
-                                                        step.selectValues || []
-                                                      ).includes(option)}
-                                                      onChange={(e) => {
+                                                className="text-gray-500"  onChange={(e) => {
                                                         const selectedValues =
                                                           step.selectValues ||
                                                           [];
@@ -910,6 +929,25 @@ sopId: data.sopId,
                                                           );
                                                         }
                                                       }}
+                                              />
+                                            </summary>
+
+                                            <div className="absolute z-10  w-full bg-white border rounded-lg shadow-lg max-h-52 overflow-y-auto p-1 space-y-1">
+                                              {step.options?.map(
+                                                (
+                                                  option: string,
+                                                  index: number,
+                                                ) => (
+                                                  <label
+                                                    key={index}
+                                                    className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 px-1 py-1 rounded-md"
+                                                  >
+                                                    <input
+                                                      type="checkbox"
+                                                      checked={(
+                                                        step.selectValues || []
+                                                      ).includes(option)}
+                                                    
                                                     />
 
                                                     <span>{option}</span>
@@ -952,7 +990,15 @@ sopId: data.sopId,
                                                   step.optionInput,
                                                 ],
                                               );
-
+                                              handleStepChange(
+                                                section.id,
+                                                step.id,
+                                                'selectValues',
+                                                [
+                                                  ...(step.selectValues || []),
+                                                  step.optionInput,
+                                                ],
+                                              );
                                               handleStepChange(
                                                 section.id,
                                                 step.id,
@@ -968,11 +1014,9 @@ sopId: data.sopId,
                                     )}
                                   </div>
                                 </td>
-
                                 {/* AFTER IMAGE */}
                                 <td className="p-3">
                                   <div className="space-y-4">
-                                    {/* YES / NO */}
                                     <div className="flex gap-2">
                                       {['Yes', 'No'].map((option) => (
                                         <label
@@ -985,6 +1029,9 @@ sopId: data.sopId,
                                             checked={
                                               step.previousAfter === option
                                             }
+                                            disabled={
+                                              !step.fieldTypes.includes('Image')
+                                            }
                                             onChange={() =>
                                               handleStepChange(
                                                 section.id,
@@ -993,7 +1040,6 @@ sopId: data.sopId,
                                                 option,
                                               )
                                             }
-                                              // className="h- w-3"
                                           />
 
                                           {option}
@@ -1003,25 +1049,32 @@ sopId: data.sopId,
 
                                     {/* TEXT COUNT */}
                                     {}
-                                        {step.previousAfter === 'Yes' && (
-                                    <div>
-                                      <input
-                                        type="number"
-                                        min={1}
-                                        value={step.textCount || 1}
-                                       onChange={(e) => {
-    const value = Math.min(5, Math.max(1, Number(e.target.value)));
+                                    {step.previousAfter === 'Yes' && (
+                                      <div>
+                                        <input
+                                          type="number"
+                                          min={1}
+                                          value={step.textCount || 1}
+                                          onChange={(e) => {
+                                            const value = Math.min(
+                                              5,
+                                              Math.max(
+                                                1,
+                                                Number(e.target.value),
+                                              ),
+                                            );
 
-    handleStepChange(
-      section.id,
-      step.id,
-      'textCount',
-      value,
-    );
-  }}
-                                        className="w-24 border rounded-lg px-2 py-1"
-                                      />
-                                    </div>)}
+                                            handleStepChange(
+                                              section.id,
+                                              step.id,
+                                              'textCount',
+                                              value,
+                                            );
+                                          }}
+                                          className="w-24 border rounded-lg px-2 py-1"
+                                        />
+                                      </div>
+                                    )}
                                   </div>
                                 </td>
 

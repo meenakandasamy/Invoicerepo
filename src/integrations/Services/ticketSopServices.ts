@@ -2,11 +2,13 @@ import { baseUrl,ticketUrl} from './baseUrl';
 import type {SopDTOType,SopUpdateDTOType} from '@/utils/Validators/schema/sopSchema';
 export enum TicketSopQueries {
   GET_TICKET_SOP= 'getAllTicketApproval',
+    GET_TICKET_SOP_DROPDOWN= 'getAllTSopdropdown',
 
 }
    const session=sessionStorage.getItem('session') ;
 enum TicketSopEndpoints {
   getAllTicketSop = import.meta.env.VITE_SOP_API_GET,
+    getAllTSopdropdown = import.meta.env.VITE_SOP_DROPDOWN_API,
   AddSop = import.meta.env.VITE_SOP_API_POST,
     UpdateSop = import.meta.env.VITE_SOP_API_PUT,
   // getAllTicketApproval = import.meta.env.VITE_GET_PO_LOA,
@@ -18,6 +20,17 @@ const fetchgetallTicketSop = async () => {
   try {
     const response = await ticketUrl.get(
       `${TicketSopEndpoints.getAllTicketSop}?companyId=${companyId}`,
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('Error fetching cost centres:', error.message);
+    throw error;
+  }
+};
+const fetchGetallSopdropdown = async (ticketTypeId:any) => {
+  try {
+    const response = await ticketUrl.get(
+      `${TicketSopEndpoints.getAllTSopdropdown}=${ticketTypeId[0]}&ticketCategoryId=${ticketTypeId[1]}`,
     );
     return response.data;
   } catch (error: any) {
@@ -54,6 +67,7 @@ const UpdateSopById = async (data:SopUpdateDTOType) => {
 export const TicketSopServices = {
   fetchgetallTicketSop,
   AddNewSop,
-  UpdateSopById
+  UpdateSopById,
+  fetchGetallSopdropdown
 
 };

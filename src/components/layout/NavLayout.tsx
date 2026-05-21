@@ -166,21 +166,26 @@ export default function Layout({ isHidden, path, children }: LayoutProps) {
 
         <div className=" flex-1 overflow-auto">
           <div className="flex-1 flex flex-col h-screen overflow-hidden">
+             
             <div
-              className="
-    h-[65px] bg-white dark:bg-black shadow-md dark:shadow-lg 
-    flex items-center justify-end px-6 border-b border-gray-200 dark:border-[var(--border)] 
-    z-10 space-x-4
-  "
-              style={{ paddingLeft: isExpanded ? '13rem' : '4rem' }}
-            >
-              <ModeToggle />
-              {/* <NotificationBell /> */}
-              <UserOptionsMenu />
-            </div>
+  className="h-[65px] flex items-center justify-between"
+  style={{
+    paddingLeft: isExpanded ? '13rem' : '5rem',
+  }}
+>
+  {/* LEFT SIDE */}
+  <div >
+    <CustomBreadcrumbs />
+  </div>
+
+  {/* RIGHT SIDE */}
+  <div className="flex items-center gap-3 px-6">
+    <ModeToggle />
+    <UserOptionsMenu />
+  </div>
+</div>
 
             <div className="flex-1 overflow-auto px-5 pt-4 h-fit">
-              <CustomBreadcrumbs />
               <div className="h-[80dvh] flex flex-1 m-2">{children}</div>
               <Footer companyName="Eira" version={packageJson.version} />
             </div>
