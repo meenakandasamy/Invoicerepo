@@ -26,7 +26,7 @@ console.log('User Name:', userName); // Debugging log
       <DropdownMenuTrigger asChild>
         <button className="flex items-center gap-3 px-2 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all focus:outline-none group text-left">
           {/* Avatar / Initials Circle */}
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-indigo-500 text-white font-medium text-sm border-2 border-white dark:border-gray-900 shadow-sm">
+          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-violet-700 text-white font-medium text-sm border-2 border-white dark:border-gray-900 shadow-sm">
             {userName?.charAt(0).toUpperCase()}
           </div>
 

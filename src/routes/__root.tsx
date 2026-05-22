@@ -7,7 +7,7 @@ import {
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import {
   Building2,
-PersonStanding ,
+PersonStanding,TicketCheck
 
 } from 'lucide-react';
 
@@ -41,7 +41,8 @@ export const NavItems: Array<NavItem> = [
   {
     to: '/ticket/config',
     label: 'Ticket Configuration',
-    icons: Building2,
+    icons: TicketCheck,
+    sunlabel:'t-config',
     activity: 'ticketConfiguration',
     mode: 'menu',
   },
@@ -49,6 +50,7 @@ export const NavItems: Array<NavItem> = [
     to: '/ticket/Approval',
     label: 'Ticket Approval',
     icons: PersonStanding,
+    sunlabel:'T-Approval',
     activity: 'ticketConfiguration',
     mode: 'menu',
   },
@@ -56,6 +58,7 @@ export const NavItems: Array<NavItem> = [
     to: '/ticket/sop',
     label: 'Sop',
     icons: Building2,
+    sunlabel:'Sop',
     activity: 'ticketConfiguration',
     mode: 'menu',
   },

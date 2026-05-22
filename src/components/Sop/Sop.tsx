@@ -112,14 +112,14 @@ export const Sop = ({
   const headCells = [
     {
       label: 'TicketType',
-      id: 'ticketTypeId',
+      id: 'ticketTypeName',
 
       view: true,
       filterable: true,
     },
     {
       label: 'Ticket Category',
-      id: 'ticketCategoryId',
+      id: 'ticketCategoryName',
       view: true,
       filterable: true,
     },
@@ -239,11 +239,11 @@ export const Sop = ({
     label: 'text-mm font-bold text-black dark:text-[var(--foreground)]',
     container:
       'flex items-center justify-center min-h-screen p-4 overflow-auto max-w-screen-xl mx-auto bg-transparent dark:bg-transparent',
-    form: 'w-full max-h-[100vh] border rounded-xl backdrop-blur-md p-5 shadow-xl flex flex-col bg-white dark:bg-[var(--background)] overflow-y-auto',
+    form: 'w-full max-h-[100vh] border rounded-xl backdrop-blur-md  shadow-xl flex flex-col bg-white dark:bg-[var(--background)] overflow-y-auto',
     submitButton:
-      'border bg-blue-500 text-white py-1 px-2 rounded cursor-pointer hover:bg-blue-600 hover:text-white dark:bg-[var(--primary)] dark:hover:bg-blue-500 dark:text-[var(--primary-foreground)]',
+      'h-11 px-8 rounded-xl bg-violet-600 text-white hover:bg-violet-700 transition',
     cancelButton:
-      'border bg-red-500 text-white py-1 px-2 rounded cursor-pointer hover:bg-red-600 hover:text-white dark:bg-[var(--destructive)] dark:hover:bg-red-500 dark:text-[var(--destructive-foreground)]',
+      'h-11 px-8 rounded-xl border border-slate-300 hover:bg-slate-50 transition',
   };
 
   const handleOpen = () => {
@@ -363,15 +363,15 @@ export const Sop = ({
     .map((headcell) => headcell.id);
   function onSubmit(data: any) {
     setToBackend(true);
-      const emptySection = sections.find(
-    (section) => !section.sectionName?.trim(),
-  );
+    const emptySection = sections.find(
+      (section) => !section.sectionName?.trim(),
+    );
 
-  if (emptySection) {
-    toast.error('Section name is required');
-    setToBackend(false);
-    return;
-  }
+    if (emptySection) {
+      toast.error('Section name is required');
+      setToBackend(false);
+      return;
+    }
     const payload = {
       sopName: data.sopName || 'Inverter Maintenance SOP',
 
@@ -379,7 +379,7 @@ export const Sop = ({
         (item) => item.ticketTypeName === data.ticketType,
       )?.ticketTypeId,
 
-        ticketCategoryId: ticketCategory.find(
+      ticketCategoryId: ticketCategory.find(
         (item) => item.categoryName === data.ticketCategory,
       )?.categoryId,
 
@@ -466,15 +466,15 @@ export const Sop = ({
 
   function onUpdate(data: any) {
     setToBackend(true);
-      const emptySection = sections.find(
-    (section) => !section.sectionName?.trim(),
-  );
+    const emptySection = sections.find(
+      (section) => !section.sectionName?.trim(),
+    );
 
-  if (emptySection) {
-    toast.error('Section name is required');
+    if (emptySection) {
+      toast.error('Section name is required');
       setToBackend(false);
-    return;
-  }
+      return;
+    }
     const payload = {
       sopName: data.sopName || 'Inverter Maintenance SOP',
       sopId: data.sopId,
@@ -632,25 +632,25 @@ export const Sop = ({
       ),
     );
   };
-const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-useEffect(() => {
-  const handleClickOutside = (event: MouseEvent) => {
-    if (
-      dropdownRef.current &&
-      !dropdownRef.current.contains(event.target as Node)
-    ) {
-      setOpenDropdown(null);
-    }
-  };
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setOpenDropdown(null);
+      }
+    };
 
-  document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
 
-  return () => {
-    document.removeEventListener('mousedown', handleClickOutside);
-  };
-}, []);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
   const handleStepChange = (
     sectionId: number,
     stepId: number,
@@ -723,7 +723,7 @@ useEffect(() => {
               fields={fields}
               options={options}
               styles={formStyles}
-              label={'Add SOP'}
+              label={'Add Standard Operating Procedure'}
               toBackend={toBackend}
               extraContent={
                 <div className="space-y-6">
@@ -732,7 +732,16 @@ useEffect(() => {
                     <button
                       type="button"
                       onClick={addSection}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl shadow"
+                      className="
+          h-11 px-5
+          rounded-2xl
+          border border-violet-200
+          bg-violet-50
+          text-violet-700
+          font-medium
+          hover:bg-violet-100
+          transition
+        "
                     >
                       + Add Section
                     </button>
@@ -747,7 +756,7 @@ useEffect(() => {
                       {/* SECTION HEADER */}
                       <div className="flex items-center justify-between px-8 py-3 bg-gray-50 border-b">
                         <div className="flex items-center gap-4">
-                          <h2 className="font-semibold text-blue-600 text-lg">
+                          <h2 className="font-semibold text-violet-700 text-lg">
                             Section {sectionIndex + 1}
                           </h2>
 
@@ -920,33 +929,33 @@ useEffect(() => {
 
                                               <ChevronDown
                                                 size={16}
-                                                className="text-gray-500"  onChange={(e) => {
-                                                        const selectedValues =
-                                                          step.selectValues ||
-                                                          [];
+                                                className="text-gray-500"
+                                                onChange={(e) => {
+                                                  const selectedValues =
+                                                    step.selectValues || [];
 
-                                                        if (e.target.checked) {
-                                                          handleStepChange(
-                                                            section.id,
-                                                            step.id,
-                                                            'selectValues',
-                                                            [
-                                                              ...selectedValues,
-                                                              option,
-                                                            ],
-                                                          );
-                                                        } else {
-                                                          handleStepChange(
-                                                            section.id,
-                                                            step.id,
-                                                            'selectValues',
-                                                            selectedValues.filter(
-                                                              (item: string) =>
-                                                                item !== option,
-                                                            ),
-                                                          );
-                                                        }
-                                                      }}
+                                                  if (e.target.checked) {
+                                                    handleStepChange(
+                                                      section.id,
+                                                      step.id,
+                                                      'selectValues',
+                                                      [
+                                                        ...selectedValues,
+                                                        option,
+                                                      ],
+                                                    );
+                                                  } else {
+                                                    handleStepChange(
+                                                      section.id,
+                                                      step.id,
+                                                      'selectValues',
+                                                      selectedValues.filter(
+                                                        (item: string) =>
+                                                          item !== option,
+                                                      ),
+                                                    );
+                                                  }
+                                                }}
                                               />
                                             </summary>
 
@@ -965,7 +974,6 @@ useEffect(() => {
                                                       checked={(
                                                         step.selectValues || []
                                                       ).includes(option)}
-                                                    
                                                     />
 
                                                     <span>{option}</span>
@@ -995,7 +1003,7 @@ useEffect(() => {
 
                                           <button
                                             type="button"
-                                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 rounded-lg"
+                                            className=" bg-violet-100 text-violet-700 hover:bg-violet-200  px-4 rounded-lg"
                                             onClick={() => {
                                               if (!step.optionInput) return;
 
@@ -1134,7 +1142,7 @@ useEffect(() => {
                           <button
                             type="button"
                             onClick={() => addSubStep(section.id)}
-                            className="text-blue-600 hover:text-blue-800 font-medium"
+                            className="text-violet-700 hover:text-violet-800 font-medium"
                           >
                             + Add Sub Step
                           </button>

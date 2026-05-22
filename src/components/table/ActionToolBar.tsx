@@ -41,7 +41,7 @@ export const ToolbarActions = ({
           children={
             <CirclePlus
               color={access.hasCreateAccess ? 'blue' : 'gray'}
-              className={`h-4 w-4 ${access.hasCreateAccess ? 'hover:text-blue-500 cursor-pointer' : 'cursor-not-allowed'}`}
+              className={`h-4 w-4 ${access.hasCreateAccess ? 'hover:text-violet-700 cursor-pointer' : 'cursor-not-allowed'}`}
               onClick={() => access.hasCreateAccess && addFn()}
             />
           }

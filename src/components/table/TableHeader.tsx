@@ -15,7 +15,7 @@ export const TableHeaderRow = ({
   <TableRow
     className={cn(
       'sticky top-0 z-10',
-      'bg-gray-100 dark:bg-gray-800',
+      'bg-violet-100 dark:bg-gray-800',
       'shadow-sm dark:shadow-[0_1px_0_rgba(255,255,255,0.1)]',
       'border-none [&>*]:border-none',
       '[&>*]:hover:border-none'
@@ -31,7 +31,7 @@ export const TableHeaderRow = ({
            className={cn(
               'cursor-pointer select-none text-center',
               'text-gray-900 dark:text-gray-200',
-              'hover:bg-gray-200 dark:hover:bg-gray-700 dark:bg-gray-900',
+              'hover:bg-violet-200 bg-violet-100 dark:hover:bg-violet-700 dark:bg-violet-900',
               'hover:text-gray-900 dark:hover:text-white',
               'border-none '
             )}

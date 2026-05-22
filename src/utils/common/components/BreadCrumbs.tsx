@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Home } from 'lucide-react';
+import { ChevronRight, Home } from 'lucide-react';
 import { Link, useRouterState } from '@tanstack/react-router';
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,91 +12,101 @@ import {
 
 export default function CustomBreadcrumbs() {
   const { location } = useRouterState();
-  const path = location.pathname;
+  const pathname = location.pathname;
 
-  const rawSegments = path.split('/').filter(Boolean);
+  const rawSegments = pathname.split('/').filter(Boolean);
 
-  // Determine mode (po/admin) based on presence in rawSegments
-  const modeSegment = rawSegments.find((seg) => ['po', 'admin'].includes(seg));
+  // Detect root mode
+  const modeSegment = rawSegments.find((seg) =>
+    ['ticket', 'admin'].includes(seg),
+  );
 
-  // Filter out , po, and admin from breadcrumb display
+  // Remove unnecessary segments
   const segments = rawSegments.filter(
-    (seg) => seg !== '' && seg !== 'po' && seg !== 'admin',
+    (seg) => !['ticket', 'admin'].includes(seg),
   );
 
   const segmentTitleMap: Record<string, string> = {
-    approvaldashboard: 'Approval Dashboard',
-    approvalDashboard: 'Approval Dashboard',
-    vendor: 'Vendors',
-    approval: 'Requests',
-    requestor: 'Requests',
-    purchaseOrder: 'Purchase Orders',
-    installment: 'PO Installments',
-    product: 'Products',
-    paymentTerm: 'Payment Terms',
-    role: 'Role',
-    approverCreation: 'Approver Configuration',
-    approverSiteMap: 'Approver Site Map',
-    expenditure: 'Vendor Expenditures',
-    expenses: 'Expenses',
-    costCentre: 'Cost Centres & Cost Headers',
-    loa: 'PO & LOA Upload',
-    advance: 'Advance',
-    admin: 'Admin',
-    advanceApproval: 'Advance Requests',
-    warehouse: 'Warehouses',
-    warehouseSiteMap: 'Warehouse Site Map',
-    inventory: 'Inventories',
-    inventoryTransaction: 'Inventory Transactions',
-    employeeReimbursement: 'Employee Reimbursement',
-    vendorRegistration: 'Vendor Registration',
-    consolidatedDashboard: 'Approval Dashboard',
-    finalizedPayment: 'Final Payment',
-    consultantSalary: 'Consultant Payout',
-    reimbursement: 'Employee Reimbursement',
-    rent: 'Rent',
-    vendor_expenditure: 'Vendor Expenditure',
-    employee: 'Employee Expenditure',
-    configuration: 'Configuration',
+    sop: 'Standard Operating Procedure',
+    Approval: 'Ticket Approval',
+    Config: 'Ticket Configuration',
+  
   };
 
-  // Use modeSegment to construct base path
-  const basePath = modeSegment ? `//${modeSegment}` : '/';
+  const basePath = modeSegment ? `/${modeSegment}` : '';
+
+  const formatLabel = (segment: string) => {
+    return (
+      segmentTitleMap[segment] ||
+      decodeURIComponent(segment)
+        .replace(/[-_]/g, ' ')
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    );
+  };
 
   return (
-    <Breadcrumb>
-      <BreadcrumbList>
-        {/* Home Icon */}
-        <BreadcrumbItem>
-          <Link to="/">
-            <Home size={16} className="inline-block" />
-          </Link>
-        </BreadcrumbItem>
+   <div className="inline-flex items-center px-2 py-1">
+      <Breadcrumb>
+        <BreadcrumbList className="flex items-center gap-1">
+          {/* Home */}
+          <BreadcrumbItem>
+           
+              <Home
+                size={16}
+                className="transition-transform color-slate-600 group-hover:scale-110"
+              />
+              {/* <span>Home</span> */}
+        
+          </BreadcrumbItem>
 
-        {segments.length > 0 && <BreadcrumbSeparator>/</BreadcrumbSeparator>}
+          {segments.length > 0 && (
+            <BreadcrumbSeparator>
+              <ChevronRight
+                size={16}
+                className="text-muted-foreground/50 color-slate-600"
+              />
+            </BreadcrumbSeparator>
+          )}
 
-        {segments.map((segment, index) => {
-          const isLast = index === segments.length - 1;
-          const href = `${basePath}/${segments.slice(0, index + 1).join('/')}`;
+          {segments.map((segment, index) => {
+            const isLast = index === segments.length - 1;
 
-          return (
-            <React.Fragment key={href}>
-              <BreadcrumbItem>
-                {isLast ? (
-                  <BreadcrumbPage>
-                    {segmentTitleMap[segment] || decodeURIComponent(segment)}
-                  </BreadcrumbPage>
-                ) : (
-                  <Link to={href}>
-                    {segmentTitleMap[segment] || decodeURIComponent(segment)}
-                  </Link>
+            const href = `${basePath}/${segments
+              .slice(0, index + 1)
+              .join('/')}`;
+
+            const label = formatLabel(segment);
+
+            return (
+              <React.Fragment key={href}>
+                <BreadcrumbItem>
+                  {isLast ? (
+                    <BreadcrumbPage className="rounded-xl bg-violet-100 px-3 py-2 text-sm font-semibold text-violet-700">
+                      {label}
+                    </BreadcrumbPage>
+                  ) : (
+                    <Link
+                      to={href}
+                      className="rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground transition-all hover:bg-muted hover:text-primary"
+                    >
+                      {label}
+                    </Link>
+                  )}
+                </BreadcrumbItem>
+
+                {!isLast && (
+                  <BreadcrumbSeparator>
+                    <ChevronRight
+                      size={16}
+                      className="text-muted-foreground/50"
+                    />
+                  </BreadcrumbSeparator>
                 )}
-              </BreadcrumbItem>
-              {!isLast && <BreadcrumbSeparator>/</BreadcrumbSeparator>}
-            </React.Fragment>
-          );
-        })}
-      </BreadcrumbList>
-    </Breadcrumb>
+              </React.Fragment>
+            );
+          })}
+        </BreadcrumbList>
+      </Breadcrumb>
+    </div>
   );
 }

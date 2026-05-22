@@ -108,19 +108,63 @@ export function CustomForm({
         style={{ maxHeight: '90vh' }}
       >
         {/* Sticky Header */}
-        {!disableLabel && (
-          <div className="flex justify-center mb-2 sticky top-0 bg-white z-10 px-5 pt-5 pb-4 border-b dark:bg-background dark:text-[()--bg-secondary-foreground] border-gray-200 ">
-            <label
-              htmlFor={label}
-              className={
-                styles?.label ||
-                'text-2xl font-bold text-gray-800 dark:bg-background dark:text-white'
-              }
-            >
-              {label}
-            </label>
-          </div>
-        )}
+      {/* Sticky Header */}
+{!disableLabel && (
+  <div className="sticky top-0 z-20 bg-white border-b border-gray-200 px-6 py-4 dark:bg-background">
+    <div className="flex items-center justify-between">
+      {/* Left Side */}
+      <div className="flex items-center gap-3">
+        {/* Icon */}
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-600">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+            className="h-5 w-5 text-white"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M19.5 14.25V11.25a2.25 2.25 0 00-.659-1.591l-6-6A2.25 2.25 0 0011.25 3H6.75A2.25 2.25 0 004.5 5.25v13.5A2.25 2.25 0 006.75 21h10.5a2.25 2.25 0 002.25-2.25v-4.5z"
+            />
+          </svg>
+        </div>
+
+        {/* Title + Subtitle */}
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            {label}
+          </h2>
+         
+        </div>
+      </div>
+
+      {/* Close Button */}
+      <button
+        type="button"
+        onClick={onClose}
+        className="text-gray-400 hover:text-gray-600 transition"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+)}
         {/* Scrollable Form Fields */}
         <div className="overflow-y-auto overflow-x-hidden dark:bg-background flex-1 p-4 md:p-6">
           {/* Extra Summary Preview / Bill / Custom Component */}

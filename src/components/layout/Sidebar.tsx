@@ -217,68 +217,77 @@ export default function Sidebar({
           currentSegments.at(-1) === lastSegment;
 
         return (
-          <div key={'item-' + idx} className="mb-2">
-            <Tooltip>
-              <Link to={item.to}>
-                <div
-                  className={`
-                    group relative flex items-center
-                    rounded-2xl px-4 py-3
-                    transition-all duration-200 cursor-pointer
+        <div key={'item-' + idx} className="mb-2">
+  <Tooltip>
+    <Link to={item.to}>
+      <div
+        className={`
+          group relative flex items-center
+          rounded-2xl px-4 py-3
+          transition-all duration-200 cursor-pointer
 
-                    ${
-                      isExpanded
-                        ? 'gap-3'
-                        : 'justify-center'
-                    }
+          ${
+            isExpanded
+              ? 'gap-3'
+              : 'flex-col justify-center gap-1'
+          }
 
-                    ${
-                      isActive
-                        ? `
-                          bg-violet-100
-                          text-violet-700
-                          shadow-sm
-                        `
-                        : `
-                          text-slate-600
-                          hover:bg-slate-100
-                          hover:text-slate-900
-                        `
-                    }
-                  `}
-                >
-                  {/* Active Left Border */}
-                  {isActive && (
-                    <div className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-violet-600" />
-                  )}
+          ${
+            isActive
+              ? `
+                bg-violet-100
+                text-violet-700
+                shadow-sm
+              `
+              : `
+                text-slate-600
+                hover:bg-slate-100
+                hover:text-slate-900
+              `
+          }
+        `}
+      >
+        {/* Active Left Border */}
+        {isActive && (
+          <div className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-violet-600" />
+        )}
 
-                  <item.icons
-                    size={20}
-                    className={`
-                      shrink-0
-                      ${
-                        isActive
-                          ? 'text-violet-700'
-                          : 'text-slate-500 group-hover:text-slate-800'
-                      }
-                    `}
-                  />
+        {/* Icon */}
+        <item.icons
+          size={20}
+          className={`
+            shrink-0
+            ${
+              isActive
+                ? 'text-violet-700'
+                : 'text-slate-500 group-hover:text-slate-800'
+            }
+          `}
+        />
 
-                  {isExpanded && (
-                    <span className="font-medium text-[14px] truncate">
-                      {item.label}
-                    </span>
-                  )}
-                </div>
-              </Link>
+        {/* Label */}
+        <span
+          className={`
+            font-medium transition-all duration-200
+            ${
+              isExpanded
+                ? 'text-[14px] truncate'
+                : 'text-[10px] text-center leading-tight mt-1'
+            }
+          `}
+        >
+          {item.label}
+        </span>
+      </div>
+    </Link>
 
-              {!isExpanded && (
-                <TooltipContent side="right">
-                  {item.label}
-                </TooltipContent>
-              )}
-            </Tooltip>
-          </div>
+    {!isExpanded && (
+      <TooltipContent side="right">
+        {item.label}
+      </TooltipContent>
+    )}
+  </Tooltip>
+</div>
         );
       })}
     </div>

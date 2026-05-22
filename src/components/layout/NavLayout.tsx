@@ -168,7 +168,8 @@ export default function Layout({ isHidden, path, children }: LayoutProps) {
           <div className="flex-1 flex flex-col h-screen overflow-hidden">
              
             <div
-  className="h-[65px] flex items-center  p-5 justify-between"
+  className="h-[65px] flex items-center bg-white    shadow-sm
+      overflow-hidden p-5 justify-between"
   // style={{
   //   paddingLeft: isExpanded ? '3rem' : '2rem',
   // }}
@@ -185,7 +186,7 @@ export default function Layout({ isHidden, path, children }: LayoutProps) {
   </div>
 </div>
 
-            <div className="flex-1 overflow-auto px-5 pt-4 h-fit">
+            <div className="flex-1 overflow-auto px-1 h-fit">
               <div className="h-[80dvh] flex flex-1 m-2">{children}</div>
               <Footer companyName="Eira" version={packageJson.version} />
             </div>

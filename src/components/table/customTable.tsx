@@ -195,7 +195,7 @@ export const CustomTable = ({
     <section className="w-full h-full flex flex-col">
       {allTabsValues && (
         <Tabs defaultValue={allTabsValues.tabsValue} className="flex self-end">
-          <TabsList className="flex gap-2 bg-gray-200 p-1 rounded-xl">
+          <TabsList className="flex gap-2 bg-violet-100 p-1 rounded-xl">
             {allTabsValues.tabsHeadcells.map((tabList: any) => (
               <TabsTrigger
                 key={tabList.id}
@@ -276,7 +276,7 @@ export const CustomTable = ({
               }
             >
               <Table key={pageName} className="w-full ">
-                <TableHeader className="dark:bg-background dark:text-secondary-foreground">
+                <TableHeader className="dark:bg-violet-100 dark:text-secondary-foreground">
                   <TableHeaderRow
                     headcells={handledHeadCells}
                     sortConfig={sortConfig}

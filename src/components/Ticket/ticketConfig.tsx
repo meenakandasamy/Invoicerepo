@@ -4,62 +4,58 @@ import { Modal } from '@mui/material';
 import { CustomTable } from '../table/customTable';
 import { CustomForm } from '../form/customForm';
 import type { JSX } from 'react';
-import type { BaseProps } from '@/types/common';
+import type { BaseProps, siteDropdownType } from '@/types/common';
 import type { Row } from '@/types/table';
 import type { Field } from '@/types/form';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import debounce from 'lodash/debounce';
 import {
+  useDependentQueriesWithId,
   useMutationFn,
   useQueriesFn,
 } from '@/utils/common/queryUtils';
+import { useTicketconfig } from '@/hooks/data/useTicketconfig';
 import {
   PoloaQueries,
   PoloaServices,
 } from '@/integrations/Services/PoloaService';
 import Loader from '@/utils/common/components/loader';
-import {
-  EIRASAAS_API_QUERIES,
-  EirasaasAPIs,
-} from '@/integrations/Services/commonServices';
 
-interface ticketProps extends BaseProps {}
-export const TicketConfig = ({
+interface TicketconfigProps extends BaseProps {}
+export const Ticketconfig = ({
   hasCreateAccess,
   hasUpdateAccess,
   session,
-}: ticketProps): JSX.Element => {
-  const { GET_SITELIST_BY_COMPANY, GET_SITELIST_BY_CUSTOMER } =
-    EIRASAAS_API_QUERIES;
-  const { GetSiteListDropdownByCompany, GetSiteListDropdownByCustomer } =
-    EirasaasAPIs;
-
-  const isOEM = session.userTypeName === 'OEM';
-
-  const [tableValue, setTableValue] = useState<Array<Row>>([]);
-  const [siteDropdown, setSiteDropdown] = useState<Array<any>>([]);
+}: TicketconfigProps): JSX.Element => {
   const [toBackend, setToBackend] = useState<boolean>(false);
 
+  // const queries = [
+  //   {
+  //     queryKey:
+  //       (isOEM ? GET_SITELIST_BY_COMPANY : GET_SITELIST_BY_CUSTOMER) + 'CCM',
+  //     api: isOEM ? GetSiteListDropdownByCompany : GetSiteListDropdownByCustomer,
+  //     setState: setSiteDropdown,
+  //     id: isOEM ? session.companyId : session.customerId,
+  //   },
+  // ];
+  // const {
+  //   data: [dependentResponse],
+  //   status,
+  // } = useQueriesFn(queries);
 
-  const queries = [
-    {
-      queryKey:
-        (isOEM ? GET_SITELIST_BY_COMPANY : GET_SITELIST_BY_CUSTOMER) + 'CCM',
-      api: isOEM ? GetSiteListDropdownByCompany : GetSiteListDropdownByCustomer,
-      setState: setSiteDropdown,
-      id: isOEM ? session.companyId : session.customerId,
-    },
-    // {
-    //   queryKey: CostCentreQueries.GET_COST_CENTRE_DROPDOWN + 'CCM',
-    //   api: CostCentreServices.fetchCostCentreDropdown,
-    //   setState: setPouploadlist,
-    // },
-  ];
-  const {
-    data: [dependentResponse],
-    status,
-  } = useQueriesFn(queries);
-
+  const TicketconfigQuery = useTicketconfig(
+    session,
+  );
+  const Ticketdata= useMemo(
+    () =>
+      (TicketconfigQuery.data ?? []).sort(
+        (a: any, b: any) =>
+          new Date(b.lastUpdatedDate).getTime() -
+          new Date(a.lastUpdatedDate).getTime(),
+      ),
+    [TicketconfigQuery.data],
+  );
+ 
 
   const postMutation = useMutationFn(
     PoloaServices.AddNewpoloa,
@@ -69,27 +65,106 @@ export const TicketConfig = ({
     PoloaServices.UpdatePoloaById,
     PoloaQueries.GET_ALL,
   );
-  const HeadCells = [
+ const HeadCells = [
     {
-      id: 'vendorCode',
-      label: 'Vendor Code',
+      label: "Ticket No",
+      id: "ticketCode",
       view: true,
-      filterable: true,
+      default: true,
     },
     {
-      id: 'vendorName',
-      label: 'Vendor Name',
+      label: "Site Name",
+      id: "siteName",
       view: true,
-      filterable: true,
+      default: true,
     },
-    { id: 'castHeader', label: 'Cost Header', view: true, filterable: true },
-    { id: 'castCenter', label: 'Cost Center', view: true, filterable: true },
-    
-    { id: 'action', label: 'Action', view: true, filterable: false },
+    {
+      label: "Ticket Type",
+      id: "ticketTypeName",
+      view: true,
+      default: false,
+    },
+    {
+      label: "Ticket Category",
+      id: "categoryName",
+      view: true,
+      default: false,
+    },
+    {
+      label: "Equipment Name",
+      id: "displayName",
+      view: true,
+      default: true,
+    },
+
+    {
+      label: "Priority",
+      id: "priority",
+      view: true,
+      default: false,
+    },
+    {
+      label: "Created By",
+      id: "userName",
+      view: true,
+      default: false,
+    },
+    {
+      label: "Created Date",
+      id: "createdDate",
+      view: false,
+      default: false,
+    },
+    {
+      label: "Assigned To",
+      id: "assignedBy",
+      view: true,
+      default: true,
+    },
+    {
+      label: "Schedule  On",
+      id: "scheduleOn",
+      view: true,
+      default: true,
+    },
+    {
+      label: "State",
+      id: "stateName",
+      view: true,
+      default: true,
+    },
+    {
+      label: "Status",
+      id: "statusName",
+      view: true,
+      default: true,
+    },
+    {
+      label: "Subject",
+      id: "subject",
+      view: true,
+      default: false,
+    },
+    {
+      label: "Action",
+      id: "action",
+      view: true,
+      default: true,
+    },
   ];
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
+  const defaultValues = {
+    selectedVendorName: '',
+    vendorName: '',
+    poNumber: '',
+    uploadType: '',
+    castHeader: '',
+    castCenter: '',
+    document: '',
+    poId: '',
+  };
   const clickableColumnList: Array<string> = ['documentName'];
   const [formFields, setFormFields] = useState<poloaFieldType>(defaultValues);
   const fields: Array<Field> = [
@@ -99,11 +174,6 @@ export const TicketConfig = ({
       type: 'text',
       placeholder: 'Enter Vendor Email / Code',
       required: true,
-      // disabled: edit || toBackend,
-      // onChange: (_name: string, value: any, form: any) => {
-      //   form.setFieldValue('vendorName', value);
-      //   validateVendorEmail(value, form,);
-      // },
       styles: {
         wrapper: 'flex flex-col gap-1',
         label: 'text-sm font-medium text-gray-500',
@@ -111,35 +181,8 @@ export const TicketConfig = ({
           'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
       },
     },
-    {
-      name: 'selectedVendorName',
-      label: 'Vendor Name',
-      type: 'text',
-      placeholder: 'Vendor Name',
-      disabled: true,
-      required: true,
-      styles: {
-        wrapper: 'flex flex-col gap-1',
-        label: 'text-sm font-medium text-gray-500',
-        input:
-          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
-      },
-    },
+   
   ];
-    const handleDownloadDocument = (row: any) => {
-    const fileUrl = row;
-
-    if (typeof fileUrl === 'string' && fileUrl.startsWith('http')) {
-      const link = document.createElement('a');
-      link.href = fileUrl;
-      link.target = '_blank';
-      link.download = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else {
-    }
-  };
   const formStyles = {
     pageName: 'Cost centre',
     label: 'text-mm font-bold text-black dark:text-[var(--foreground)]',
@@ -156,7 +199,7 @@ export const TicketConfig = ({
     setIsOpen(true);
     setFormFields({
       ...formFields,
-      uploadType: tabsValue === 'LOA' ? 'LOA' : 'PO',
+  
     });
   };
   const handleClose = () => {
@@ -166,15 +209,13 @@ export const TicketConfig = ({
     setEdit(false);
   };
   const options = {
-
+    uploadType: ['PO', 'LOA'],
   };
 
   function handleOptionClick(option: string, row: any) {
     if (option === 'Edit') {
       const data = {
         ...row,
-        vendorName: row.vendorCode,
-        selectedVendorName: row.vendorName,
       };
       setFormFields(data);
       setIsOpen(true);
@@ -217,36 +258,47 @@ const includedDownloadColumns = HeadCells.filter((headcell) =>
   }
 
   function onUpdate(data: any) {
+  //   ((data.vendorId = vendorDropdown.find(
+  //     (ven: any) => ven.vendorCode === data.vendorName,
+  //   )?.vendorId),
+  //     (data.costHeaderid = costHeadersDropdown.find(
+  //       (head: any) => head.costHeaderName === data.castHeader,
+  //     )?.costHeaderId),
+  //     (data.costCentreid = costCentersDropdown.find(
+  //       (head: any) => head.costCentreName === data.castCenter,
+  //     )?.costCentreId),
+  //     putMutation.mutate(data, {
+  //       onSuccess: () => {
+  //         toast.success('Site mapped to Cost Centre successfully!');
+  //         handleClose();
+  //         setFormFields(defaultValues);
+  //       },
+  //       onError: (error: any) => {
+  //         const errors=error.response.data.error
+  //         if (errors?.includes('unique_po_number')) {
+  //   toast.error('PO number already exists. Document already uploaded for this PO.');
+  // }else{
+  //   toast.error(error.message);
+  // }
+  //       },
+  //     }));
+  }
+
+  // ----- TABS STATE -----
 
 
-  const label = tabsValue === 'LOA' ? 'Upload the LOA' : 'Upload the PO';
   return (
     <div className="m-2.5">
-       {PolistQuery.isLoading ||
+       {/* {TicketconfigQuery.isLoading ||
           status.some((item) => item === 'pending') ? (
             <Loader />
-          ) : (
+          ) : ( */}
       <section className="w-full h-full flex flex-col">
-        {/* Tabs header */}
-        <Tabs
-          value={tabsValue}
-          onValueChange={setTabsValue}
-          className="self-end"
-        >
-          <TabsList className="flex gap-2">
-            <TabsTrigger value="PO">PO</TabsTrigger>
-            <TabsTrigger value="LOA">LOA</TabsTrigger>
-          </TabsList>
-        </Tabs>
-
-        {/* COST CENTRE TAB */}
-
         <>
-         
             <CustomTable
               headcells={HeadCells}
-              rows={tabledata}
-              pageName={tabsValue}
+              rows={Ticketdata}
+              pageName={'Ticket Configuration'}
               hide={{
                 add: false,
                 filter: false,
@@ -262,11 +314,7 @@ const includedDownloadColumns = HeadCells.filter((headcell) =>
                 optionHandler: (option: any, row: any) =>
                   handleOptionClick(option, row),
               }}
-                onClick={(row, headcellId) => {
-                if (headcellId === 'documentName') {
-                  handleDownloadDocument(row.document);
-                }
-              }}
+              
               clickableColumn={clickableColumnList}
                 includedDownloadColumns={includedDownloadColumns}
             />
@@ -275,7 +323,7 @@ const includedDownloadColumns = HeadCells.filter((headcell) =>
 
         {/* COST HEADER TAB */}
       </section>
-    )}
+    {/* // )} */}
 
       {/* MODAL */}
       {isOpen && (

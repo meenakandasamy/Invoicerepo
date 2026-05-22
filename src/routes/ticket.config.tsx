@@ -5,7 +5,7 @@ import {
   useRouteContext,
   useSearch,
 } from '@tanstack/react-router';
-import {Poloa} from '@/components/poloa/poloa';
+import {Ticketconfig} from '@/components/Ticket/ticketConfig';
 import { getAccessPermissions } from '@/utils/common/permissions';
 import { ticketSearchSchema } from '@/utils/Validators/schema/SearchSchemas';
 
@@ -38,7 +38,7 @@ function RouteComponent() {
   // const search = useSearch({ from: '/po/loa' });
 
   return (
-    <Poloa
+    <Ticketconfig
       hasCreateAccess={hasCreateAccess}
       hasUpdateAccess={hasUpdateAccess}
       session={session}

@@ -6,6 +6,7 @@ export type NavItem = {
   icons: LucideIcon;
   section?: string;
   hidden?: boolean;
+  sunlabel?: string;
   disabled?: boolean;
   activity?: string;
   allowAccess?: boolean;
