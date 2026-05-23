@@ -10,6 +10,9 @@ export enum EIRASAAS_API_QUERIES {
   GET_ALL_PRODUCT_TYPE= 'GetproductType',
   GET_TICKET_TYPE = 'FetchTicketType',
   GET_TICKET_CATEGORY = 'FetchTicketCategory',
+  GET_ALL_TICKET_CATEGORY='Getallcategory',
+  GET_ALL_TICKET_STATE='Getticketstate',
+  GET_USER_LIST_SITEID='GetuserlistbysiteId'
 }
 enum EirasaasEndPoints {
   GET_SITELIST_BY_USER = import.meta.env
@@ -28,6 +31,11 @@ enum EirasaasEndPoints {
     .VITE_GET_ALL_PRODUCT_TYPE,
     GET_TICKET_TYPE = import.meta.env.VITE_TICKET_TYPE_API,
     GET_TICKET_CATEGORY = import.meta.env.VITE_TICKET_CATEGORY_API,
+    GET_ALL_TICKET_CATEGORY=import.meta.env.VITE_GET_ALL_CATEGORY_API,
+    GET_ALL_TICKET_STATE=import.meta.env.VITE_GET_ALL_STATE,
+    GET_USER_LIST_SITEID=import.meta.env.VITE_GET_USER_LIST_BY_SITE
+
+    
 }
 
 const GetSiteListDropdownByUser = async (userId: string) => {
@@ -40,16 +48,7 @@ const GetSiteListDropdownByUser = async (userId: string) => {
     console.error('Error fetching site dropdown:', error);
   }
 };
-const GetproductType = async () => {
-  try {
-    const response = await baseUrl.get(
-      `${EirasaasEndPoints.GET_ALL_PRODUCT_TYPE }`,
-    );
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching site dropdown:', error);
-  }
-};
+
 const GetSiteListDropdownByCompany = async (companyId: string) => {
   try {
     const response = await Eirasaas_BaseUrl.get(
@@ -123,7 +122,36 @@ const FetchTicketType = async () => {
     console.error('Error fetching site dropdown:', error);
   }
 };
-
+const FetchAllcategory = async () => {
+  try {
+    const response = await Eirasaas_BaseUrl.get(
+      `${EirasaasEndPoints.GET_ALL_TICKET_CATEGORY}`,
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching site dropdown:', error);
+  }
+};
+const FetchAllstate = async () => {
+  try {
+    const response = await Eirasaas_BaseUrl.get(
+      `${EirasaasEndPoints.GET_ALL_TICKET_STATE}`,
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching site dropdown:', error);
+  }
+};
+const FetchAlluserlistbySiteid = async () => {
+  try {
+    const response = await Eirasaas_BaseUrl.get(
+      `${EirasaasEndPoints.GET_ALL_TICKET_STATE}`,
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching site dropdown:', error);
+  }
+};
 export const EirasaasAPIs = {
   GetSiteListDropdownByCompany,
   GetSiteListDropdownByCustomer,
@@ -133,4 +161,7 @@ export const EirasaasAPIs = {
   FetchUsersByCustomerId,
 FetchTicketCategory,
   FetchTicketType,
+  FetchAllcategory,
+  FetchAllstate,
+  FetchAlluserlistbySiteid
 };

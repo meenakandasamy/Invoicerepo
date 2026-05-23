@@ -8,7 +8,10 @@ import type { BaseProps, siteDropdownType } from '@/types/common';
 import type { Row } from '@/types/table';
 import type { Field } from '@/types/form';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import debounce from 'lodash/debounce';
+import {
+  EIRASAAS_API_QUERIES,
+  EirasaasAPIs,
+} from '@/integrations/Services/commonServices';
 import {
   useDependentQueriesWithId,
   useMutationFn,
@@ -28,20 +31,48 @@ export const Ticketconfig = ({
   session,
 }: TicketconfigProps): JSX.Element => {
   const [toBackend, setToBackend] = useState<boolean>(false);
-
-  // const queries = [
-  //   {
-  //     queryKey:
-  //       (isOEM ? GET_SITELIST_BY_COMPANY : GET_SITELIST_BY_CUSTOMER) + 'CCM',
-  //     api: isOEM ? GetSiteListDropdownByCompany : GetSiteListDropdownByCustomer,
-  //     setState: setSiteDropdown,
-  //     id: isOEM ? session.companyId : session.customerId,
-  //   },
-  // ];
-  // const {
-  //   data: [dependentResponse],
-  //   status,
-  // } = useQueriesFn(queries);
+ const [ticketTypes, setTicketTypes] = useState<Array<any>>([]);
+  const [ticketCategory, setTicketCategory] = useState<Array<any>>([]);
+    const [ticketstate, setTicketstate] = useState<Array<any>>([]);
+    const [userlist,setUserlist]= useState<Array<any>>([]);
+    const [Sitelist,setSitelist]= useState<Array<any>>([]);
+   const queries = [
+  
+     {
+       queryKey: EIRASAAS_API_QUERIES.GET_TICKET_TYPE,
+       api: EirasaasAPIs.FetchTicketType,
+       setState: setTicketTypes,
+       id: session.userId,
+     },
+     {
+       queryKey: EIRASAAS_API_QUERIES.GET_ALL_TICKET_CATEGORY,
+       api: EirasaasAPIs.FetchAllcategory,
+       setState: setTicketCategory,
+    
+     },
+     {
+       queryKey: EIRASAAS_API_QUERIES.GET_ALL_TICKET_STATE,
+       api: EirasaasAPIs.FetchAllstate,
+       setState: setTicketstate,
+    
+     },
+          {
+       queryKey: EIRASAAS_API_QUERIES.GET_USER_LIST_SITEID,
+       api: EirasaasAPIs.FetchAlluserlistbySiteid,
+       setState: setUserlist,
+    
+     },
+       {
+       queryKey: EIRASAAS_API_QUERIES.GET_SITELIST_BY_USER,
+       api: EirasaasAPIs.GetSiteListDropdownByUser,
+       setState: setSitelist,
+    id:session.userId
+     },
+   ];
+  const {
+    data: [dependentResponse],
+    status,
+  } = useQueriesFn(queries);
 
   const TicketconfigQuery = useTicketconfig(
     session,
@@ -183,6 +214,112 @@ export const Ticketconfig = ({
     },
    
   ];
+    const fielddata: Array<Field> = [
+    {
+      name: 'siteName',
+      label: 'Site Name',
+      type: 'select',
+      placeholder: 'Site Name',
+      required: true,
+      styles: {
+        wrapper: 'flex flex-col gap-1',
+        label: 'text-sm font-medium text-gray-500',
+        input:
+          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
+      },
+    },
+      {
+      name: 'From Date',
+      label: 'From Date',
+      type: 'date',
+      placeholder: 'From Date',
+      required: true,
+      styles: {
+        wrapper: 'flex flex-col gap-1',
+        label: 'text-sm font-medium text-gray-500',
+        input:
+          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
+      },
+    },
+      {
+      name: 'To Date',
+      label: 'To Date',
+      type: 'date',
+      placeholder: 'To Date',
+      required: true,
+      styles: {
+        wrapper: 'flex flex-col gap-1',
+        label: 'text-sm font-medium text-gray-500',
+        input:
+          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
+      },
+    },    {
+      name: 'basedon',
+      label: 'Based On',
+      type: 'select',
+      placeholder: 'Based On',
+      required: true,
+      styles: {
+        wrapper: 'flex flex-col gap-1',
+        label: 'text-sm font-medium text-gray-500',
+        input:
+          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
+      },
+    },
+      {
+      name: 'categoryName',
+      label: 'Ticket Category',
+      type: 'select',
+      placeholder: 'Ticket Category',
+      required: true,
+      styles: {
+        wrapper: 'flex flex-col gap-1',
+        label: 'text-sm font-medium text-gray-500',
+        input:
+          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
+      },
+    },
+    {
+      name: 'priority',
+      label: 'Priority',
+      type: 'select',
+      placeholder: 'Priority',
+      required: true,
+      styles: {
+        wrapper: 'flex flex-col gap-1',
+        label: 'text-sm font-medium text-gray-500',
+        input:
+          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
+      },
+    },
+   
+     {
+      name: 'assigned',
+      label: 'Assigned',
+      type: 'select',
+      placeholder: 'Assigned',
+      required: true,
+      styles: {
+        wrapper: 'flex flex-col gap-1',
+        label: 'text-sm font-medium text-gray-500',
+        input:
+          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
+      },
+    },
+         {
+      name: 'statusName',
+      label: 'Ticket State',
+      type: 'select',
+      placeholder: 'Ticket State',
+      required: true,
+      styles: {
+        wrapper: 'flex flex-col gap-1',
+        label: 'text-sm font-medium text-gray-500',
+        input:
+          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
+      },
+    },
+  ];
   const formStyles = {
     pageName: 'Cost centre',
     label: 'text-mm font-bold text-black dark:text-[var(--foreground)]',
@@ -209,7 +346,12 @@ export const Ticketconfig = ({
     setEdit(false);
   };
   const options = {
-    uploadType: ['PO', 'LOA'],
+     basedon :[ "Created Date", "Scheduled On" ],
+       ticketType: ticketTypes.map((type) => type.ticketTypeName),
+    ticketCategory: ticketCategory.map((category) => category.categoryName),
+    priority:['High','Medium','Low'],
+    assigned:userlist.map((type)=>type.userName),
+siteName:Sitelist.map((site)=>site.siteName),
   };
 
   function handleOptionClick(option: string, row: any) {
@@ -305,6 +447,14 @@ const includedDownloadColumns = HeadCells.filter((headcell) =>
                 hidden: false,
                 download: false,
               }}
+              onSubmit={onSubmit}
+              
+                field={fielddata}
+              option={options}
+              // styles={formStyles}
+           labels={'Ticket'}
+              toBackend={toBackend}
+                
               access={{
                 hasCreateAccess: true,
                 hasUpdateAccess: hasUpdateAccess,
@@ -338,7 +488,7 @@ const includedDownloadColumns = HeadCells.filter((headcell) =>
               fields={fields}
               options={options}
               styles={formStyles}
-              label={label}
+              label={''}
               toBackend={toBackend}
             />
           </Modal>

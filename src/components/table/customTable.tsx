@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { EllipsisVertical, FileQuestion,Trash2 } from 'lucide-react';
+
+import { EllipsisVertical, FileQuestion, Trash2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { TabsTrigger } from '@radix-ui/react-tabs';
 import {
@@ -14,11 +15,12 @@ import { ToolbarActions } from './ActionToolBar';
 import { SearchBar } from './SearchBar';
 import { TableHeaderRow } from './TableHeader';
 import { TableRowComponent } from './TableRow';
+import {CustomTicketform}  from '../form/customTicketform';
 import { Pagination } from './Pagination';
 import type { HeadCell, Row, TableProps } from '@/types/table';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-
+import AdvancedTicketChart from '@/components/Chart/barticketchart'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +28,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+
 
 export const CustomTable = ({
   headcells,
@@ -43,6 +46,11 @@ export const CustomTable = ({
   includedDownloadColumns = [],
   tabsFns,
   allTabsValues,
+  field,
+  option,
+  onSubmit,
+  toBackend,
+  labels,
 }: TableProps) => {
   const {
     addFn = () => {},
@@ -70,8 +78,8 @@ export const CustomTable = ({
     setCurrentPage(1);
   }, [rows]);
   useEffect(() => {
-  setHandledHeadCells(headcells);
-}, [headcells]);
+    setHandledHeadCells(headcells);
+  }, [headcells]);
 
   const handleHeadCellsFromTable = (modified: Array<HeadCell>) => {
     setHandledHeadCells(modified);
@@ -142,11 +150,15 @@ export const CustomTable = ({
   // );
 
   const downloadableRows = sortedRows.map((row) => {
-    const newRow = {...row};
-      const filteredRow = Object.fromEntries(Object.entries(newRow).filter(([key]) => includedDownloadColumns.includes(key)));
+    const newRow = { ...row };
+    const filteredRow = Object.fromEntries(
+      Object.entries(newRow).filter(([key]) =>
+        includedDownloadColumns.includes(key),
+      ),
+    );
     return filteredRow;
   });
-  
+
   const goToPage = (page: number) => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
@@ -264,8 +276,30 @@ export const CustomTable = ({
             </CardContent>
           </Card>
         </div>
+ {labels === 'Ticket' && (
+  <div className="grid w-full grid-cols-1 gap-4 py-2 xl:grid-cols-2 items-stretch">
+    {/* Left Column - Form Container */}
+    <div className="flex flex-col h-full min-w-0"> 
+      <div className="flex flex-col h-full w-full rounded-2xl border bg-white shadow-sm dark:bg-neutral-950 p-4">
+        <CustomTicketform
+          submitFunction={(data) => onSubmit(data)}
+          fields={field}
+          options={option}
+          label={labels}
+          toBackend={toBackend}
+        />
+      </div>
+    </div>
 
-        <Card className="h-[80dvh]">
+    {/* Right Column - Chart Container */}
+    <div className="flex flex-col h-full min-w-0">
+      <div className="h-full w-full rounded-2xl border bg-white shadow-sm dark:bg-neutral-950 p-4 flex items-center justify-center">
+        <AdvancedTicketChart />
+      </div>
+    </div>
+  </div>
+)}
+        <Card className="py-2">
           <CardContent className="flex flex-col justify-between py-2 w-full">
             <div
               className={

@@ -62,5 +62,10 @@ export type TableProps = {
     headcellId: string,
   ) => string | { backgroundColor?: string; color?: string } | undefined;
   tabsFns?: any;
+    toBackend?: boolean;
+    labels?:string
   allTabsValues?: any;
+    field?: Array<Field>;
+    onSubmit?:(value: any) => void
+      submitFunction: (value: any) => void;  option?: Record<string, Array<string | number>>;
 };

@@ -175,7 +175,7 @@ export const Sop = ({
       name: 'ticketCategory',
       label: 'Ticket Category',
       type: 'select',
-      disabled: formFields.ticketType,
+      // disabled: formFields.ticketType,
       placeholder: 'Enter Ticket Category',
       onChange: (name, value, form) => {
         form.setFieldValue(name, value);
@@ -286,8 +286,6 @@ export const Sop = ({
 
   function handleOptionClick(option: string, row: any) {
     if (option === 'Edit') {
-      console.log(row);
-
       const mappedSections = row?.sopData?.sections?.map(
         (section: any, sectionIndex: number) => ({
           id: sectionIndex + 1,
@@ -351,8 +349,11 @@ export const Sop = ({
 
       const data = {
         ...row,
+        ticketType:row?.ticketTypeName,
+        ticketCategory:row?.ticketCategoryName
       };
-
+setCategoryId(data?.ticketCategoryId)
+setticketTypeId(data?.ticketTypeId)
       setFormFields(data);
       setIsOpen(true);
       setEdit(true);
@@ -371,7 +372,45 @@ export const Sop = ({
       toast.error('Section name is required');
       setToBackend(false);
       return;
+    }  // SUBSTEP VALIDATION
+for (const section of sections) {
+  for (const step of section.steps) {
+
+    // Show error ONLY when all 3 are empty
+    const isHeaderEmpty = !step.header?.trim();
+    const isFieldTypeEmpty =
+      !step.fieldTypes || step.fieldTypes.length === 0;
+    const isImageNo = step.previousAfter === 'No';
+
+    if (isHeaderEmpty && isFieldTypeEmpty && isImageNo) {
+      toast.error(
+        'Header, field type, or image configuration is required',
+      );
+      setToBackend(false);
+      return;
     }
+
+    // Dropdown validation
+    if (
+      step.fieldTypes?.includes('DropDown') &&
+      (!step.selectValues || step.selectValues.length === 0)
+    ) {
+      toast.error('Dropdown values are required');
+      setToBackend(false);
+      return;
+    }
+
+    // Image count validation
+    if (
+      step.fieldTypes?.includes('Image') &&
+      (!step.textCount || step.textCount <= 0)
+    ) {
+      toast.error('Image count is required');
+      setToBackend(false);
+      return;
+    }
+  }
+}
     const payload = {
       sopName: data.sopName || 'Inverter Maintenance SOP',
 
