@@ -1,12 +1,10 @@
 import React, { useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import {
   BarChart,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   Legend,
   ResponsiveContainer,
 } from 'recharts';
@@ -22,139 +20,49 @@ interface TicketMetrics {
   createdTicket: number;
 }
 
-type RawApiResponse = Record<string, TicketMetrics>;
+interface ChartDataItem extends TicketMetrics {
+  statusName: string;
+}
 
-/* ---------------------------------------
-   API MOCK
----------------------------------------- */
-const fetchStatusData = async (): Promise<RawApiResponse> => {
-  return {
-    Close: {
-      finishedTicket: 196,
-      AssignedTicket: 0,
-      unfinishedTicket: 0,
-      inProgressTicketCount: 0,
-      createdTicket: 0,
-    },
-    Hold: {
-      finishedTicket: 0,
-      AssignedTicket: 0,
-      unfinishedTicket: 0,
-      inProgressTicketCount: 0,
-      createdTicket: 0,
-    },
-    Open: {
-      finishedTicket: 22,
-      AssignedTicket: 84,
-      unfinishedTicket: 0,
-      inProgressTicketCount: 10,
-      createdTicket: 0,
-    },
+interface AdvancedTicketChartProps {
+  chartData: {
+    ticketTypes: Record<string, TicketMetrics>;
   };
-};
-
-/* ---------------------------------------
-   CUSTOM TOOLTIP
----------------------------------------- */
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    const total = payload.reduce(
-      (acc: number, item: any) => acc + item.value,
-      0
-    );
-
-    return (
-      <div className="rounded-xl border border-neutral-200 bg-white p-3 shadow-lg dark:border-neutral-700 dark:bg-neutral-900">
-        <p className="mb-2 text-xs font-bold text-neutral-800 dark:text-neutral-100">
-          {label} ({total})
-        </p>
-
-        <div className="space-y-1">
-          {payload.map((item: any) => {
-            if (item.value === 0) return null;
-
-            return (
-              <div
-                key={item.name}
-                className="flex items-center justify-between gap-6 text-[11px]"
-              >
-                <div className="flex items-center gap-2">
-                  <span
-                    className="h-2 w-2 rounded-full"
-                    style={{
-                      background: item.color,
-                    }}
-                  />
-
-                  <span className="text-neutral-500 dark:text-neutral-400">
-                    {item.name}
-                  </span>
-                </div>
-
-                <span className="font-semibold text-neutral-700 dark:text-neutral-200">
-                  {item.value}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
-  return null;
-};
+}
 
 /* ---------------------------------------
    MAIN COMPONENT
 ---------------------------------------- */
-export default function AdvancedTicketChart() {
-  const {
-    data: rawData,
-    isLoading,
-    isError,
-  } = useQuery<RawApiResponse>({
-    queryKey: ['ticketStatusMetrics'],
-    queryFn: fetchStatusData,
-  });
+export default function AdvancedTicketChart({
+  chartData,
+}: AdvancedTicketChartProps) {
+  /* ---------------------------------------
+     CONVERT OBJECT -> ARRAY
+  ---------------------------------------- */
+  const formattedData: ChartDataItem[] = useMemo(() => {
+    if (!chartData?.ticketTypes) return [];
+
+    return Object.entries(chartData.ticketTypes).map(
+      ([statusName, values]) => ({
+        statusName,
+        ...values,
+      })
+    );
+  }, [chartData]);
+
+  console.log(formattedData);
 
   /* ---------------------------------------
-     TRANSFORM DATA
+     EMPTY STATE
   ---------------------------------------- */
-  const chartData = useMemo(() => {
-    if (!rawData) return [];
-
-    return Object.entries(rawData).map(([status, metrics]) => ({
-      statusName: status,
-      ...metrics,
-    }));
-  }, [rawData]);
-
-  /* ---------------------------------------
-     LOADING
-  ---------------------------------------- */
-  if (isLoading) {
+  if (formattedData.length === 0) {
     return (
       <div className="flex h-[250px] items-center justify-center text-sm text-neutral-500">
-        Loading metrics...
+        No chart data available.
       </div>
     );
   }
 
-  /* ---------------------------------------
-     ERROR
-  ---------------------------------------- */
-  if (isError || !rawData) {
-    return (
-      <div className="flex h-[250px] items-center justify-center text-sm text-red-500">
-        Failed to load chart metrics.
-      </div>
-    );
-  }
-
-  /* ---------------------------------------
-     UI
-  ---------------------------------------- */
   return (
     <div className="w-full rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
       {/* Header */}
@@ -162,15 +70,13 @@ export default function AdvancedTicketChart() {
         <h2 className="text-base font-bold text-neutral-800 dark:text-white">
           Ticket Status Metrics
         </h2>
-
-     
       </div>
 
       {/* Chart */}
-      <div className="h-[220px] w-full">
+      <div className="h-[260px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
-            data={chartData}
+            data={formattedData}
             margin={{
               top: 10,
               right: 10,
@@ -263,14 +169,6 @@ export default function AdvancedTicketChart() {
               tick={{
                 fill: '#9CA3AF',
                 fontSize: 11,
-              }}
-            />
-
-            {/* Tooltip */}
-            <Tooltip
-              content={<CustomTooltip />}
-              cursor={{
-                fill: 'rgba(0,0,0,0.02)',
               }}
             />
 

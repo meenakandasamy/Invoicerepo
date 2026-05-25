@@ -35,7 +35,7 @@ interface CustomFormProps {
   disableIndex?: Array<any>;
 }
 
-export function CustomForm({
+export function TicketcreateForm({
   initialValues,
   submitFunction,
   onClose,
@@ -110,46 +110,47 @@ export function CustomForm({
         {/* Sticky Header */}
       {/* Sticky Header */}
 {!disableLabel && (
-  <div className="sticky top-0 z-20 bg-white border-b border-gray-200 px-6 py-4 dark:bg-background">
-    <div className="flex items-center justify-between">
-      {/* Left Side */}
-      <div className="flex items-center gap-3">
-        {/* Icon */}
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-600">
+  <div className="border-b border-gray-200 bg-white px-8 py-6">
+    <div className="flex items-start justify-between">
+      
+      <div className="flex items-center gap-4">
+        
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-600 shadow-lg">
           <svg
             xmlns="http://www.w3.org/2000/svg"
+            className="h-7 w-7 text-white"
             fill="none"
             viewBox="0 0 24 24"
-            strokeWidth={2}
             stroke="currentColor"
-            className="h-5 w-5 text-white"
+            strokeWidth={2}
           >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              d="M19.5 14.25V11.25a2.25 2.25 0 00-.659-1.591l-6-6A2.25 2.25 0 0011.25 3H6.75A2.25 2.25 0 004.5 5.25v13.5A2.25 2.25 0 006.75 21h10.5a2.25 2.25 0 002.25-2.25v-4.5z"
+              d="M9 12h6m-6 4h6M7 4h10a2 2 0 012 2v12a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2z"
             />
           </svg>
         </div>
 
-        {/* Title + Subtitle */}
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-            {label}
+          <h2 className="text-3xl font-bold text-gray-900">
+            Add New Ticket
           </h2>
-         
+
+          <p className="mt-1 text-sm text-gray-500">
+            Fill in the details below to create a new ticket
+          </p>
         </div>
       </div>
 
-      {/* Close Button */}
       <button
         type="button"
         onClick={onClose}
-        className="text-gray-400 hover:text-gray-600 transition"
+        className="rounded-full p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="h-5 w-5"
+          className="h-6 w-6"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -166,7 +167,13 @@ export function CustomForm({
   </div>
 )}
         {/* Scrollable Form Fields */}
-        <div className="overflow-y-auto overflow-x-hidden dark:bg-background flex-1 p-4 md:p-6">
+        <div className="
+  flex-1
+  overflow-y-auto
+  bg-gray-50
+  px-8
+  py-8
+">
           {/* Extra Summary Preview / Bill / Custom Component */}
           {extraContent && (
             <div className="w-full p-4 border-b border-gray-300">

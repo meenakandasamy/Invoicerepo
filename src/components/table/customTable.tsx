@@ -21,6 +21,7 @@ import type { HeadCell, Row, TableProps } from '@/types/table';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import AdvancedTicketChart from '@/components/Chart/barticketchart'
+import TicketSummaryCards from '@/components/Chart/Ticketcard'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -50,13 +51,15 @@ export const CustomTable = ({
   option,
   onSubmit,
   toBackend,
-  labels,
+  labels,dataChart,
+  carddata,
 }: TableProps) => {
   const {
     addFn = () => {},
     optionHandler = () => {},
     handleFileChange = () => {},
   } = functions;
+console.log(dataChart);
 
   const [currentPage, setCurrentPage] = React.useState(1);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -276,26 +279,37 @@ export const CustomTable = ({
             </CardContent>
           </Card>
         </div>
- {labels === 'Ticket' && (
+{(labels === 'Ticket Approval' || labels === 'Ticket Config') && (
   <div className="grid w-full grid-cols-1 gap-4 py-2 xl:grid-cols-2 items-stretch">
+    
     {/* Left Column - Form Container */}
-    <div className="flex flex-col h-full min-w-0"> 
+    <div className="flex flex-col h-full min-w-0">
       <div className="flex flex-col h-full w-full rounded-2xl border bg-white shadow-sm dark:bg-neutral-950 p-4">
         <CustomTicketform
-          submitFunction={(data) => onSubmit(data)}
-          fields={field}
-          options={option}
+          submitFunction={(data: any) => onSubmit(data)}
+          fields={field ?? []}
+          options={option || {}}
           label={labels}
           toBackend={toBackend}
         />
       </div>
     </div>
 
-    {/* Right Column - Chart Container */}
+    {/* Right Column */}
     <div className="flex flex-col h-full min-w-0">
-      <div className="h-full w-full rounded-2xl border bg-white shadow-sm dark:bg-neutral-950 p-4 flex items-center justify-center">
-        <AdvancedTicketChart />
-      </div>
+      
+      {labels === 'Ticket Config' && (
+        <div className="h-full w-full rounded-2xl border bg-white shadow-sm dark:bg-neutral-950 p-4 flex items-center justify-center">
+          <AdvancedTicketChart chartData={dataChart} />
+        </div>
+      )}
+
+      {labels === 'Ticket Approval' && (
+        <div className="h-full w-full rounded-2xl border bg-white shadow-sm dark:bg-neutral-950 p-4 flex items-center justify-center">
+          <TicketSummaryCards data={carddata} />
+        </div>
+      )}
+
     </div>
   </div>
 )}

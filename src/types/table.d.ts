@@ -64,8 +64,10 @@ export type TableProps = {
   tabsFns?: any;
     toBackend?: boolean;
     labels?:string
+    dataChart?:any
   allTabsValues?: any;
     field?: Array<Field>;
-    onSubmit?:(value: any) => void
+    carddata?:any
+    onSubmit:(value: any) => void
       submitFunction: (value: any) => void;  option?: Record<string, Array<string | number>>;
 };
