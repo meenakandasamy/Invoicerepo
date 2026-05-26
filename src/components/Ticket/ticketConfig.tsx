@@ -459,7 +459,7 @@ export const Ticketconfig = ({
   ];
   const formStyles = {
     container:
-      'fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-2',
+      'fixed inset-0 z-50 flex items-center justify-center  backdrop-blur-sm p-2',
 
     form: `
     w-full

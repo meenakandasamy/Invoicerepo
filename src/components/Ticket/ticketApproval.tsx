@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { Modal } from '@mui/material';
 import { CustomTable } from '../table/customTable';
-import { CustomForm } from '../form/customForm';
+import { TicketcreateForm } from '../form/ticketcreateFrom';
 import type { JSX } from 'react';
 import type { BaseProps } from '@/types/common';
 import type { Row } from '@/types/table';
@@ -97,10 +97,10 @@ export const TicketApproval = ({
     TicketApprovalServices.TicketFiltercocuntlist,
     null,
   );
-  // const postMutation = useMutationFn(
-  //   PoloaServices.AddNewpoloa,
-  //   PoloaQueries.GET_ALL,
-  // );
+  const postMutation = useMutationFn(
+  TicketApprovalServices.postTicketApproval,
+    null,
+  );
   // const putMutation = useMutationFn(
   //   PoloaServices.UpdatePoloaById,
   //   PoloaQueries.GET_ALL,
@@ -120,13 +120,13 @@ export const TicketApproval = ({
     id: "ticketCode",
 
     view: true,
-    filterable: true,
+    default: true,
   },
   {
     label: "Site Name",
     id: "siteName",
     view: true,
-    filterable: true,
+    default: true,
   },
   // {
   //   label: "Ticket Type",
@@ -138,20 +138,20 @@ export const TicketApproval = ({
     label: "Ticket Category",
     id: "categoryName",
     view: true,
-    filterable: false,
+    default: false,
   },
   {
     label: "Equipment Name",
     id: "displayName",
     view: true,
-    filterable: true,
+    default: true,
   },
 
   {
     label: "Priority",
     id: "priority",
     view: true,
-    filterable: false,
+    default: false,
   },
   // {
   //   label: "Created By",
@@ -163,31 +163,31 @@ export const TicketApproval = ({
     label: "Created Date",
     id: "createdDate",
     view: true,
-    filterable: false,
+    default: false,
   },
   {
     label: "Assigned To",
     id: "assignedBy",
     view: true,
-    filterable: true,
+    default: true,
   },
   {
     label: "Schedule  On",
     id: "scheduleOn",
     view: true,
-    filterable: true,
+    default: true,
   },
   {
     label: "State",
     id: "stateName",
     view: true,
-    filterable: true,
+    default: true,
   },
   {
     label: "Status",
     id: "statusName",
     view: true,
-    filterable: true,
+    default: true,
   },
   {
     label: "Current Level",
@@ -195,42 +195,39 @@ export const TicketApproval = ({
     headerStyle: { width: "100px" },
 
     view: true,
-    filterable: true,
+    default: true,
   },
   {
     label: "Subject",
     id: "subject",
     view: true,
-    filterable: true,
+    default: true,
   },
   {
     label: "Action",
     id: "action",
     view: true,
-    filterable: true,
+    default: true,
   },
 ];
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
   const defaultValues = {
-    selectedVendorName: '',
-    vendorName: '',
-    poNumber: '',
-    uploadType: '',
-    castHeader: '',
-    castCenter: '',
-    document: '',
-    poId: '',
+    approvedBy:0,
+    lastUpdatedBy:0,
+    remarks: '',
+    ticketId: 0,
+    ticketStatusId:0,
   };
   const clickableColumnList: Array<string> = ['documentName'];
-  const [formFields, setFormFields] = useState<poloaFieldType>(defaultValues);
+  const [formFields, setFormFields] = useState<approveFieldType>(defaultValues);
   const fields: Array<Field> = [
     {
-      name: 'vendorName',
-      label: 'Vendor Email / Code',
+      name: 'remark',
+      label: 'Remark',
       type: 'text',
-      placeholder: 'Enter Vendor Email / Code',
+      placeholder: 'Enter Remark',
       required: true,
       styles: {
         wrapper: 'flex flex-col gap-1',
@@ -369,18 +366,49 @@ export const TicketApproval = ({
       console.log('Invalid document URL');
     }
   };
-  const formStyles = {
-    pageName: 'Cost centre',
-    label: 'text-mm font-bold text-black dark:text-[var(--foreground)]',
+ const formStyles = {
     container:
-      'flex items-center justify-center min-h-screen p-4 overflow-auto max-w-screen-xl mx-auto bg-transparent dark:bg-transparent',
-    form: 'w-[60%] max-h-[100vh] border rounded-xl backdrop-blur-md p-5 shadow-xl flex flex-col bg-white dark:bg-[var(--background)] overflow-y-auto',
-    submitButton:
-      'border bg-blue-500 text-white py-1 px-2 rounded cursor-pointer hover:bg-blue-600 hover:text-white dark:bg-[var(--primary)] dark:hover:bg-blue-500 dark:text-[var(--primary-foreground)]',
-    cancelButton:
-      'border bg-red-500 text-white py-1 px-2 rounded cursor-pointer hover:bg-red-600 hover:text-white dark:bg-[var(--destructive)] dark:hover:bg-red-500 dark:text-[var(--destructive-foreground)]',
-  };
+      'fixed inset-0 z-50 flex items-center justify-center p-2',
 
+    form: `
+    w-full
+  max-w-xl
+    rounded-[28px]
+    bg-white
+    shadow-2xl
+    border
+    border-gray-200
+    overflow-hidden
+    flex
+    flex-col
+  `,
+
+    grid: `
+    grid
+    grid-cols-1
+    md:grid-cols-1
+     gap-x-5
+    gap-y-2
+    w-full
+  `,
+
+    submitButton:
+      'h-11 px-8 rounded-xl bg-violet-600 text-white hover:bg-violet-600 transition',
+
+    cancelButton: `
+    h-11
+    px-8 
+    rounded-xl
+    border
+    border-gray-300
+    bg-white
+    hover:bg-gray-100
+    text-gray-700
+    font-semibold
+    transition-all
+    duration-200
+  `,
+  };
   const handleOpen = () => {
     setIsOpen(true);
     setFormFields({
@@ -419,18 +447,19 @@ export const TicketApproval = ({
   ).map((headcell) => headcell.id);
   function onSubmit(data: any) {
     setToBackend(true);
-    (  data.siteId = Sitelist
-    .filter((site: any) => data.siteName.includes(site.siteName))
-    .map((site: any) => site.siteId),
-      (data.ticketStatusId =3),
+  
+    ((data.siteId = Sitelist.filter((site: any) =>
+      data.siteName.includes(site.siteName),
+    ).map((site: any) => site.siteId)),
+      (data.ticketStatusId = ticketstate.find(
+        (state: any) => state.statusName === data.statusName,
+      )?.ticketStatusId),
       (data.categoryId = ticketCategory.find(
         (head: any) => head.categoryName === data.ticketCategory,
       )?.categoryId),
       (data.filterType =
-        data.basedOn === 'Scheduled On'
-          ? 'scheduleOn'
-          :'createdDate'),
-               (data.priority =
+        data.basedOn === 'Scheduled On' ? 'scheduleOn' : 'createdDate'),
+      (data.priority =
         data.priority === 'High'
           ? 3
           : data.priority === 'Medium'
@@ -446,8 +475,11 @@ export const TicketApproval = ({
         : null),
       postTicketlistMutation.mutate(data, {
         onSuccess: (e:any) => {
-          setTableValue(e);
+          console.log(e);
           
+          setTableValue(e);
+           handleClose();
+           setFormFields(defaultValues);
           setToBackend(false);
         },
       }));
@@ -457,6 +489,21 @@ export const TicketApproval = ({
           setToBackend(false);
         },
       })
+
+  }
+  function onSubmitdata(data: any) {
+    console.log(data);
+    
+    setToBackend(true);
+      postMutation.mutate(data, {
+        onSuccess: (e:any) => {
+          setTableValue(e);
+           handleClose();
+           setFormFields(defaultValues);
+          setToBackend(false);
+        },
+      })
+
 
   }
 
@@ -502,7 +549,7 @@ export const TicketApproval = ({
             rows={tableValue}
             pageName={'Ticket Approval'}
             hide={{
-              add: false,
+              add: true,
               filter: false,
               hidden: false,
               download: false,
@@ -513,6 +560,7 @@ export const TicketApproval = ({
             }}
              labels={'Ticket Approval'}
               onSubmit={onSubmit}
+              submitFunction={onSubmit}
             field={fielddata}
             option={options}
             carddata={dataCocunt}
@@ -539,16 +587,19 @@ export const TicketApproval = ({
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <Modal open={isOpen} onClose={handleClose}>
-            <CustomForm
+          <TicketcreateForm
               initialValues={formFields}
               submitFunction={(data) =>
-                edit ? onUpdate(data) : onSubmit(data)
+              onSubmitdata(data)
               }
               onClose={handleClose}
+              onReset={handleClose}
               fields={fields}
               options={options}
+              buttonLabel={edit?'Update':'Approve'}
+              optionalbuttonLabel={'Re-assign'}
               styles={formStyles}
-              label={''}
+              label={'Ticket Approval'}
               toBackend={toBackend}
             />
           </Modal>

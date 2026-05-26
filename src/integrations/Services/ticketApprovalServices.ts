@@ -1,8 +1,8 @@
 import { baseUrl } from './baseUrl';
 import type {
-  PoloaDTOType,
-  PoloaUpdateDTOType,
-} from '@/utils/Validators/schema/poloaSchema';
+  TicketapprovalDTOType,
+  TicketapprovalUpdateDTOType,
+} from '@/utils/Validators/schema/Ticketapprovalschema';
 export enum TicketApprovalQueries {
   GET_TICKET_APPROVAL_USERID = 'getAllTicketApproval',
     GET_TICKET_APPROVAL_COCUNT = 'getTicketApprovalcocunt',
@@ -11,7 +11,7 @@ export enum TicketApprovalQueries {
 enum TicketApprovalEndpoints {
   getAllTicketApproval = import.meta.env.VITE_APPROVAL_API_USERID,
   getTicketApprovalcocunt = import.meta.env.VITE_APPROVAL_LIST_COCUNT,
-  AddTicketApproval = import.meta.env.VITE_ADD_PO_LOA,
+  AddTicketApproval = import.meta.env.VITE_TICKET_APPROVAL,
   UpdateTicketApproval = import.meta.env.VITE_UPDATE_PO_LOA,
   TicketFilterlist = import.meta.env.VITE_TICKET_FILTER_LIST,
     TicketFiltercocunt = import.meta.env.VITE_APPROVAL_FILTER_COCUNT,
@@ -63,7 +63,9 @@ const TicketFiltercocuntlist = async (data: any) => {
     throw error;
   }
 };
-const AddNewTicketApproval = async (data: PoloaDTOType) => {
+const postTicketApproval = async (data: TicketapprovalDTOType) => {
+  console.log(data);
+  
   try {
     const response = await baseUrl.post(
       `${TicketApprovalEndpoints.AddTicketApproval}`,
@@ -76,7 +78,7 @@ const AddNewTicketApproval = async (data: PoloaDTOType) => {
   }
 };
 
-const UpdateTicketApprovalById = async (data: PoloaUpdateDTOType) => {
+const UpdateTicketApprovalById = async (data: TicketapprovalUpdateDTOType) => {
   try {
     const response = await baseUrl.put(
       `${TicketApprovalEndpoints.UpdateTicketApproval}/${data.poId}`,
@@ -90,7 +92,7 @@ const UpdateTicketApprovalById = async (data: PoloaUpdateDTOType) => {
 };
 export const TicketApprovalServices = {
   fetchgetallTicketApproval,
-  AddNewTicketApproval,
+  postTicketApproval,
   UpdateTicketApprovalById,
   fetchgetTicketApprovalCount,
   TicketFilterlist,TicketFiltercocuntlist

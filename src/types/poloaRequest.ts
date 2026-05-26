@@ -27,3 +27,12 @@ interface ticketFiledType {
     cycle:number,createdBy:number
 
 }
+interface approveFieldType {
+  approvedBy:number;
+    lastUpdatedBy:number;
+    remarks: string;
+ 
+    ticketStatusId:number;
+    ticketId:number;
+
+}
