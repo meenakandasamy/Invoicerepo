@@ -72,7 +72,7 @@ export const TableRowComponent = ({
           displayValue = optionPopup(row);
         } else if (
           (headcell.id.includes('Date') ||
-            headcell.id.includes('lastCountedAt')) &&
+            headcell.id.includes('lastCountedAt')||headcell.id.includes('scheduleOn')) &&
           row?.[headcell.id] && !headcell.visualFormat
         ) {
           // Handle date values

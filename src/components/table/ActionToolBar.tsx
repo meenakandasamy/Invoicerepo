@@ -40,8 +40,12 @@ export const ToolbarActions = ({
           content="Add"
           children={
             <CirclePlus
-              color={access.hasCreateAccess ? 'blue' : 'gray'}
-              className={`h-4 w-4 ${access.hasCreateAccess ? 'hover:text-violet-700 cursor-pointer' : 'cursor-not-allowed'}`}
+              // color={access.hasCreateAccess ? 'blue' : 'gray'}
+  className={`h-4 w-4 ${
+    access.hasCreateAccess
+      ? 'text-violet-600 hover:text-violet-700 cursor-pointer'
+      : 'text-gray-400 cursor-not-allowed'
+  }`}
               onClick={() => access.hasCreateAccess && addFn()}
             />
           }
@@ -53,8 +57,11 @@ export const ToolbarActions = ({
           content="Upload"
           children={
             <Upload
-              color={access.hasCreateAccess ? 'blue' : 'gray'}
-              className={`h-4 w-4 ${access.hasCreateAccess ? 'hover:text-blue-500 cursor-pointer' : 'cursor-not-allowed'}`}
+               className={`h-4 w-4 ${
+    access.hasCreateAccess
+      ? 'text-violet-600 hover:text-violet-700 cursor-pointer'
+      : 'text-gray-400 cursor-not-allowed'
+  }`}
               onClick={handleIconClick}
             />
           }
@@ -77,8 +84,12 @@ export const ToolbarActions = ({
               handleHeadCellsFromActions={handleHeadCellsFromActions}
             >
               <Eye
-                color="blue"
-                className="h-4.5 w-4.5 cursor-pointer hover:text-blue-500"
+             
+                 className={`h-4 w-4 ${
+    access.hasCreateAccess
+      ? 'text-violet-600 hover:text-violet-700 cursor-pointer'
+      : 'text-gray-400 cursor-not-allowed'
+  }`}
               />
             </HeadCellsHandler>
           }
@@ -95,8 +106,11 @@ export const ToolbarActions = ({
               handleFilter={handleFilter}
             >
               <Filter
-                color="blue"
-                className="h-4 w-4 cursor-pointer hover:text-blue-500"
+              className={`h-4 w-4 ${
+    access.hasCreateAccess
+      ? 'text-violet-600 hover:text-violet-700 cursor-pointer'
+      : 'text-gray-400 cursor-not-allowed'
+  }`}
               />
             </HandleTableFilter>
           }
@@ -107,8 +121,11 @@ export const ToolbarActions = ({
           content="Download"
           children={
             <Download
-              color="blue"
-              className="h-4 w-4 cursor-pointer hover:text-blue-500"
+             className={`h-4 w-4 ${
+    access.hasCreateAccess
+      ? 'text-violet-600 hover:text-violet-700 cursor-pointer'
+      : 'text-gray-400 cursor-not-allowed'
+  }`}
               onClick={() => exportToExcel(downloadableRows, pageName)}
             />
           }

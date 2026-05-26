@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-// Base schema (for reuse, not exported directly)
+// Base schema
 const BaseTicketconfigSchema = z.object({
   assignedTo: z.array(z.number()).optional(),
   priority: z.number().optional(),
@@ -9,13 +9,40 @@ const BaseTicketconfigSchema = z.object({
   siteId: z.array(z.number()),
   toDate: z.string(),
   fromDate: z.string(),
-filterType:z.string()
+  filterType: z.string(),
+    ticketId:z.number().optional()
 });
 
+const BaseTicketcreationSchema = z.object({
+  equipmentId: z.array(z.number()).optional(),
+  siteId: z.number().optional(),
+  ticketTypeId: z.number().optional(),
+  ticketCategory: z.number().optional(),
+  description: z.string(),
+  priority: z.string(),
+  subject: z.string(),
+  cycle: z.number().optional,
+  createdBy: z.number(),
+
+});
+
+// Schemas
 export const TicketconfigSaveSchema = BaseTicketconfigSchema;
 
-export const TicketconfigUpdateSchema = BaseTicketconfigSchema.partial();
+export const TicketcreationSchema = BaseTicketcreationSchema;
 
-// ✅ Types
-export type TicketconfigDTOType = z.infer<typeof TicketconfigSaveSchema>;
-export type TicketconfigUpdateDTOType = z.infer<typeof TicketconfigUpdateSchema>;
+export const TicketconfigUpdateSchema =
+  BaseTicketconfigSchema.partial();
+
+// Types
+export type TicketconfigDTOType = z.infer<
+  typeof TicketconfigSaveSchema
+>;
+
+export type TicketcreationDTOType = z.infer<
+  typeof TicketcreationSchema
+>;
+
+export type TicketconfigUpdateDTOType = z.infer<
+  typeof TicketconfigUpdateSchema
+>;

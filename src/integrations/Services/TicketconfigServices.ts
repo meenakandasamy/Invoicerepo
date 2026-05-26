@@ -1,5 +1,5 @@
 import { baseUrl } from './baseUrl';
-import type {TicketconfigDTOType,TicketconfigUpdateDTOType} from '@/utils/Validators/schema/Ticketconfigschema';
+import type {TicketconfigDTOType,TicketconfigUpdateDTOType,TicketcreationDTOType} from '@/utils/Validators/schema/Ticketconfigschema';
 export enum TicketconfigQueries {
   GET_TICKET_CONFIG_USERID= 'getAllTicketconfig',
   GET_TICKET_COCUNT_USERID= 'getAllTicketlistcount',
@@ -11,7 +11,8 @@ enum TicketconfigEndpoints {
   AddTicketconfig = import.meta.env.VITE_ADD_PO_LOA,
     TicketFilterlist = import.meta.env.VITE_TICKET_FILTER_LIST,
     TicketFilterchart = import.meta.env.VITE_TICKET_FILTER_CHART,
-    UpdateTicketconfig = import.meta.env.VITE_UPDATE_PO_LOA,
+    UpdateTicketconfig = import.meta.env.VITE_TICKET_UPDATE,
+    Ticketcreation = import.meta.env.VITE_TICKET_CREATION,
   // getAllTicketconfig = import.meta.env.VITE_GET_PO_LOA,
 }
 const fetchgetallTicketconfig = async (id:number) => {
@@ -73,10 +74,22 @@ const TicketFilterchart = async (data: TicketconfigDTOType ) => {
     throw error;
   }
 };
+const TicketCreation = async (data: TicketcreationDTOType ) => {
+  try {
+    const response = await baseUrl.post(
+      `${TicketconfigEndpoints.Ticketcreation}`,
+      data,
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('Error adding vendor:', error);
+    throw error;
+  }
+};
 const UpdateTicketconfigById = async (data:TicketconfigUpdateDTOType) => {
   try {
     const response = await baseUrl.put(
-      `${TicketconfigEndpoints.UpdateTicketconfig}/${data.poId}`,
+      `${TicketconfigEndpoints.UpdateTicketconfig}/${data.ticketId}`,
       data,
     );
     return response.data;
@@ -87,7 +100,7 @@ const UpdateTicketconfigById = async (data:TicketconfigUpdateDTOType) => {
 };
 export const TicketconfigServices = {
   fetchgetallTicketconfig,
-  AddNewTicketconfig,
+  AddNewTicketconfig,TicketCreation,
   UpdateTicketconfigById,TicketFilterlist,TicketFilterchart,fetchgetallTicketlistcocunt
 
 };

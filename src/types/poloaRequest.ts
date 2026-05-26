@@ -12,3 +12,18 @@ interface poloaFieldType {
     castHeader: string;
     castCenter: string;
 }
+interface ticketFiledType {
+  siteName: string;
+    displayName: string;
+    ticketTypeName: string;
+ 
+    categoryName: string;
+    ticketTypeId:number;
+    subject: string;
+    priority: string;
+        description: string;
+    equipmentId: Array<number>;
+    ticketCategory:number,
+    cycle:number,createdBy:number
+
+}

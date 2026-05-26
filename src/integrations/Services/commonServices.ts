@@ -14,6 +14,7 @@ export enum EIRASAAS_API_QUERIES {
   GET_ALL_TICKET_STATE = 'Getticketstate',
   GET_USER_LIST_SITEID = 'GetuserlistbysiteId',
   GET_ALL_STATE_LIST = 'GetAllstatelist',
+  GET_ALL_EQUIPMENT_LIST="getEquipmentlistbysiteId"
 }
 enum EirasaasEndPoints {
   GET_SITELIST_BY_USER = import.meta.env
@@ -34,6 +35,8 @@ enum EirasaasEndPoints {
   GET_ALL_TICKET_CATEGORY = import.meta.env.VITE_GET_ALL_CATEGORY_API,
   GET_ALL_TICKET_STATE = import.meta.env.VITE_TICKET_STATE_LIST,
   GET_USER_LIST_SITEID = import.meta.env.VITE_GET_USER_LIST_BY_SITE,
+  GET_ALL_EQUIPMENT_LIST=import.meta.env.VITE_TICKET_EQUIPMET_BY_SITEID,
+
 }
 
 const GetSiteListDropdownByUser = async (userId: string) => {
@@ -150,6 +153,16 @@ const FetchAlluserlistbySiteid = async (id: any) => {
     console.error('Error fetching site dropdown:', error);
   }
 };
+const FetchAllEquipmentlistbysiteId = async (id: any) => {
+  try {
+    const response = await Eirasaas_BaseUrl.get(
+      `${EirasaasEndPoints. GET_ALL_EQUIPMENT_LIST}/${id}`,
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching site dropdown:', error);
+  }
+};
 
 export const EirasaasAPIs = {
   GetSiteListDropdownByCompany,
@@ -163,4 +176,5 @@ export const EirasaasAPIs = {
   FetchAllcategory,
   FetchAllstate,
   FetchAlluserlistbySiteid,
+  FetchAllEquipmentlistbysiteId
 };

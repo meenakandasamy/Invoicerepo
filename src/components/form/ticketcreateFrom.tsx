@@ -11,6 +11,7 @@ interface CustomFormProps {
   initialValues: Record<string, any>;
   submitFunction: (value: any) => void;
   onClose: () => void;
+    onReset: () => void;
   onChange?: (name: string, value: any, form?: any, editingField?: any) => void;
   fields: Array<Field>;
   options: Record<string, Array<string | number>>;
@@ -18,6 +19,7 @@ interface CustomFormProps {
   label: string;
   disableLabel?: boolean;
   buttonLabel?: string;
+  optionalbuttonLabel?:string,
   validators?: Record<string, any>;
   toBackend?: boolean;
   hidden?: boolean;
@@ -38,13 +40,14 @@ interface CustomFormProps {
 export function TicketcreateForm({
   initialValues,
   submitFunction,
-  onClose,
+  onClose,onReset,
   fields,
   options,
   styles,
   label,
   disableLabel,
   buttonLabel,
+  optionalbuttonLabel,
   toBackend,
   disabledOptions,
   extraContent,
@@ -103,54 +106,55 @@ export function TicketcreateForm({
         }}
         className={
           styles?.form ||
-          'w-full max-w-2xl rounded-xl backdrop-blur-md shadow-xl bg-white flex flex-col'
+          'w-full max-w-1xl rounded-xl backdrop-blur-md shadow-xl bg-white flex flex-col'
         }
         style={{ maxHeight: '90vh' }}
       >
         {/* Sticky Header */}
       {/* Sticky Header */}
 {!disableLabel && (
-  <div className="border-b border-gray-200 bg-white px-8 py-6">
-    <div className="flex items-start justify-between">
-      
-      <div className="flex items-center gap-4">
-        
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-600 shadow-lg">
+  <div className="sticky top-0 z-20 bg-white border-b border-gray-200 px-6 py-4 dark:bg-background">
+    <div className="flex items-center justify-between">
+      {/* Left Side */}
+      <div className="flex items-center gap-3">
+        {/* Icon */}
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-600">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-7 w-7 text-white"
             fill="none"
             viewBox="0 0 24 24"
-            stroke="currentColor"
             strokeWidth={2}
+            stroke="currentColor"
+            className="h-5 w-5 text-white"
           >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              d="M9 12h6m-6 4h6M7 4h10a2 2 0 012 2v12a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2z"
+              d="M19.5 14.25V11.25a2.25 2.25 0 00-.659-1.591l-6-6A2.25 2.25 0 0011.25 3H6.75A2.25 2.25 0 004.5 5.25v13.5A2.25 2.25 0 006.75 21h10.5a2.25 2.25 0 002.25-2.25v-4.5z"
             />
           </svg>
         </div>
 
+        {/* Title + Subtitle */}
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">
-            Add New Ticket
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            {label}
           </h2>
-
-          <p className="mt-1 text-sm text-gray-500">
-            Fill in the details below to create a new ticket
-          </p>
+          {/* <p className="text-sm text-gray-500">
+            Create a new Standard Operating Procedure
+          </p> */}
         </div>
       </div>
 
+      {/* Close Button */}
       <button
         type="button"
         onClick={onClose}
-        className="rounded-full p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700"
+        className="text-gray-400 hover:text-gray-600 transition"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6"
+          className="h-5 w-5"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -184,7 +188,7 @@ export function TicketcreateForm({
           <div
             className={
               styles?.grid ||
-              'grid grid-cols-1 sm:grid-cols-2 gap-4  md:gap-6 w-full'
+              'grid grid-cols-1 sm:grid-cols-1 gap-4  md:gap-6 w-full'
             }
           >
             {fields.map((fieldItem: Field) => {
@@ -540,7 +544,7 @@ export function TicketcreateForm({
             {!hide.cancelButton && (
               <form.AppForm>
                 <form.buttonField
-                  label="Cancel"
+                  label={optionalbuttonLabel||"Cancel"}
                   className={clsx(
                     styles?.cancelButton,
                     'w-full sm:w-auto border border-red-500 text-red-500 rounded cursor-pointer',
@@ -552,7 +556,7 @@ export function TicketcreateForm({
                   buttonType="reset"
                   onClick={() => {
                     form.reset();
-                    onClose();
+                    onReset();
                   }}
                 />
               </form.AppForm>
@@ -565,7 +569,7 @@ export function TicketcreateForm({
                   className={clsx(
                     styles?.submitButton,
                     'w-full sm:w-auto bg-blue-700 text-white rounded-md hover:bg-blue-500',
-                    'focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2',
+                    'focus:outline-none focus:ring-2 focus:bg-violet-600 focus:ring-offset-2',
                     'transition-colors disabled:opacity-50 cursor-pointer',
                     {
                       'pointer-events-none opacity-50': toBackend,

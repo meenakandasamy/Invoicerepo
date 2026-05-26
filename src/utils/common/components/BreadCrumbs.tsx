@@ -27,9 +27,9 @@ export default function CustomBreadcrumbs() {
   );
 
   const segmentTitleMap: Record<string, string> = {
-    sop: 'Standard Operating Procedure',
+    sop: 'Sop',
     Approval: 'Ticket Approval',
-    Config: 'Ticket Configuration',
+    config: 'Ticket Configuration',
   
   };
 
