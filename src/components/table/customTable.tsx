@@ -176,7 +176,14 @@ console.log(dataChart);
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          disabled={!access.hasUpdateAccess}
+       disabled={
+          !access.hasUpdateAccess ||
+          (pageName === 'Ticket Approval' &&
+            row.approverstatus === false) ||
+          row.currentLevel === row.approverLevel ||
+          row.currentLevel < 0 ||
+          row.currentLevel === 2
+        }
           size="icon"
           className="cursor-pointer"
         >

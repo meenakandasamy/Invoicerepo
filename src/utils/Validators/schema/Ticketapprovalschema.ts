@@ -10,6 +10,7 @@ const BaseTicketapprovalSchema = z.object({
   
 });
 
+
 export const TicketapprovalSaveSchema = BaseTicketapprovalSchema;
 
 export const TicketapprovalUpdateSchema = BaseTicketapprovalSchema.partial();

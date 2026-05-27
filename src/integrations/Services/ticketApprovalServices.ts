@@ -6,11 +6,13 @@ import type {
 export enum TicketApprovalQueries {
   GET_TICKET_APPROVAL_USERID = 'getAllTicketApproval',
     GET_TICKET_APPROVAL_COCUNT = 'getTicketApprovalcocunt',
+    VITE_TICKET_APPROVAL_USERLIST='getTicketApprovaluserlist'
 }
 
 enum TicketApprovalEndpoints {
   getAllTicketApproval = import.meta.env.VITE_APPROVAL_API_USERID,
   getTicketApprovalcocunt = import.meta.env.VITE_APPROVAL_LIST_COCUNT,
+   getTicketApprovaluserlist = import.meta.env.VITE_TICKET_APPROVAL_USERLIST,
   AddTicketApproval = import.meta.env.VITE_TICKET_APPROVAL,
   UpdateTicketApproval = import.meta.env.VITE_UPDATE_PO_LOA,
   TicketFilterlist = import.meta.env.VITE_TICKET_FILTER_LIST,
@@ -32,6 +34,17 @@ const fetchgetTicketApprovalCount = async (id: number) => {
   try {
     const response = await baseUrl.get(
       `${TicketApprovalEndpoints.getTicketApprovalcocunt}/${id}`,
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('Error fetching cost centres:', error.message);
+    throw error;
+  }
+};
+const fetchapprovaluserlist = async (id: number) => {
+  try {
+    const response = await baseUrl.get(
+      `${TicketApprovalEndpoints.getTicketApprovaluserlist}/${id}`,
     );
     return response.data;
   } catch (error: any) {
@@ -95,5 +108,6 @@ export const TicketApprovalServices = {
   postTicketApproval,
   UpdateTicketApprovalById,
   fetchgetTicketApprovalCount,
+  fetchapprovaluserlist,
   TicketFilterlist,TicketFiltercocuntlist
 };

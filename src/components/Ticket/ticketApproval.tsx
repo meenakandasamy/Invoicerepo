@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState ,useEffect} from 'react';
 import { toast } from 'sonner';
 import { Modal } from '@mui/material';
 import { CustomTable } from '../table/customTable';
@@ -7,6 +7,7 @@ import type { JSX } from 'react';
 import type { BaseProps } from '@/types/common';
 import type { Row } from '@/types/table';
 import type { Field } from '@/types/form';
+import { useTicketApproval } from '@/hooks/data/useTicketapprovalist';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   useDependentQueriesWithId,
@@ -18,7 +19,8 @@ import {
   TicketApprovalServices,
 } from '@/integrations/Services/ticketApprovalServices';
 import {
-EIRASAAS_API_QUERIES,EirasaasAPIs
+  EIRASAAS_API_QUERIES,
+  EirasaasAPIs,
 } from '@/integrations/Services/commonServices';
 
 interface TicketProps extends BaseProps {}
@@ -28,19 +30,49 @@ export const TicketApproval = ({
   session,
 }: TicketProps): JSX.Element => {
   const [tableValue, setTableValue] = useState<Array<Row>>([]);
+  console.log(tableValue);
+  
   const [dataCocunt, setDatacocunt] = useState<Array<Row>>([]);
-   const [ticketTypes, setTicketTypes] = useState<Array<any>>([]);
-      const [ticketCategory, setTicketCategory] = useState<Array<any>>([]);
+    const [approvaluserlist, setApprovalserlist] = useState<Array<Row>>([]);
+  const [ticketTypes, setTicketTypes] = useState<Array<any>>([]);
+  const [ticketCategory, setTicketCategory] = useState<Array<any>>([]);
   const [toBackend, setToBackend] = useState<boolean>(false);
   const [userlist, setUserlist] = useState<Array<any>>([]);
   const [Sitelist, setSitelist] = useState<Array<any>>([]);
-    const [ticketstate, setTicketstate] = useState<Array<any>>([]);
-      const [SiteId, setSiteId] = useState<number | null>(0);
+  const [ticketstate, setTicketstate] = useState<Array<any>>([]);
+  const [SiteId, setSiteId] = useState<number | null>(0);
+  const attachApproverLevel = (item: any) => {
+  const match = approvaluserlist.find(
+    (a) => a.siteId === item.siteId
+  );
+
+  const approverLevel = match?.approverLevel ?? null;
+
+  const approverstatus =
+    (item.stateName === 'Closed' && approverLevel === 1) ||
+    (approverLevel === 2 && item.currentLevel !== null);
+
+  return {
+    ...item,
+    tickets: item.ticketCode,
+    approverLevel,
+    approverstatus,
+    currentLevelstatus:
+      item.currentLevel > 0
+        ? `${item.currentLevel} Approved`
+        : item.currentLevel < 0
+          ? 'Reassigned'
+          : null,
+    assignedBy: item.assignedBy ?? '-',
+  };
+};
+
+
   const queries = [
-    {
-      queryKey: TicketApprovalQueries.GET_TICKET_APPROVAL_USERID,
-      api: TicketApprovalServices.fetchgetallTicketApproval,
-      setState: setTableValue,
+     {
+      queryKey: TicketApprovalQueries.VITE_TICKET_APPROVAL_USERLIST,
+      api: TicketApprovalServices.fetchapprovaluserlist,
+      setState: setApprovalserlist,
       id: session.userId,
     },
      {
@@ -49,29 +81,23 @@ export const TicketApproval = ({
       setState: setDatacocunt,
       id: session.userId,
     },
-        {
+    {
       queryKey: EIRASAAS_API_QUERIES.GET_TICKET_TYPE,
       api: EirasaasAPIs.FetchTicketType,
       setState: setTicketTypes,
       id: session.userId,
     },
-        {
+    {
       queryKey: EIRASAAS_API_QUERIES.GET_TICKET_CATEGORY,
       api: EirasaasAPIs.FetchTicketCategory,
       setState: setTicketCategory,
       id: session.userId,
-    },
-    // {
-    //   queryKey: EIRASAAS_API_QUERIES.GET_ALL_TICKET_CATEGORY,
-    //   api: EirasaasAPIs.FetchAllcategory,
-    //   setState: setTicketCategory,
-    // },
-    {
+    }, {
       queryKey: EIRASAAS_API_QUERIES.GET_ALL_TICKET_STATE,
       api: EirasaasAPIs.FetchAllstate,
       setState: setTicketstate,
     },
-    
+
     {
       queryKey: EIRASAAS_API_QUERIES.GET_USER_LIST_SITEID,
       api: EirasaasAPIs.FetchAlluserlistbySiteid,
@@ -84,21 +110,36 @@ export const TicketApproval = ({
       setState: setSitelist,
       id: session.userId,
     },
+    {
+      queryKey: TicketApprovalQueries.GET_TICKET_APPROVAL_USERID,
+      api: TicketApprovalServices.fetchgetallTicketApproval,
+    setState: (data: any) => {
+    const updatedData = data.map(attachApproverLevel);
+    console.log(updatedData);
+    
+    setTableValue(updatedData);
+  },
+  id: session.userId,
+    },
+   
+    // {
+    //   queryKey: EIRASAAS_API_QUERIES.GET_ALL_TICKET_CATEGORY,
+    //   api: EirasaasAPIs.FetchAllcategory,
+    //   setState: setTicketCategory,
+    // },
+   
   ];
-  const {
-    data: [dependentResponse],
-    status,
-  } = useQueriesFn(queries);
- const postTicketlistMutation = useMutationFn(
+ 
+  const postTicketlistMutation = useMutationFn(
     TicketApprovalServices.TicketFilterlist,
     null,
   );
-   const postTicketcocuntMutation = useMutationFn(
+  const postTicketcocuntMutation = useMutationFn(
     TicketApprovalServices.TicketFiltercocuntlist,
     null,
   );
   const postMutation = useMutationFn(
-  TicketApprovalServices.postTicketApproval,
+    TicketApprovalServices.postTicketApproval,
     null,
   );
   // const putMutation = useMutationFn(
@@ -115,113 +156,140 @@ export const TicketApproval = ({
   //   { id: 'action', label: 'Action', view: true, filterable: false },
   // ];
   const headCells = [
-  {
-    label: "Ticket No",
-    id: "ticketCode",
+    {
+      label: 'Ticket No',
+      id: 'ticketCode',
 
-    view: true,
-    default: true,
-  },
-  {
-    label: "Site Name",
-    id: "siteName",
-    view: true,
-    default: true,
-  },
-  // {
-  //   label: "Ticket Type",
-  //   id: "ticketTypeName",
-  //   view: true,
-  //   default: true,
-  // },
-  {
-    label: "Ticket Category",
-    id: "categoryName",
-    view: true,
-    default: false,
-  },
-  {
-    label: "Equipment Name",
-    id: "displayName",
-    view: true,
-    default: true,
-  },
+      view: true,
+      default: true,
+    },
+    {
+      label: 'Site Name',
+      id: 'siteName',
+      view: true,
+      default: true,
+    },
+    // {
+    //   label: "Ticket Type",
+    //   id: "ticketTypeName",
+    //   view: true,
+    //   default: true,
+    // },
+    {
+      label: 'Ticket Category',
+      id: 'categoryName',
+      view: true,
+      default: false,
+    },
+    {
+      label: 'Equipment Name',
+      id: 'displayName',
+      view: true,
+      default: true,
+    },
 
-  {
-    label: "Priority",
-    id: "priority",
-    view: true,
-    default: false,
-  },
-  // {
-  //   label: "Created By",
-  //   id: "userName",
-  //   view: true,
-  //   default: false,
-  // },
-  {
-    label: "Created Date",
-    id: "createdDate",
-    view: true,
-    default: false,
-  },
-  {
-    label: "Assigned To",
-    id: "assignedBy",
-    view: true,
-    default: true,
-  },
-  {
-    label: "Schedule  On",
-    id: "scheduleOn",
-    view: true,
-    default: true,
-  },
-  {
-    label: "State",
-    id: "stateName",
-    view: true,
-    default: true,
-  },
-  {
-    label: "Status",
-    id: "statusName",
-    view: true,
-    default: true,
-  },
-  {
-    label: "Current Level",
-    id: "currentLevel",
-    headerStyle: { width: "100px" },
+    {
+      label: 'Priority',
+      id: 'priority',
+      view: true,
+      default: false,
+    },
+    // {
+    //   label: "Created By",
+    //   id: "userName",
+    //   view: true,
+    //   default: false,
+    // },
+    {
+      label: 'Created Date',
+      id: 'createdDate',
+      view: true,
+      default: false,
+    },
+    {
+      label: 'Assigned To',
+      id: 'assignedBy',
+      view: true,
+      default: true,
+    },
+    {
+      label: 'Schedule  On',
+      id: 'scheduleOn',
+      view: true,
+      default: true,
+    },
+    {
+      label: 'State',
+      id: 'stateName',
+      view: true,
+      default: true,
+    },
+    {
+      label: 'Status',
+      id: 'statusName',
+      view: true,
+      default: true,
+    },
+    {
+      label: 'Current Level',
+      id: 'currentLevel',
+      headerStyle: { width: '100px' },
 
-    view: true,
-    default: true,
-  },
-  {
-    label: "Subject",
-    id: "subject",
-    view: true,
-    default: true,
-  },
-  {
-    label: "Action",
-    id: "action",
-    view: true,
-    default: true,
-  },
-];
+      view: true,
+      default: true,
+    },
+    {
+      label: 'Subject',
+      id: 'subject',
+      view: true,
+      default: true,
+    },
+    {
+      label: 'Action',
+      id: 'action',
+      view: true,
+      default: true,
+    },
+  ];
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
   const defaultValues = {
-    approvedBy:0,
-    lastUpdatedBy:0,
+    approvedBy: 0,
+    lastUpdatedBy: 0,
     remarks: '',
     ticketId: 0,
-    ticketStatusId:0,
+    ticketStatusId: 0,
   };
   const clickableColumnList: Array<string> = ['documentName'];
   const [formFields, setFormFields] = useState<approveFieldType>(defaultValues);
+    const {
+      data: [dependentResponse],
+      status,
+    } = useQueriesFn(queries);
+  
+    const TicketconfigQuery = useTicketApproval(session);
+    // const Ticketdata = useMemo(
+    //   () =>
+    //     (TicketconfigQuery.data ?? []).sort(
+    //       (a: any, b: any) =>
+    //         new Date(b.lastUpdatedDate).getTime() -
+    //         new Date(a.lastUpdatedDate).getTime(),
+    //     ),
+    //   [TicketconfigQuery.data],
+    // );
+  
+    useEffect(() => {
+      if (TicketconfigQuery.data) {
+        const sortedData = [...TicketconfigQuery.data].sort(
+          (a: any, b: any) =>
+            new Date(b.lastUpdatedDate).getTime() -
+            new Date(a.lastUpdatedDate).getTime(),
+        );
+  
+        setTableValue(sortedData);
+      }
+    }, [TicketconfigQuery.data]);
   const fields: Array<Field> = [
     {
       name: 'remark',
@@ -323,7 +391,6 @@ export const TicketApproval = ({
           'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
       },
     },
-
     {
       name: 'assigned',
       label: 'Assigned',
@@ -337,19 +404,19 @@ export const TicketApproval = ({
           'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
       },
     },
-    {
-      name: 'statusName',
-      label: 'Ticket State',
-      type: 'select',
-      placeholder: 'Ticket State',
-      required: false,
-      styles: {
-        wrapper: 'flex flex-col gap-1',
-        label: 'text-sm font-medium text-gray-500',
-        input:
-          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
-      },
-    },
+    // {
+    //   name: 'statusName',
+    //   label: 'Ticket State',
+    //   type: 'select',
+    //   placeholder: 'Ticket State',
+    //   required: false,
+    //   styles: {
+    //     wrapper: 'flex flex-col gap-1',
+    //     label: 'text-sm font-medium text-gray-500',
+    //     input:
+    //       'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
+    //   },
+    // },
   ];
   const handleDownloadDocument = (row: any) => {
     const fileUrl = row;
@@ -366,9 +433,8 @@ export const TicketApproval = ({
       console.log('Invalid document URL');
     }
   };
- const formStyles = {
-    container:
-      'fixed inset-0 z-50 flex items-center justify-center p-2',
+  const formStyles = {
+    container: 'fixed inset-0 z-50 flex items-center justify-center p-2',
 
     form: `
     w-full
@@ -395,19 +461,8 @@ export const TicketApproval = ({
     submitButton:
       'h-11 px-8 rounded-xl bg-violet-600 text-white hover:bg-violet-600 transition',
 
-    cancelButton: `
-    h-11
-    px-8 
-    rounded-xl
-    border
-    border-gray-300
-    bg-white
-    hover:bg-gray-100
-    text-gray-700
-    font-semibold
-    transition-all
-    duration-200
-  `,
+    cancelButton:
+      'h-11 px-8 rounded-xl bg-violet-600 text-white hover:bg-violet-600 transition',
   };
   const handleOpen = () => {
     setIsOpen(true);
@@ -423,8 +478,10 @@ export const TicketApproval = ({
   };
   const options = {
     ticketTypes: ticketTypes.map((type) => type.ticketTypeName),
-    ticketCategory: ticketCategory.map((category) => category.ticketCategoryName),
-       Category: ticketCategory.map((category) => category.categoryName),
+    ticketCategory: ticketCategory.map(
+      (category) => category.ticketCategoryName,
+    ),
+    Category: ticketCategory.map((category) => category.categoryName),
     priority: ['High', 'Medium', 'Low'],
     assigned: userlist.map((type) => type.userName),
     basedOn: ['Created Date', 'Scheduled On'],
@@ -442,12 +499,11 @@ export const TicketApproval = ({
       setEdit(true);
     }
   }
-  const includedDownloadColumns = headCells.filter(
-    (headcell) => headcell.view === true,
-  ).map((headcell) => headcell.id);
+  const includedDownloadColumns = headCells
+    .filter((headcell) => headcell.view === true)
+    .map((headcell) => headcell.id);
   function onSubmit(data: any) {
     setToBackend(true);
-  
     ((data.siteId = Sitelist.filter((site: any) =>
       data.siteName.includes(site.siteName),
     ).map((site: any) => site.siteId)),
@@ -459,6 +515,7 @@ export const TicketApproval = ({
       )?.categoryId),
       (data.filterType =
         data.basedOn === 'Scheduled On' ? 'scheduleOn' : 'createdDate'),
+         (data. ticketStateId = 3),
       (data.priority =
         data.priority === 'High'
           ? 3
@@ -473,40 +530,48 @@ export const TicketApproval = ({
       (data.toDate = data.toDate
         ? new Date(data.toDate).toISOString().split('T')[0]
         : null),
+
       postTicketlistMutation.mutate(data, {
-        onSuccess: (e:any) => {
-          console.log(e);
-          
+        onSuccess: (e: any) => {
+   const updatedData = e.map(attachApproverLevel);
+    console.log(updatedData);
+    
+    setTableValue(updatedData);
           setTableValue(e);
-           handleClose();
-           setFormFields(defaultValues);
+          handleClose();
+          setFormFields(defaultValues);
           setToBackend(false);
         },
       }));
- postTicketcocuntMutation.mutate(data, {
-        onSuccess: (e:any) => {
-          setDatacocunt(e);
-          setToBackend(false);
-        },
-      })
-
+    postTicketcocuntMutation.mutate(data, {
+      onSuccess: (e: any) => {
+        setDatacocunt(e);
+        setToBackend(false);
+      },
+    });
   }
   function onSubmitdata(data: any) {
-    console.log(data);
-    
+    const payload = {
+      ticketStatusId: data?.ticketStatusId,
+      ticketId: data?.ticketId,
+      remarks: data?.remarks,
+      lastUpdatedBy: data?.lastUpdatedBy,
+      approvedBy: session.userId,
+    };
+
     setToBackend(true);
-      postMutation.mutate(data, {
-        onSuccess: (e:any) => {
-          setTableValue(e);
-           handleClose();
-           setFormFields(defaultValues);
-          setToBackend(false);
-        },
-      })
-
-
+    postMutation.mutate(payload, {
+      onSuccess: (e: any) => {
+        setTableValue(e);
+        handleClose();
+        setFormFields(defaultValues);
+        setToBackend(false);
+      },
+      onError: (error: any) => {
+        setToBackend(false);
+      },
+    });
   }
-
 
   function onUpdate(data: any) {
     //   ((data.vendorId = vendorDropdown.find(
@@ -558,9 +623,9 @@ export const TicketApproval = ({
               hasCreateAccess: true,
               hasUpdateAccess: hasUpdateAccess,
             }}
-             labels={'Ticket Approval'}
-              onSubmit={onSubmit}
-              submitFunction={onSubmit}
+            labels={'Ticket Approval'}
+            onSubmit={onSubmit}
+            submitFunction={onSubmit}
             field={fielddata}
             option={options}
             carddata={dataCocunt}
@@ -587,16 +652,14 @@ export const TicketApproval = ({
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <Modal open={isOpen} onClose={handleClose}>
-          <TicketcreateForm
+            <TicketcreateForm
               initialValues={formFields}
-              submitFunction={(data) =>
-              onSubmitdata(data)
-              }
+              submitFunction={(data) => onSubmitdata(data)}
               onClose={handleClose}
               onReset={handleClose}
               fields={fields}
               options={options}
-              buttonLabel={edit?'Update':'Approve'}
+              buttonLabel={edit ? 'Update' : 'Approve'}
               optionalbuttonLabel={'Re-assign'}
               styles={formStyles}
               label={'Ticket Approval'}

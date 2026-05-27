@@ -29,7 +29,7 @@ export const Route = createFileRoute('/ticket/approval')({
       view: hasAccess,
       create: hasCreateAccess,
       edit: hasUpdateAccess,
-    } = getAccessPermissions(session, 'ticketConfiguration');
+    } = getAccessPermissions(session, 'ticketApproval');
 
     if (!hasAccess) {
       throw redirect({ to: '/login' });

@@ -546,7 +546,7 @@ export function TicketcreateForm({
                 <form.buttonField
                   label={optionalbuttonLabel||"Cancel"}
                   className={clsx(
-                    styles?.cancelButton,
+                    styles?.cancelButton||
                     'w-full sm:w-auto border border-red-500 text-red-500 rounded cursor-pointer',
                     'hover:bg-red-500 hover:text-white transition-colors',
                     {
