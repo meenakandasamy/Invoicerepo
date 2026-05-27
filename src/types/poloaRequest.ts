@@ -31,7 +31,8 @@ interface approveFieldType {
   approvedBy:number;
     lastUpdatedBy:number;
     remarks: string;
- 
+ assignedTo:number;
+assignedBy:string;
     ticketStatusId:number;
     ticketId:number;
 

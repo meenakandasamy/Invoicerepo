@@ -4,6 +4,7 @@ import { validationSchema } from './validations';
 import { ProductsViewer } from './productsViewer';
 import type { Field } from '@/types/form';
 import { useAppForm } from '@/hooks/app.form';
+
 import { useFormPageStore } from '@/stores/formPageStore';
 import { Switch } from '@/components/ui/switch';
 
@@ -23,6 +24,8 @@ interface CustomFormProps {
   validators?: Record<string, any>;
   toBackend?: boolean;
   hidden?: boolean;
+  customdata?:string
+  isCustom?:boolean
   disabledOptions?: Array<string>;
   extraContent?: React.ReactNode;
   hide?: {
@@ -46,7 +49,7 @@ export function TicketcreateForm({
   styles,
   label,
   disableLabel,
-  buttonLabel,
+  buttonLabel,customdata,isCustom,
   optionalbuttonLabel,
   toBackend,
   disabledOptions,
@@ -171,10 +174,14 @@ export function TicketcreateForm({
   </div>
 )}
         {/* Scrollable Form Fields */}
+{isCustom?(<div className="
+  px-10
+  py-10
+">{customdata}</div>):(
         <div className="
   flex-1
   overflow-y-auto
-  bg-gray-50
+
   px-8
   py-8
 ">
@@ -536,7 +543,7 @@ export function TicketcreateForm({
                 </form.AppField>
               </div>
             ))}
-        </div>
+        </div>)}
 
         {/* Sticky Footer */}
         <div className="sticky bottom-0 bg-white z-10 pt-4 pb-2 border-t dark:bg-background border-gray-200">
@@ -561,7 +568,7 @@ export function TicketcreateForm({
                 />
               </form.AppForm>
             )}
-            {buttonLabel !== 'View' && !hide.submitButton && (
+            {!isCustom && !hide.submitButton && (
               <form.AppForm>
                 <form.buttonField
                   toBackend={toBackend}

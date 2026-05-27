@@ -23,6 +23,21 @@ export const TableRowComponent = ({
     headcellId: string,
   ) => string | { backgroundColor?: string; color?: string } | undefined;
 }) => {
+const getStatusStyles = (status: string) => {
+  switch (true) {
+    case status?.includes('Approved'):
+       return 'bg-[#EDFDF5] text-[#0c8b63] border border-[#a8d5c4] uppercase';
+
+    case status?.includes('PENDING'):
+      return 'bg-orange-100 text-orange-600 border border-orange-200';
+
+    case status?.includes('REJECTED'):
+      return 'bg-red-100 text-red-600 border border-red-200';
+
+    default:
+      return '-';
+  }
+};
   return (
     <TableRow>
       {headcells.map((headcell) => {
@@ -68,7 +83,7 @@ export const TableRowComponent = ({
 
         let displayValue: React.ReactNode = '-';
 
-        if (headcell.id === 'action' && (row.isPaid === false || row.isPaid == undefined) ) {
+        if (headcell.id === 'action' ) {
           displayValue = optionPopup(row);
         } else if (
           (headcell.id.includes('Date') ||
@@ -81,7 +96,20 @@ export const TableRowComponent = ({
         } else if (headcell.id.includes('.') && parent && child) {
           // Handle nested objects
           displayValue = row?.[parent]?.[child] ?? '-';
-        } else {
+        } else if (headcell.id === 'currentLevelstatus') {
+  const value = row?.[headcell.id];
+console.log(value);
+
+  displayValue = (
+    <span
+      className={`px-3 py-1 rounded-full text-xs font-medium inline-block ${getStatusStyles(
+        value,
+      )}`}
+    >
+      {value||'-'}
+    </span>
+  );
+}else{
           const value = row?.[headcell.id];
 
           if (Array.isArray(value)) {

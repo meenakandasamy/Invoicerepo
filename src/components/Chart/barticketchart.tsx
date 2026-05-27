@@ -7,6 +7,7 @@ import {
   CartesianGrid,
   Legend,
   ResponsiveContainer,
+  Tooltip,
 } from 'recharts';
 
 /* ---------------------------------------
@@ -31,13 +32,60 @@ interface AdvancedTicketChartProps {
 }
 
 /* ---------------------------------------
+   CUSTOM TOOLTIP
+---------------------------------------- */
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="min-w-[190px] rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-2xl">
+        {/* Title */}
+        <p className="mb-3 text-sm font-semibold text-slate-800">
+          {label}
+        </p>
+
+        {/* Items */}
+        <div className="space-y-2">
+          {payload.map((entry: any, index: number) => (
+            <div
+              key={index}
+              className="flex items-center justify-between gap-5"
+            >
+              {/* Left */}
+              <div className="flex items-center gap-2">
+                <div
+                  className="h-3 w-3 rounded-full"
+                  style={{
+                    backgroundColor: entry.color,
+                  }}
+                />
+
+                <span className="text-xs font-medium text-slate-600">
+                  {entry.name}
+                </span>
+              </div>
+
+              {/* Right */}
+              <span className="text-xs font-bold text-slate-900">
+                {entry.value}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+/* ---------------------------------------
    MAIN COMPONENT
 ---------------------------------------- */
 export default function AdvancedTicketChart({
   chartData,
 }: AdvancedTicketChartProps) {
   /* ---------------------------------------
-     CONVERT OBJECT -> ARRAY
+     FORMAT DATA
   ---------------------------------------- */
   const formattedData: ChartDataItem[] = useMemo(() => {
     if (!chartData?.ticketTypes) return [];
@@ -50,104 +98,47 @@ export default function AdvancedTicketChart({
     );
   }, [chartData]);
 
-  console.log(formattedData);
-
   /* ---------------------------------------
      EMPTY STATE
   ---------------------------------------- */
   if (formattedData.length === 0) {
     return (
-      <div className="flex h-[250px] items-center justify-center text-sm text-neutral-500">
+      <div className="flex h-[300px]  items-center justify-center rounded-2xl border border-slate-200 bg-white text-sm text-slate-500 shadow-sm">
         No chart data available.
       </div>
     );
   }
 
   return (
-    <div className="w-full rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
+    <div className="w-full ">
       {/* Header */}
-      <div className="mb-4">
-        <h2 className="text-base font-bold text-neutral-800 dark:text-white">
-          Ticket Status Metrics
-        </h2>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-semibold text-slate-800">
+            Status Specific Chart
+          </h2>
+        </div>
       </div>
 
       {/* Chart */}
-      <div className="h-[260px] w-full">
+      <div className="h-[280px] w-full  [&_*:focus]:outline-none [&_*:focus]:ring-0">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={formattedData}
             margin={{
               top: 10,
               right: 10,
-              left: -20,
+              left: -10,
               bottom: 0,
             }}
-            barSize={40}
+            barGap={8}
+            barCategoryGap="20%"
           >
-            {/* Gradients */}
-            <defs>
-              <linearGradient
-                id="assignedGradient"
-                x1="0"
-                y1="0"
-                x2="0"
-                y2="1"
-              >
-                <stop offset="0%" stopColor="#FBBF24" />
-                <stop offset="100%" stopColor="#D97706" />
-              </linearGradient>
-
-              <linearGradient
-                id="createdGradient"
-                x1="0"
-                y1="0"
-                x2="0"
-                y2="1"
-              >
-                <stop offset="0%" stopColor="#FB923C" />
-                <stop offset="100%" stopColor="#EA580C" />
-              </linearGradient>
-
-              <linearGradient
-                id="finishedGradient"
-                x1="0"
-                y1="0"
-                x2="0"
-                y2="1"
-              >
-                <stop offset="0%" stopColor="#4ADE80" />
-                <stop offset="100%" stopColor="#16A34A" />
-              </linearGradient>
-
-              <linearGradient
-                id="progressGradient"
-                x1="0"
-                y1="0"
-                x2="0"
-                y2="1"
-              >
-                <stop offset="0%" stopColor="#A855F7" />
-                <stop offset="100%" stopColor="#7E22CE" />
-              </linearGradient>
-
-              <linearGradient
-                id="unfinishedGradient"
-                x1="0"
-                y1="0"
-                x2="0"
-                y2="1"
-              >
-                <stop offset="0%" stopColor="#F87171" />
-                <stop offset="100%" stopColor="#DC2626" />
-              </linearGradient>
-            </defs>
-
             {/* Grid */}
             <CartesianGrid
               strokeDasharray="3 3"
               vertical={false}
-              stroke="#f1f5f9"
+              stroke="#E2E8F0"
             />
 
             {/* X Axis */}
@@ -156,8 +147,8 @@ export default function AdvancedTicketChart({
               axisLine={false}
               tickLine={false}
               tick={{
-                fill: '#6B7280',
-                fontSize: 12,
+                fill: '#475569',
+                fontSize: 14,
                 fontWeight: 500,
               }}
             />
@@ -167,61 +158,75 @@ export default function AdvancedTicketChart({
               axisLine={false}
               tickLine={false}
               tick={{
-                fill: '#9CA3AF',
-                fontSize: 11,
+                fill: '#94A3B8',
+                fontSize: 12,
+              }}
+            />
+
+            {/* Tooltip */}
+            <Tooltip
+              content={<CustomTooltip />}
+              cursor={{
+                fill: 'rgba(148,163,184,0.08)',
               }}
             />
 
             {/* Legend */}
             <Legend
+              verticalAlign="bottom"
+              align="center"
               iconType="circle"
-              iconSize={8}
+              iconSize={10}
               wrapperStyle={{
-                paddingTop: 10,
-                fontSize: '11px',
+                paddingTop: 25,
+                fontSize: '13px',
                 fontWeight: 500,
               }}
             />
 
-            {/* Bars */}
-            <Bar
-              dataKey="AssignedTicket"
-              name="Assigned"
-              stackId="tickets"
-              fill="url(#assignedGradient)"
-              radius={[4, 4, 0, 0]}
-            />
-
-            <Bar
-              dataKey="createdTicket"
-              name="Created"
-              stackId="tickets"
-              fill="url(#createdGradient)"
-              radius={[4, 4, 0, 0]}
-            />
-
+            {/* Finished */}
             <Bar
               dataKey="finishedTicket"
               name="Finished"
-              stackId="tickets"
-              fill="url(#finishedGradient)"
-              radius={[4, 4, 0, 0]}
+              fill="#38BDF8"
+              radius={[8, 8, 0, 0]}
+              maxBarSize={40}
             />
 
+            {/* Assigned */}
             <Bar
-              dataKey="inProgressTicketCount"
-              name="In Progress"
-              stackId="tickets"
-              fill="url(#progressGradient)"
-              radius={[4, 4, 0, 0]}
+              dataKey="AssignedTicket"
+              name="Assigned"
+              fill="#6366F1"
+              radius={[8, 8, 0, 0]}
+              maxBarSize={40}
             />
 
+            {/* Unfinished */}
             <Bar
               dataKey="unfinishedTicket"
               name="Unfinished"
-              stackId="tickets"
-              fill="url(#unfinishedGradient)"
-              radius={[4, 4, 0, 0]}
+              fill="#22C55E"
+              radius={[8, 8, 0, 0]}
+              maxBarSize={40}
+            />
+
+            {/* Created */}
+            <Bar
+              dataKey="createdTicket"
+              name="Created"
+              fill="#F97316"
+              radius={[8, 8, 0, 0]}
+              maxBarSize={40}
+            />
+
+            {/* In Progress */}
+            <Bar
+              dataKey="inProgressTicketCount"
+              name="In Progress"
+              fill="#8B5CF6"
+              radius={[8, 8, 0, 0]}
+              maxBarSize={40}
             />
           </BarChart>
         </ResponsiveContainer>

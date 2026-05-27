@@ -1,7 +1,7 @@
 import { baseUrl } from './baseUrl';
 import type {
   TicketapprovalDTOType,
-  TicketapprovalUpdateDTOType,
+  TicketapprovalUpdateDTOType,TicketreassignDTOType
 } from '@/utils/Validators/schema/Ticketapprovalschema';
 export enum TicketApprovalQueries {
   GET_TICKET_APPROVAL_USERID = 'getAllTicketApproval',
@@ -14,7 +14,7 @@ enum TicketApprovalEndpoints {
   getTicketApprovalcocunt = import.meta.env.VITE_APPROVAL_LIST_COCUNT,
    getTicketApprovaluserlist = import.meta.env.VITE_TICKET_APPROVAL_USERLIST,
   AddTicketApproval = import.meta.env.VITE_TICKET_APPROVAL,
-  UpdateTicketApproval = import.meta.env.VITE_UPDATE_PO_LOA,
+  ReassignTicketApproval = import.meta.env.VITE_APPROVAL_TICKET_REASSIGN,
   TicketFilterlist = import.meta.env.VITE_TICKET_FILTER_LIST,
     TicketFiltercocunt = import.meta.env.VITE_APPROVAL_FILTER_COCUNT,
   // getAllTicketApproval = import.meta.env.VITE_GET_PO_LOA,
@@ -91,10 +91,10 @@ const postTicketApproval = async (data: TicketapprovalDTOType) => {
   }
 };
 
-const UpdateTicketApprovalById = async (data: TicketapprovalUpdateDTOType) => {
+const ReassignApprovalticket = async (data: TicketreassignDTOType) => {
   try {
     const response = await baseUrl.put(
-      `${TicketApprovalEndpoints.UpdateTicketApproval}/${data.poId}`,
+      `${TicketApprovalEndpoints.ReassignTicketApproval}`,
       data,
     );
     return response.data;
@@ -106,7 +106,7 @@ const UpdateTicketApprovalById = async (data: TicketapprovalUpdateDTOType) => {
 export const TicketApprovalServices = {
   fetchgetallTicketApproval,
   postTicketApproval,
-  UpdateTicketApprovalById,
+  ReassignApprovalticket,
   fetchgetTicketApprovalCount,
   fetchapprovaluserlist,
   TicketFilterlist,TicketFiltercocuntlist

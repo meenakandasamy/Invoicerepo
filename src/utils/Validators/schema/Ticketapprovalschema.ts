@@ -10,7 +10,14 @@ const BaseTicketapprovalSchema = z.object({
   
 });
 
-
+const BaseApprovalreassignSchema = z.object({
+  closedBy: z.number(),
+  ticketId: z.number(),
+  assignedTo: z.string(),
+  lastUpdatedBy: z.number(),
+  rejectedBy: z.number(),
+  scheduleOn:z.string()
+});
 export const TicketapprovalSaveSchema = BaseTicketapprovalSchema;
 
 export const TicketapprovalUpdateSchema = BaseTicketapprovalSchema.partial();
@@ -18,3 +25,4 @@ export const TicketapprovalUpdateSchema = BaseTicketapprovalSchema.partial();
 // ✅ Types
 export type TicketapprovalDTOType = z.infer<typeof TicketapprovalSaveSchema>;
 export type TicketapprovalUpdateDTOType = z.infer<typeof TicketapprovalUpdateSchema>;
+export type TicketreassignDTOType = z.infer<typeof BaseApprovalreassignSchema>;

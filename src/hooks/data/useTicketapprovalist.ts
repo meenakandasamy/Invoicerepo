@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { useApprovaluserList } from './useApprovaluserlist';
 import {
-  TicketconfigQueries,
-  TicketconfigServices,
-} from '@/integrations/Services/TicketconfigServices';
+  TicketApprovalQueries,
+  TicketApprovalServices,
+} from '@/integrations/Services/ticketApprovalServices';
 
 export const useTicketApproval = (session: Session) => {
   const { data: userList } = useApprovaluserList(session);
@@ -13,17 +13,15 @@ export const useTicketApproval = (session: Session) => {
   const allDependenciesLoaded = !!userList;
 
   return useQuery({
-    queryKey: [TicketconfigQueries.GET_TICKET_CONFIG_USERID],
+    queryKey: [TicketApprovalQueries.GET_TICKET_APPROVAL_USERID],
     queryFn: async () => {
       if (!allDependenciesLoaded) {
         throw new Error('Dependent data not loaded yet');
       }
 
-      const response = await TicketconfigServices.fetchgetallTicketconfig(
+      const response = await TicketApprovalServices.fetchgetallTicketApproval(
         session.userId
       );
-console.log(response);
-
       return response?.map((item: any) => {
         const match = userList.find(
           (a: any) => a.siteId === item.siteId

@@ -1,5 +1,7 @@
 import { Eirasaas_BaseUrl, baseUrl } from './baseUrl';
-
+import type {
+  TicketreassignDTOType
+} from '@/utils/Validators/schema/commonSchema';
 export enum EIRASAAS_API_QUERIES {
   GET_SITELIST_BY_USER = 'getSiteListByUser',
   GET_SITELIST_BY_COMPANY = 'getSiteListByCompany',
@@ -36,6 +38,7 @@ enum EirasaasEndPoints {
   GET_ALL_TICKET_STATE = import.meta.env.VITE_TICKET_STATE_LIST,
   GET_USER_LIST_SITEID = import.meta.env.VITE_GET_USER_LIST_BY_SITE,
   GET_ALL_EQUIPMENT_LIST=import.meta.env.VITE_TICKET_EQUIPMET_BY_SITEID,
+  GET_TICKET_REASSIGN=import.meta.env.VITE_APP_TICKET_REASSIGN_PUT
 
 }
 
@@ -163,7 +166,18 @@ const FetchAllEquipmentlistbysiteId = async (id: any) => {
     console.error('Error fetching site dropdown:', error);
   }
 };
-
+const Reassignticket = async (data:TicketreassignDTOType) => {
+  try {
+    const response = await baseUrl.put(
+      `${EirasaasEndPoints.GET_TICKET_REASSIGN}/${data.ticketId}`,
+      data,
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('Error editing vendor:', error);
+    throw error;
+  }
+};
 export const EirasaasAPIs = {
   GetSiteListDropdownByCompany,
   GetSiteListDropdownByCustomer,
@@ -176,5 +190,6 @@ export const EirasaasAPIs = {
   FetchAllcategory,
   FetchAllstate,
   FetchAlluserlistbySiteid,
-  FetchAllEquipmentlistbysiteId
+  FetchAllEquipmentlistbysiteId,Reassignticket
+  
 };

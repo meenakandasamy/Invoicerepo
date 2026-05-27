@@ -6,7 +6,7 @@ import {
 } from '@/integrations/Services/ticketApprovalServices';
 
 export const useApprovaluserList = (session: Session) => {
-  const Id: number = session.organizationId;
+  const Id: number = session.userId;
 
   return useQuery<Array<Approvalist>, Error>({
     queryKey: [TicketApprovalQueries.VITE_TICKET_APPROVAL_USERLIST],

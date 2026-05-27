@@ -1,5 +1,8 @@
 import { useState ,useEffect} from 'react';
+
 import { toast } from 'sonner';
+import { format, addDays } from 'date-fns';
+
 import { Modal } from '@mui/material';
 import { CustomTable } from '../table/customTable';
 import { TicketcreateForm } from '../form/ticketcreateFrom';
@@ -7,10 +10,10 @@ import type { JSX } from 'react';
 import type { BaseProps } from '@/types/common';
 import type { Row } from '@/types/table';
 import type { Field } from '@/types/form';
+
 import { useTicketApproval } from '@/hooks/data/useTicketapprovalist';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  useDependentQueriesWithId,
+
   useMutationFn,
   useQueriesFn,
 } from '@/utils/common/queryUtils';
@@ -22,6 +25,7 @@ import {
   EIRASAAS_API_QUERIES,
   EirasaasAPIs,
 } from '@/integrations/Services/commonServices';
+
 
 interface TicketProps extends BaseProps {}
 export const TicketApproval = ({
@@ -57,12 +61,12 @@ export const TicketApproval = ({
     tickets: item.ticketCode,
     approverLevel,
     approverstatus,
-    currentLevelstatus:
-      item.currentLevel > 0
-        ? `${item.currentLevel} Approved`
-        : item.currentLevel < 0
-          ? 'Reassigned'
-          : null,
+     currentLevelstatus:
+            item.currentLevel > 0
+              ? `${item.currentLevel} Approved`
+              : item.currentLevel < 0
+                ? 'Reassigned'
+                : null,
     assignedBy: item.assignedBy ?? '-',
   };
 };
@@ -79,12 +83,6 @@ export const TicketApproval = ({
       queryKey: TicketApprovalQueries.GET_TICKET_APPROVAL_COCUNT,
       api: TicketApprovalServices.fetchgetTicketApprovalCount,
       setState: setDatacocunt,
-      id: session.userId,
-    },
-    {
-      queryKey: EIRASAAS_API_QUERIES.GET_TICKET_TYPE,
-      api: EirasaasAPIs.FetchTicketType,
-      setState: setTicketTypes,
       id: session.userId,
     },
     {
@@ -110,17 +108,7 @@ export const TicketApproval = ({
       setState: setSitelist,
       id: session.userId,
     },
-    {
-      queryKey: TicketApprovalQueries.GET_TICKET_APPROVAL_USERID,
-      api: TicketApprovalServices.fetchgetallTicketApproval,
-    setState: (data: any) => {
-    const updatedData = data.map(attachApproverLevel);
-    console.log(updatedData);
-    
-    setTableValue(updatedData);
-  },
-  id: session.userId,
-    },
+
    
     // {
     //   queryKey: EIRASAAS_API_QUERIES.GET_ALL_TICKET_CATEGORY,
@@ -140,6 +128,14 @@ export const TicketApproval = ({
   );
   const postMutation = useMutationFn(
     TicketApprovalServices.postTicketApproval,
+   TicketApprovalQueries.GET_TICKET_APPROVAL_USERID,
+  );
+    const putApprovalReassignMutation = useMutationFn(
+    TicketApprovalServices.ReassignApprovalticket,
+    null,
+  );
+    const putTicketReassignMutation = useMutationFn(
+    EirasaasAPIs.Reassignticket,
     null,
   );
   // const putMutation = useMutationFn(
@@ -232,8 +228,7 @@ export const TicketApproval = ({
     },
     {
       label: 'Current Level',
-      id: 'currentLevel',
-      headerStyle: { width: '100px' },
+      id: 'currentLevelstatus',
 
       view: true,
       default: true,
@@ -254,30 +249,26 @@ export const TicketApproval = ({
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
+    const [isCustom, setIscustom] = useState<boolean>(false);
   const defaultValues = {
     approvedBy: 0,
     lastUpdatedBy: 0,
     remarks: '',
     ticketId: 0,
     ticketStatusId: 0,
+    assignedTo:0,
+    assignedBy:''
   };
   const clickableColumnList: Array<string> = ['documentName'];
   const [formFields, setFormFields] = useState<approveFieldType>(defaultValues);
+  
     const {
       data: [dependentResponse],
       status,
     } = useQueriesFn(queries);
   
     const TicketconfigQuery = useTicketApproval(session);
-    // const Ticketdata = useMemo(
-    //   () =>
-    //     (TicketconfigQuery.data ?? []).sort(
-    //       (a: any, b: any) =>
-    //         new Date(b.lastUpdatedDate).getTime() -
-    //         new Date(a.lastUpdatedDate).getTime(),
-    //     ),
-    //   [TicketconfigQuery.data],
-    // );
+   
   
     useEffect(() => {
       if (TicketconfigQuery.data) {
@@ -475,18 +466,32 @@ export const TicketApproval = ({
     setFormFields(defaultValues);
     setToBackend(false);
     setEdit(false);
+    setIscustom(false)
+  };
+    const handlReassign = () => {setIscustom(true)
+  // let data = {
+  //       ticketId: editValue?.ticketId,
+  //       closedBy: editValue?.lastUpdatedBy,
+  //       rejectedBy: sessionStorage.getItem("id"),
+  //       reassignTo: editValue?.assignedTo,
+  //       scheduleOn: formattedDate,
+  //       lastUpdatedBy: Number(sessionStorage.getItem("id")),
+  //     };
+  //     let datas = {
+  //       assignedTo: editValue?.assignedTo,
+  //       scheduleOn: formattedDate,
+  //       remarks: editValue?.remarks,
+  //       lastUpdatedBy: Number(sessionStorage.getItem("id")),
+  //     };
   };
   const options = {
     ticketTypes: ticketTypes.map((type) => type.ticketTypeName),
-    ticketCategory: ticketCategory.map(
-      (category) => category.ticketCategoryName,
-    ),
-    Category: ticketCategory.map((category) => category.categoryName),
+ 
     priority: ['High', 'Medium', 'Low'],
     assigned: userlist.map((type) => type.userName),
     basedOn: ['Created Date', 'Scheduled On'],
     siteName: Sitelist.map((site) => site.siteName),
-    statusName: ticketstate.map((state) => state.statusName),
+    ticketCategory: ticketstate.map((state) => state.statusName),
   };
 
   function handleOptionClick(option: string, row: any) {
@@ -537,13 +542,48 @@ export const TicketApproval = ({
     console.log(updatedData);
     
     setTableValue(updatedData);
-          setTableValue(e);
+          // setTableValue(e);
           handleClose();
           setFormFields(defaultValues);
           setToBackend(false);
         },
       }));
     postTicketcocuntMutation.mutate(data, {
+      onSuccess: (e: any) => {
+        setDatacocunt(e);
+        setToBackend(false);
+      },
+    });
+  }
+    function handleReassignSubmit(data: any) {
+      console.log(data);
+      
+    setToBackend(true);
+      const tomorrowDate = format(
+    addDays(new Date(), 1),
+    'yyyy-MM-dd 00:00:00'
+  );
+   const datas={
+   remarks:formFields.remarks,
+    ticketId:formFields.ticketId,
+    assignedTo:formFields.assignedTo,
+    lastUpdatedBy:session.userId,
+    scheduleOn:tomorrowDate 
+   }
+    const datavalue={
+    ticketStatusId:8,
+    ticketId:formFields.ticketId,reassignBy:formFields.assignedTo,
+    remarks:formFields.remarks,closedBy:session.userId,rejectedBy:session.userId,
+    lastUpdatedBy:session.userId,
+    approvedBy:session.userId
+   }
+      putTicketReassignMutation.mutate(datas, {
+        onSuccess: (e: any) => {
+          setFormFields(defaultValues);
+          setToBackend(false);
+        },
+      });
+    putApprovalReassignMutation.mutate(datavalue, {
       onSuccess: (e: any) => {
         setDatacocunt(e);
         setToBackend(false);
@@ -562,7 +602,6 @@ export const TicketApproval = ({
     setToBackend(true);
     postMutation.mutate(payload, {
       onSuccess: (e: any) => {
-        setTableValue(e);
         handleClose();
         setFormFields(defaultValues);
         setToBackend(false);
@@ -656,8 +695,12 @@ export const TicketApproval = ({
               initialValues={formFields}
               submitFunction={(data) => onSubmitdata(data)}
               onClose={handleClose}
-              onReset={handleClose}
+              onReset={isCustom ?handleReassignSubmit:handlReassign}
               fields={fields}
+              isCustom={isCustom}
+      customdata={`Are you sure you want to reassign this ticket to ${
+  formFields.assignedBy
+} on ${format(addDays(new Date(), 1), 'dd-MM-yyyy')}`}
               options={options}
               buttonLabel={edit ? 'Update' : 'Approve'}
               optionalbuttonLabel={'Re-assign'}
