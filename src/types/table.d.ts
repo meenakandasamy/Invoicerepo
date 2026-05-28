@@ -68,6 +68,6 @@ export type TableProps = {
   allTabsValues?: any;
     field?: Array<Field>;
     carddata?:any
-    onSubmit:(value: any) => void
-      submitFunction: (value: any) => void;  option?: Record<string, Array<string | number>>;
+    onSubmit?:(value: any) => void
+      submitFunction?: (value: any) => void;  option?: Record<string, Array<string | number>>;
 };

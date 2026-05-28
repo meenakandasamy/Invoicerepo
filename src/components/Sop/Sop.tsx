@@ -47,13 +47,13 @@ export const Sop = ({
           previousAfter: 'No',
           options: dropdowndata,
           textCount: 1,
+          mandatory: false,
           remarks: '',
           selectValues: [],
         },
       ],
     },
   ]);
-  console.log(sections);
 
   useEffect(() => {
     if (dropdowndata.length > 0) {
@@ -158,7 +158,8 @@ export const Sop = ({
       required: true,
       onChange: (name, value, form) => {
         form.setFieldValue(name, value);
-
+ 
+setFormFields({...formFields,'ticketType':value})
         const selectedType = ticketTypes.find(
           (type) => type.ticketTypeName === value,
         )?.ticketTypeId;
@@ -175,7 +176,7 @@ export const Sop = ({
       name: 'ticketCategory',
       label: 'Ticket Category',
       type: 'select',
-      // disabled: formFields.ticketType,
+      disabled: !formFields.ticketType,
       placeholder: 'Enter Ticket Category',
       onChange: (name, value, form) => {
         form.setFieldValue(name, value);
@@ -266,6 +267,7 @@ export const Sop = ({
             options: [],
             textCount: 1,
             remarks: '',
+            mandatory: false,
             selectValues: [],
           },
         ],
@@ -279,7 +281,7 @@ export const Sop = ({
     setEdit(false);
   };
   const options = {
-    status: ['Inactive', 'Active'],
+    status: ['Active','Inactive'],
     ticketType: ticketTypes.map((type) => type.ticketTypeName),
     ticketCategory: ticketCategory.map((category) => category.categoryName),
   };
@@ -336,7 +338,7 @@ export const Sop = ({
               previousAfter: imageField?.imageRequired ? 'Yes' : 'No',
 
               textCount: imageField?.imageCount || 1,
-
+              mandatory: step.mandatory,
               remarks: step.remarksEnabled,
             };
           }),
@@ -349,11 +351,12 @@ export const Sop = ({
 
       const data = {
         ...row,
-        ticketType:row?.ticketTypeName,
-        ticketCategory:row?.ticketCategoryName
+        ticketType: row?.ticketTypeName,
+        ticketCategory: row?.ticketCategoryName,
+        status:row?.status===1?'Active':'Inactive'
       };
-setCategoryId(data?.ticketCategoryId)
-setticketTypeId(data?.ticketTypeId)
+      setCategoryId(data?.ticketCategoryId);
+      setticketTypeId(data?.ticketTypeId);
       setFormFields(data);
       setIsOpen(true);
       setEdit(true);
@@ -372,45 +375,42 @@ setticketTypeId(data?.ticketTypeId)
       toast.error('Section name is required');
       setToBackend(false);
       return;
-    }  // SUBSTEP VALIDATION
-for (const section of sections) {
-  for (const step of section.steps) {
+    } // SUBSTEP VALIDATION
+    for (const section of sections) {
+      for (const step of section.steps) {
+        // Show error ONLY when all 3 are empty
+        const isHeaderEmpty = !step.header?.trim();
+        const isFieldTypeEmpty =
+          !step.fieldTypes || step.fieldTypes.length === 0;
+        const isImageNo = step.previousAfter === 'No';
 
-    // Show error ONLY when all 3 are empty
-    const isHeaderEmpty = !step.header?.trim();
-    const isFieldTypeEmpty =
-      !step.fieldTypes || step.fieldTypes.length === 0;
-    const isImageNo = step.previousAfter === 'No';
+        if (isHeaderEmpty && isFieldTypeEmpty && isImageNo) {
+          toast.error('Header, field type, or image configuration is required');
+          setToBackend(false);
+          return;
+        }
 
-    if (isHeaderEmpty && isFieldTypeEmpty && isImageNo) {
-      toast.error(
-        'Header, field type, or image configuration is required',
-      );
-      setToBackend(false);
-      return;
+        // Dropdown validation
+        if (
+          step.fieldTypes?.includes('DropDown') &&
+          (!step.selectValues || step.selectValues.length === 0)
+        ) {
+          toast.error('Dropdown values are required');
+          setToBackend(false);
+          return;
+        }
+
+        // Image count validation
+        if (
+          step.fieldTypes?.includes('Image') &&
+          (!step.textCount || step.textCount <= 0)
+        ) {
+          toast.error('Image count is required');
+          setToBackend(false);
+          return;
+        }
+      }
     }
-
-    // Dropdown validation
-    if (
-      step.fieldTypes?.includes('DropDown') &&
-      (!step.selectValues || step.selectValues.length === 0)
-    ) {
-      toast.error('Dropdown values are required');
-      setToBackend(false);
-      return;
-    }
-
-    // Image count validation
-    if (
-      step.fieldTypes?.includes('Image') &&
-      (!step.textCount || step.textCount <= 0)
-    ) {
-      toast.error('Image count is required');
-      setToBackend(false);
-      return;
-    }
-  }
-}
     const payload = {
       sopName: data.sopName || 'Inverter Maintenance SOP',
 
@@ -473,7 +473,7 @@ for (const section of sections) {
               workDescription: step.header,
 
               fields,
-
+              mandatory: step.mandatory,
               remarksEnabled: step.remarks,
             };
           }),
@@ -527,7 +527,7 @@ for (const section of sections) {
 
       customerId: session.customerId,
       companyId: session.companyId,
-      status: 1,
+      status: data.status==="Active"?1:0,
       createdBy: session.userId,
 
       sopData: {
@@ -576,7 +576,7 @@ for (const section of sections) {
               workDescription: step.header,
 
               fields,
-
+              mandatory: step.mandatory,
               remarksEnabled: step.remarks,
             };
           }),
@@ -720,7 +720,7 @@ for (const section of sections) {
           <CustomTable
             headcells={headCells}
             rows={tableValue}
-            pageName={'Ticket Approval'}
+            pageName={'Ticket Configuration'}
             hide={{
               add: false,
               filter: false,
@@ -838,6 +838,9 @@ for (const section of sections) {
 
                               <th className="p-4 text-left min-w-[220px]">
                                 After Image
+                              </th>
+                              <th className="p-4 text-left min-w-[160px]">
+                                Mandatory
                               </th>
 
                               <th className="p-4 text-left min-w-[220px]">
@@ -1142,7 +1145,33 @@ for (const section of sections) {
                                     )}
                                   </div>
                                 </td>
-
+                                {/* MANDATORY */}
+                                <td className="p-3">
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleStepChange(
+                                        section.id,
+                                        step.id,
+                                        'mandatory',
+                                        !step.mandatory,
+                                      )
+                                    }
+                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
+                                      step.mandatory
+                                        ? 'bg-violet-600'
+                                        : 'bg-gray-300'
+                                    }`}
+                                  >
+                                    <span
+                                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${
+                                        step.mandatory
+                                          ? 'translate-x-6'
+                                          : 'translate-x-1'
+                                      }`}
+                                    />
+                                  </button>
+                                </td>
                                 {/* REMARKS */}
                                 <td className="p-3">
                                   <input
