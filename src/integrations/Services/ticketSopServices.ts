@@ -13,13 +13,12 @@ enum TicketSopEndpoints {
     UpdateSop = import.meta.env.VITE_SOP_API_PUT,
   // getAllTicketApproval = import.meta.env.VITE_GET_PO_LOA,
 }
-const fetchgetallTicketSop = async () => {
- const companyId= session ? JSON.parse(session).companyId : null;
-    console.log(companyId);
+const fetchgetallTicketSop = async (Id:any) => {
+
     
   try {
     const response = await ticketUrl.get(
-      `${TicketSopEndpoints.getAllTicketSop}?companyId=${companyId}`,
+      `${TicketSopEndpoints.getAllTicketSop}?companyId=${Id}`,
     );
     return response.data;
   } catch (error: any) {

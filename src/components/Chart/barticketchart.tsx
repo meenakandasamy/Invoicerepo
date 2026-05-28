@@ -36,40 +36,33 @@ interface AdvancedTicketChartProps {
 ---------------------------------------- */
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
+    const item = payload[0];
+
     return (
-      <div className="min-w-[190px] rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-2xl">
+      <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-2xl">
         {/* Title */}
-        <p className="mb-3 text-sm font-semibold text-slate-800">
+        <p className="mb-2 text-sm font-semibold text-slate-800">
           {label}
         </p>
 
-        {/* Items */}
-        <div className="space-y-2">
-          {payload.map((entry: any, index: number) => (
+        {/* Tooltip Content */}
+        <div className="flex items-center justify-between gap-5">
+          <div className="flex items-center gap-2">
             <div
-              key={index}
-              className="flex items-center justify-between gap-5"
-            >
-              {/* Left */}
-              <div className="flex items-center gap-2">
-                <div
-                  className="h-3 w-3 rounded-full"
-                  style={{
-                    backgroundColor: entry.color,
-                  }}
-                />
+              className="h-3 w-3 rounded-full"
+              style={{
+                backgroundColor: item.color,
+              }}
+            />
 
-                <span className="text-xs font-medium text-slate-600">
-                  {entry.name}
-                </span>
-              </div>
+            <span className="text-xs font-medium text-slate-600">
+              {item.name}
+            </span>
+          </div>
 
-              {/* Right */}
-              <span className="text-xs font-bold text-slate-900">
-                {entry.value}
-              </span>
-            </div>
-          ))}
+          <span className="text-xs font-bold text-slate-900">
+            {item.value}
+          </span>
         </div>
       </div>
     );
@@ -103,30 +96,28 @@ export default function AdvancedTicketChart({
   ---------------------------------------- */
   if (formattedData.length === 0) {
     return (
-      <div className="flex h-[300px]  items-center justify-center rounded-2xl border border-slate-200 bg-white text-sm text-slate-500 shadow-sm">
+      <div className="flex h-[300px] items-center justify-center rounded-2xl border border-slate-200 bg-white text-sm text-slate-500 shadow-sm">
         No chart data available.
       </div>
     );
   }
 
   return (
-    <div className="w-full ">
+    <div className="w-full">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-semibold text-slate-800">
-            Status Specific Chart
-          </h2>
-        </div>
+      <div className="mb-4">
+        <h2 className="text-lg font-semibold text-slate-800">
+          Status Specific Chart
+        </h2>
       </div>
 
       {/* Chart */}
-      <div className="h-[280px] w-full  [&_*:focus]:outline-none [&_*:focus]:ring-0">
+      <div className="h-[320px] w-full [&_*:focus]:outline-none [&_*:focus]:ring-0">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={formattedData}
             margin={{
-              top: 10,
+              top: 20,
               right: 10,
               left: -10,
               bottom: 0,
@@ -165,10 +156,15 @@ export default function AdvancedTicketChart({
 
             {/* Tooltip */}
             <Tooltip
-              content={<CustomTooltip />}
+              shared={false}
+              offset={15}
+              wrapperStyle={{
+                outline: 'none',
+              }}
               cursor={{
                 fill: 'rgba(148,163,184,0.08)',
               }}
+              content={<CustomTooltip />}
             />
 
             {/* Legend */}

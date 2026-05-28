@@ -73,7 +73,7 @@ export const Sop = ({
       queryKey: TicketSopQueries.GET_TICKET_SOP,
       api: TicketSopServices.fetchgetallTicketSop,
       setState: setTableValue,
-      // id: session.userId,
+      id: session.companyId,
     },
     {
       queryKey: EIRASAAS_API_QUERIES.GET_TICKET_TYPE,
