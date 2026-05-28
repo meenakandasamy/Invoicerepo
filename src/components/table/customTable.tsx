@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { EllipsisVertical, FileQuestion, Trash2 } from 'lucide-react';
+import { EllipsisVertical, FileQuestion, Download } from 'lucide-react';
 import { useEffect } from 'react';
 import { TabsTrigger } from '@radix-ui/react-tabs';
 import {
@@ -53,15 +53,15 @@ export const CustomTable = ({
   onSubmit,
   toBackend,
   labels,dataChart,
-  carddata,
+  carddata,isdownload,
+
 }: TableProps) => {
   const {
     addFn = () => {},
     optionHandler = () => {},
     handleFileChange = () => {},
+    handleDownloadAction=() =>{}
   } = functions;
-console.log(dataChart);
-
   const [currentPage, setCurrentPage] = React.useState(1);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [searchTerm, setSearchTerm] = React.useState('');
@@ -173,6 +173,10 @@ console.log(dataChart);
   };
 
   const optionPopup = (row: Row) => (
+      <div className="flex items-center justify-center">
+    
+    {/* First Icon - Custom Function */}
+
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
@@ -194,6 +198,7 @@ console.log(dataChart);
         >
           <EllipsisVertical />
         </Button>
+        
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-32 cursor-pointer ">
         {editOptions.map((option, index) => {
@@ -216,6 +221,17 @@ console.log(dataChart);
         })}
       </DropdownMenuContent>
     </DropdownMenu>
+    {isdownload&&(
+      <Button
+      variant="ghost"
+      size="icon"
+      className="cursor-pointer"
+      
+      onClick={() => handleDownloadAction(row)}
+    >
+      <Download className="h-4w-4" />
+    </Button>)}
+    </div>
   );
 
   return (

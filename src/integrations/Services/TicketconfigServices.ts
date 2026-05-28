@@ -1,12 +1,14 @@
-import { baseUrl } from './baseUrl';
+import { baseUrl ,ticketUrl} from './baseUrl';
 import type {TicketconfigDTOType,TicketconfigUpdateDTOType,TicketcreationDTOType} from '@/utils/Validators/schema/Ticketconfigschema';
 export enum TicketconfigQueries {
   GET_TICKET_CONFIG_USERID= 'getAllTicketconfig',
   GET_TICKET_COCUNT_USERID= 'getAllTicketlistcount',
+  GET_TICKET_DOWNLOAD='getDownloadticket'
 }
 
 enum TicketconfigEndpoints {
   getAllTicketconfig = import.meta.env.VITE_TICKET_LIST_BY_USERID,
+   getDownloadticket = import.meta.env.VITE_TICKET_DOWNLOAD_REPORT,
   getAllTicketlistcount = import.meta.env.VITE_TICKET_USERID_CHART,
   AddTicketconfig = import.meta.env.VITE_ADD_PO_LOA,
     TicketFilterlist = import.meta.env.VITE_TICKET_FILTER_LIST,
@@ -37,7 +39,17 @@ const fetchgetallTicketlistcocunt = async (id:number) => {
     throw error;
   }
 };
-
+const fetchgetallTicketdownload = async (id:number) => {
+  try {
+    const response = await ticketUrl.get(
+      `${TicketconfigEndpoints.getDownloadticket}/${id}`,
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('Error fetching cost centres:', error.message);
+    throw error;
+  }
+};
 const AddNewTicketconfig = async (data: TicketconfigDTOType ) => {
   try {
     const response = await baseUrl.post(
@@ -101,6 +113,6 @@ const UpdateTicketconfigById = async (data:TicketconfigUpdateDTOType) => {
 export const TicketconfigServices = {
   fetchgetallTicketconfig,
   AddNewTicketconfig,TicketCreation,
-  UpdateTicketconfigById,TicketFilterlist,TicketFilterchart,fetchgetallTicketlistcocunt
+  UpdateTicketconfigById,TicketFilterlist,TicketFilterchart,fetchgetallTicketlistcocunt,fetchgetallTicketdownload
 
 };

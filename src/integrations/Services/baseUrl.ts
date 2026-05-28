@@ -4,7 +4,7 @@ const baseUrl = axios.create({
   baseURL: import.meta.env.VITE_SAAS_API_PATH,
 });
 const ticketUrl = axios.create({
-  baseURL: import.meta.env.VITE_TICKET_API_PATH,
+  baseURL: import.meta.env.VITE_EIRASAAS_TICKET_REPORT,
 });
 
 const Eirasaas_BaseUrl = axios.create({

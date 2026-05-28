@@ -731,6 +731,7 @@ setFormFields({...formFields,'ticketType':value})
               hasCreateAccess: true,
               hasUpdateAccess: hasUpdateAccess,
             }}
+              // isdownload={false}
             functions={{
               addFn: handleOpen,
               optionHandler: (option: any, row: any) =>

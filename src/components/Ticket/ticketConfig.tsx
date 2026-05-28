@@ -18,7 +18,7 @@ import {
   TicketconfigQueries,
   TicketconfigServices,
 } from '@/integrations/Services/TicketconfigServices';
-
+import  {downloadFile} from '@/components/common/downloadcommon'
 interface TicketconfigProps extends BaseProps {}
 export const Ticketconfig = ({
   hasCreateAccess,
@@ -546,6 +546,21 @@ export const Ticketconfig = ({
       setEdit(true);
     }
   }
+async function handleDownload(row: any) {
+  try {
+    const response =
+      await TicketconfigServices.fetchgetallTicketdownload(
+        row?.ticketId
+      );
+
+    downloadFile(
+      response.data,
+      `Ticket_${row?.ticketId}.pdf`
+    );
+  } catch (error) {
+    console.error('Download failed:', error);
+  }
+}
   const includedDownloadColumns = HeadCells.filter(
     (headcell) => headcell.view === true,
   ).map((headcell) => headcell.id);
@@ -695,14 +710,18 @@ export const Ticketconfig = ({
             dataChart={ticketchart}
             labels={'Ticket Config'}
             toBackend={toBackend}
+         
             access={{
               hasCreateAccess: true,
               hasUpdateAccess: hasUpdateAccess,
             }}
+            isdownload={true}
             functions={{
               addFn: handleOpen,
               optionHandler: (option: any, row: any) =>
                 handleOptionClick(option, row),
+              handleDownloadAction:(row: any) =>
+                handleDownload( row)
             }}
             clickableColumn={clickableColumnList}
             includedDownloadColumns={includedDownloadColumns}

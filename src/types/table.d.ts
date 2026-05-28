@@ -31,6 +31,7 @@ type allFns = {
   downloadFn?: () => void;
   optionHandler?: (option: any, row: any) => void;
   handleFileChange?: () => void;
+  handleDownloadAction?:(row)=>void
 };
 
 type hide = {
@@ -63,6 +64,7 @@ export type TableProps = {
   ) => string | { backgroundColor?: string; color?: string } | undefined;
   tabsFns?: any;
     toBackend?: boolean;
+    isdownload?:boolean
     labels?:string
     dataChart?:any
   allTabsValues?: any;
