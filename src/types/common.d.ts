@@ -3,3 +3,8 @@ export type Approvalist = {
   approverLevel:number;
 
 };
+export interface BaseProps {
+  hasCreateAccess: boolean;
+  hasUpdateAccess: boolean;
+  session: Session;
+}

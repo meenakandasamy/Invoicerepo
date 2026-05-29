@@ -5,11 +5,11 @@
     <title>Redirecting...</title>
     <script>
       // Extract path after /saas-po/
-      const rawPath = window.location.pathname.replace(/^\/saas-po\//, '');
+      const rawPath = window.location.pathname.replace(/^\/saas-ticket\//, '');
       if (rawPath && rawPath !== 'index.html') {
-        window.location.replace('/saas-po/#/' + rawPath);
+        window.location.replace('/saas-ticket/#/' + rawPath);
       } else {
-        window.location.replace('/saas-po/#/');
+        window.location.replace('/saas-ticket/#/');
       }
     </script>
   </head>

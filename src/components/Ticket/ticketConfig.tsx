@@ -1,13 +1,14 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Modal } from '@mui/material';
 import { CustomTable } from '../table/customTable';
 import { TicketcreateForm } from '../form/ticketcreateFrom';
 import type { JSX } from 'react';
-import type { BaseProps, siteDropdownType } from '@/types/common';
+import type { BaseProps } from '@/types/common';
 import type { Row } from '@/types/table';
 import type { Field } from '@/types/form';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Encrypt } from '@/utils/auth/encryptor';
+import  {downloadFile} from '@/components/common/downloadcommon'
 import {
   EIRASAAS_API_QUERIES,
   EirasaasAPIs,
@@ -18,7 +19,7 @@ import {
   TicketconfigQueries,
   TicketconfigServices,
 } from '@/integrations/Services/TicketconfigServices';
-import  {downloadFile} from '@/components/common/downloadcommon'
+
 interface TicketconfigProps extends BaseProps {}
 export const Ticketconfig = ({
   hasCreateAccess,
@@ -225,7 +226,25 @@ export const Ticketconfig = ({
     cycle: 0,
     createdBy: 0,ticketId:0,fromDate:'',toDate:'',filterType:''
   };
-  const clickableColumnList: Array<string> = ['documentName'];
+  
+  const clickableColumnList = 'ticketCode';
+ const handleViewticketPopup = async (row: Row | Promise<Row>) => {
+    const encryptedUrl = Encrypt({
+      string: JSON.stringify({
+        ticketCode: row.ticketCode,
+        ticketId: row.ticketId,
+      }),
+      key: import.meta.env.VITE_AES_SECRET_KEY,
+      iv: import.meta.env.VITE_AES_IV,
+    });
+    const encodedKey = encodeURIComponent(encryptedUrl);
+
+    const baseUrl = import.meta.env.VITE_BASE_URL;
+    console.log('handle Logpopup works', encryptedUrl);
+    const url = `${window.location.origin}${baseUrl}/#/ticket_expenditure/ticket_overview?ticketKey=${encodedKey}`;
+    window.open(url, '_blank');
+ 
+  };
   const [formFields, setFormFields] = useState<ticketFiledType>(defaultValues);
   
   const fields: Array<Field> = [
@@ -714,6 +733,7 @@ async function handleDownload(row: any) {
               hasCreateAccess: true,
               hasUpdateAccess: hasUpdateAccess,
             }}
+               onClick={handleViewticketPopup}
             isdownload={true}
             functions={{
               addFn: handleOpen,

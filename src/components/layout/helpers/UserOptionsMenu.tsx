@@ -15,7 +15,7 @@ export default function UserOptionsMenu() {
   const handleLogout = () => {
     DeleteSessionCookie();
     sessionStorage.removeItem('session');
-    window.location.replace('/saas-po/login');
+    window.location.replace('/saas-ticket/login');
   };
 const sessionData = JSON.parse(sessionStorage.getItem('session'));
 

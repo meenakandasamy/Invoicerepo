@@ -32,7 +32,7 @@ export function FormLinkGenerator({
     dialogTitle = 'Generate Form',
     dialogDescription = 'Anyone with this link can fill the form.',
     tooltipContent = 'Generate Form',
-    baseUrl = import.meta.env.VITE_BASE_URL || '/saas-po',
+    baseUrl = import.meta.env.VITE_BASE_URL || '/saas-p',
     formPath,
 }: FormLinkProps) {
     const [open, setOpen] = useState(false);

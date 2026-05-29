@@ -33,7 +33,7 @@ const Login = () => {
       return await LoginServices.postLogin(data);
     },
     onSuccess: (e) => {
-      window.location.replace('/saas-po/#/po/vendor');
+      window.location.replace('/saas-p/#/po/vendor');
       console.log(e);
 
       const formattedResponse = {
