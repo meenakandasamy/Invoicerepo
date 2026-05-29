@@ -30,6 +30,7 @@ type allFns = {
   filterFn?: () => void;
   downloadFn?: () => void;
   optionHandler?: (option: any, row: any) => void;
+    handleDownloadOption?: (option: any, row: any) => void;
   handleFileChange?: () => void;
   handleDownloadAction?:(row)=>void
 };
@@ -50,6 +51,7 @@ export type TableProps = {
   hide?: hide;
   enblepay?: boolean;
   editOptions?: Array<string>;
+  downloadOptions?:Array<string>;
   onClick?: (row: Row, headcellId: string) => void;
   clickableColumn?: string | Array<string>;
   customToolbarItems?: {

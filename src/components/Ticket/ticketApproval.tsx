@@ -10,7 +10,11 @@ import type { JSX } from 'react';
 import type { BaseProps } from '@/types/common';
 import type { Row } from '@/types/table';
 import type { Field } from '@/types/form';
-
+import {
+  TicketconfigQueries,
+  TicketconfigServices,
+} from '@/integrations/Services/TicketconfigServices';
+import  {downloadFile} from '@/components/common/downloadcommon'
 import { useTicketApproval } from '@/hooks/data/useTicketapprovalist';
 import {
 
@@ -504,6 +508,42 @@ export const TicketApproval = ({
       setEdit(true);
     }
   }
+  async function handleDownload(option:any,row:any) {
+    console.log(option,row);
+    if(option==='Ticket Report'){
+       const response =
+            await TicketconfigServices.fetchgetallTicketdownload(
+              row?.ticketId
+            );
+      
+          downloadFile(
+            response.data,
+            `Ticket_${row?.ticketCode}.pdf`
+          );
+    }else{
+      console.log(row.ticketClosureUrl);
+      
+         const response =row.ticketClosureUrl
+      
+          downloadFile(
+            response.data,
+            `ClosedReport_${row?.ticketCode}.pdf`
+          );
+    }
+    // try {
+    //   const response =
+    //     await TicketconfigServices.fetchgetallTicketdownload(
+    //       row?.ticketId
+    //     );
+  
+    //   downloadFile(
+    //     response.data,
+    //     `Ticket_${row?.ticketId}.pdf`
+    //   );
+    // } catch (error) {
+    //   console.error('Download failed:', error);
+    // }
+  }
   const includedDownloadColumns = headCells
     .filter((headcell) => headcell.view === true)
     .map((headcell) => headcell.id);
@@ -668,10 +708,13 @@ export const TicketApproval = ({
             field={fielddata}
             option={options}
             carddata={dataCocunt}
+            downloadOptions={['Ticket Report' ,'Closed Report']}
             functions={{
               addFn: handleOpen,
               optionHandler: (option: any, row: any) =>
                 handleOptionClick(option, row),
+               handleDownloadOption: (option: any, row: any) =>
+                handleDownload(option, row),
             }}
             onClick={(row, headcellId) => {
               if (headcellId === 'documentName') {

@@ -552,7 +552,6 @@ async function handleDownload(row: any) {
       await TicketconfigServices.fetchgetallTicketdownload(
         row?.ticketId
       );
-
     downloadFile(
       response.data,
       `Ticket_${row?.ticketId}.pdf`

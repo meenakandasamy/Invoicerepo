@@ -40,6 +40,7 @@ export const CustomTable = ({
   access = { hasCreateAccess: true, hasUpdateAccess: true },
   hide,
   editOptions = ['Edit'],
+  downloadOptions=['Ticket Report'],
   onClick,
   clickableColumn,
   customToolbarItems = { position: 'before', element: null },
@@ -59,6 +60,7 @@ export const CustomTable = ({
   const {
     addFn = () => {},
     optionHandler = () => {},
+    handleDownloadOption=()=>{},
     handleFileChange = () => {},
     handleDownloadAction=() =>{}
   } = functions;
@@ -172,40 +174,144 @@ export const CustomTable = ({
     setCurrentPage(1);
   };
 
-  const optionPopup = (row: Row) => (
-      <div className="flex items-center justify-center">
-    
-    {/* First Icon - Custom Function */}
 
+//       <div className="flex items-center justify-center">
+    
+//     {/* First Icon - Custom Function */}
+
+//     <DropdownMenu>
+//       <DropdownMenuTrigger asChild>
+//         <Button
+//           variant="ghost"
+//      disabled={
+//   !access.hasUpdateAccess ||
+//   (
+//     pageName === 'Ticket Approval' &&
+//     (
+//       row.approverstatus === false ||
+//       row.currentLevel === row.approverLevel ||
+//       row.currentLevel < 0 ||
+//       row.currentLevel === 2
+//     )
+//   )
+// }
+//           size="icon"
+//           className="cursor-pointer"
+//         >
+//           <EllipsisVertical />
+//         </Button>
+        
+//       </DropdownMenuTrigger>
+//       <DropdownMenuContent align="end" className="w-32 cursor-pointer ">
+//         {editOptions.map((option, index) => {
+//           const isDelete = option === 'Delete';
+//           return (
+//             <React.Fragment key={index}>
+//               {isDelete && <DropdownMenuSeparator />}
+//               <DropdownMenuItem
+//                 className={
+//                   isDelete
+//                     ? 'bg-red-800 text-red-200 cursor-pointer hover:bg-red-600 hover:text-red-100 dark:hover:bg-red-600'
+//                     : 'cursor-pointer hover:bg-gray-50'
+//                 }
+//                 onClick={() => optionHandler(option, row)}
+//               >
+//                 {option}
+//               </DropdownMenuItem>
+//             </React.Fragment>
+//           );
+//         })}
+//       </DropdownMenuContent>
+//     </DropdownMenu>
+
+
+
+//         <DropdownMenu>
+//       <DropdownMenuTrigger asChild>
+//         <Button
+//           variant="ghost"
+
+//           size="icon"
+//           className="cursor-pointer"
+//         >
+//           <Download className="h-4w-4" />
+//         </Button>
+        
+//       </DropdownMenuTrigger>
+//       <DropdownMenuContent align="end" className="w-32 cursor-pointer ">
+//         {editOptions.map((option, index) => {
+//           const isDelete = option === 'Delete';
+//           return (
+//             <React.Fragment key={index}>
+//               {isDelete && <DropdownMenuSeparator />}
+//               <DropdownMenuItem
+//                 className={
+//                   isDelete
+//                     ? 'bg-red-800 text-red-200 cursor-pointer hover:bg-red-600 hover:text-red-100 dark:hover:bg-red-600'
+//                     : 'cursor-pointer hover:bg-gray-50'
+//                 }
+//                 onClick={() => optionHandler(option, row)}
+//               >
+//                 {option}
+//               </DropdownMenuItem>
+//             </React.Fragment>
+//           );
+//         })}
+//       </DropdownMenuContent>
+//     </DropdownMenu>
+//     {isdownload&&(
+//       <Button
+//       variant="ghost"
+//       size="icon"
+//       className="cursor-pointer"
+// disabled={
+//   pageName === 'Ticket Configuration' &&
+//   row.statusName !== 'Finished'
+// }
+//       onClick={() => handleDownloadAction(row)}
+//     >
+//       <Download className="h-4w-4" />
+//     </Button>)}
+//     </div>
+//   );
+const optionPopup = (row: Row) => (
+  <div className="flex items-center justify-center gap-1">
+    
+    {/* Edit Options Menu */}
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-     disabled={
-  !access.hasUpdateAccess ||
-  (
-    pageName === 'Ticket Approval' &&
-    (
-      row.approverstatus === false ||
-      row.currentLevel === row.approverLevel ||
-      row.currentLevel < 0 ||
-      row.currentLevel === 2
-    )
-  )
-}
+          disabled={
+            !access.hasUpdateAccess ||
+            (
+              pageName === 'Ticket Approval' &&
+              (
+                row.approverstatus === false ||
+                row.currentLevel === row.approverLevel ||
+                row.currentLevel < 0 ||
+                row.currentLevel === 2
+              )
+            )
+          }
           size="icon"
           className="cursor-pointer"
         >
-          <EllipsisVertical />
+          <EllipsisVertical className="h-4 w-4" />
         </Button>
-        
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-32 cursor-pointer ">
+
+      <DropdownMenuContent
+        align="end"
+        className="w-32 cursor-pointer"
+      >
         {editOptions.map((option, index) => {
           const isDelete = option === 'Delete';
+
           return (
             <React.Fragment key={index}>
               {isDelete && <DropdownMenuSeparator />}
+
               <DropdownMenuItem
                 className={
                   isDelete
@@ -221,19 +327,70 @@ export const CustomTable = ({
         })}
       </DropdownMenuContent>
     </DropdownMenu>
-    {isdownload&&(
+
+    {/* Download Options Menu */}
+    {pageName==='Ticket Approval'&& (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="cursor-pointer flex items-center gap-1"
+            // disabled={
+            //   pageName === 'Ticket Configuration' &&
+            //   row.statusName !== 'Finished'
+            // }
+          >
+            <Download className="h-4 w-4" />
+            {/* Download */}
+          </Button>
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent
+          align="end"
+          className="w-40 cursor-pointer"
+        >
+            {downloadOptions.map((option, index) => {
+    const isClosedReport =
+      option === 'Closed Report' &&
+      row.ticketClosureUrl === null;
+
+    return (
+      <DropdownMenuItem
+        key={index}
+        disabled={isClosedReport}
+        className={`cursor-pointer hover:bg-gray-50 ${
+          isClosedReport
+            ? 'pointer-events-none opacity-50'
+            : ''
+        }`}
+        onClick={() =>
+          !isClosedReport &&
+          handleDownloadOption(option, row)
+        }
+      >
+        {option}
+      </DropdownMenuItem>
+    );
+  })}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )}
+     {isdownload&&(
       <Button
       variant="ghost"
       size="icon"
       className="cursor-pointer"
-      
+disabled={
+  pageName === 'Ticket Configuration' &&
+  row.statusName !== 'Finished'
+}
       onClick={() => handleDownloadAction(row)}
     >
       <Download className="h-4w-4" />
     </Button>)}
-    </div>
-  );
-
+  </div>
+);
   return (
     <section className="w-full h-full flex flex-col">
       {allTabsValues && (

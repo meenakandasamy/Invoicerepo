@@ -1,4 +1,4 @@
-import { baseUrl,ticketUrl} from './baseUrl';
+import { TicketApi,ticketUrl} from './baseUrl';
 import type {SopDTOType,SopUpdateDTOType} from '@/utils/Validators/schema/sopSchema';
 export enum TicketSopQueries {
   GET_TICKET_SOP= 'getAllTicketApproval',
@@ -17,7 +17,7 @@ const fetchgetallTicketSop = async (Id:any) => {
 
     
   try {
-    const response = await ticketUrl.get(
+    const response = await TicketApi.get(
       `${TicketSopEndpoints.getAllTicketSop}?companyId=${Id}`,
     );
     return response.data;
@@ -28,7 +28,7 @@ const fetchgetallTicketSop = async (Id:any) => {
 };
 const fetchGetallSopdropdown = async (ticketTypeId:any) => {
   try {
-    const response = await ticketUrl.get(
+    const response = await TicketApi.get(
       `${TicketSopEndpoints.getAllTSopdropdown}=${ticketTypeId[0]}&ticketCategoryId=${ticketTypeId[1]}`,
     );
     return response.data;
@@ -40,7 +40,7 @@ const fetchGetallSopdropdown = async (ticketTypeId:any) => {
 
 const AddNewSop = async (data: SopDTOType ) => {
   try {
-    const response = await ticketUrl.post(
+    const response = await TicketApi.post(
       `${TicketSopEndpoints.AddSop}`,
       data,
     );
@@ -53,7 +53,7 @@ const AddNewSop = async (data: SopDTOType ) => {
 
 const UpdateSopById = async (data:SopUpdateDTOType) => {
   try {
-    const response = await ticketUrl.put(
+    const response = await TicketApi.put(
       `${TicketSopEndpoints.UpdateSop}/${data.sopId}`,
       data,
     );
