@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Modal } from '@mui/material';
+
 import { CustomTable } from '../table/customTable';
 import { TicketcreateForm } from '../form/ticketcreateFrom';
 import type { JSX } from 'react';
+
 import type { BaseProps } from '@/types/common';
 import type { Row } from '@/types/table';
 import type { Field } from '@/types/form';
@@ -14,6 +16,7 @@ import {
   EirasaasAPIs,
 } from '@/integrations/Services/commonServices';
 import { useMutationFn, useQueriesFn } from '@/utils/common/queryUtils';
+import Loader from '@/utils/common/components/loader';
 import { useTicketconfig } from '@/hooks/data/useTicketconfig';
 import {
   TicketconfigQueries,
@@ -231,7 +234,7 @@ export const Ticketconfig = ({
  const handleViewticketPopup = async (row: Row | Promise<Row>) => {
     const encryptedUrl = Encrypt({
       string: JSON.stringify({
-        ticketCode: row.ticketCode,
+        siteId: row.siteId,
         ticketId: row.ticketId,
       }),
       key: import.meta.env.VITE_AES_SECRET_KEY,
@@ -478,11 +481,11 @@ export const Ticketconfig = ({
   ];
   const formStyles = {
     container:
-      'fixed inset-0 z-50 flex items-center justify-center  backdrop-blur-sm p-2',
+      'fixed inset-0 z-50 flex items-center justify-center p-2',
 
     form: `
     w-full
-  max-w-xl
+ max-w-[500px]
     rounded-[28px]
     bg-white
     shadow-2xl
@@ -705,10 +708,9 @@ async function handleDownload(row: any) {
 
   return (
     <div className="m-2.5">
-      {/* {TicketconfigQuery.isLoading ||
-          status.some((item) => item === 'pending') ? (
+      {TicketconfigQuery.isLoading  ? (
             <Loader />
-          ) : ( */}
+          ) : (
       <section className="w-full h-full flex flex-col">
         <>
           <CustomTable
@@ -749,9 +751,9 @@ async function handleDownload(row: any) {
 
         {/* COST HEADER TAB */}
       </section>
-      {/* // )} */}
 
-      {/* MODAL */}
+          )}
+
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <Modal open={isOpen} onClose={handleClose}>

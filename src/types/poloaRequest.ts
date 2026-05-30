@@ -25,6 +25,14 @@ interface ticketFiledType {
     equipmentId: Array<number>;
     ticketCategory:number,
     cycle:number,createdBy:number
+}
+interface viewticketFiledType {
+  timeslot: string;
+    remarks: string;
+    assigned: string;
+ 
+    date: string;
+
 
 }
 interface approveFieldType {

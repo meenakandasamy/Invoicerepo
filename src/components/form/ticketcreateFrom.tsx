@@ -12,7 +12,7 @@ interface CustomFormProps {
   initialValues: Record<string, any>;
   submitFunction: (value: any) => void;
   onClose: () => void;
-    onReset: () => void;
+    onReset?: () => void;
   onChange?: (name: string, value: any, form?: any, editingField?: any) => void;
   fields: Array<Field>;
   options: Record<string, Array<string | number>>;
@@ -109,14 +109,14 @@ export function TicketcreateForm({
         }}
         className={
           styles?.form ||
-          'w-full max-w-1xl rounded-xl backdrop-blur-md shadow-xl bg-white flex flex-col'
+          'w-full max-w-1xl rounded-xl backdrop-blur-md  w-[100px] shadow-xl bg-white flex flex-col'
         }
         style={{ maxHeight: '90vh' }}
       >
         {/* Sticky Header */}
       {/* Sticky Header */}
 {!disableLabel && (
-  <div className="sticky top-0 z-20 bg-white border-b border-gray-200 px-6 py-4 dark:bg-background">
+  <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-4 dark:bg-background">
     <div className="flex items-center justify-between">
       {/* Left Side */}
       <div className="flex items-center gap-3">
@@ -352,7 +352,25 @@ export function TicketcreateForm({
                           hidden={fieldItem.hidden}
                           disabled={fieldItem.disabled}
                         />
-                      ) : fieldItem.type === 'productMultiSelect' ? (
+                      ) : fieldItem.type === 'time' ? (
+                        <fieldProps.TimePicker
+                          label={fieldItem.label}
+                          required={fieldItem.required}
+                          // futureDate={fieldItem.futureDate}
+                          styles={
+                            fieldItem.disabled
+                              ? disabledStyle
+                              : fieldItem.styles
+                          }
+                          onChange={(_name: string, date: Date) => {
+                            fieldItem.onChange?.(fieldItem.name, date, form);
+                            setPageField(label, fieldItem.name, date);
+                            form.setFieldValue(fieldItem.name, date);
+                          }}
+                          hidden={fieldItem.hidden}
+                          disabled={fieldItem.disabled}
+                        />
+                      ): fieldItem.type === 'productMultiSelect' ? (
                         <div className="grid grid-cols-2 w-[210%] gap-18 p-4 border border-dashed border-gray-400 rounded-md">
                           <fieldProps.MultiSelect
                             label={fieldItem.label}

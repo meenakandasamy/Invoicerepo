@@ -5,6 +5,7 @@ import {Customtogglebutton} from '@/components/form/customtogglebutton'
 import { SelectField } from '@/components/form/selectField';
 import { TextArea } from '@/components/form/textArea';
 import { DatePicker } from '@/components/form/DateRanger';
+import { TimePicker} from '@/components/form/customTimepicker';
 import { buttonField } from '@/components/form/button';
 import { Toaster } from '@/components/form/toast';
 import {MultiFiledocument} from '@/components/form/multiFile'
@@ -22,7 +23,7 @@ export const { useAppForm } = createFormHook({
     SelectField,
     TextArea,
     Customtogglebutton,
-    DatePicker,
+    DatePicker,TimePicker,
     MultiSelect,
     MultiFiledocument,
     MultiPdfUploader,
