@@ -119,7 +119,7 @@ function TicketActivityTable({
                       <TableCell className="text-sm text-muted-foreground">
                         {item?.ticketStatusId === 5
                           ? item?.completedTimestamp
-                          : item?.createdDate}
+                          : item?.createdDate||'-'}
                       </TableCell>
                     </TableRow>
                   );
