@@ -1,4 +1,5 @@
 import {
+  Download,MessageSquareX,
       OctagonPause ,
   Users,
 
@@ -9,7 +10,7 @@ import CustomTooltip from '@/utils/common/components/CustomTooltip';
 export const CustomToolbar = ({
   access,
   addFn,
-  hide = { reassign: false, hold: true, filter: false, download: false }
+  hide = { reassign: false, hold:false, close: false, download: false }
 }: {
   access: any;
   addFn: (type: string) => void;
@@ -51,6 +52,39 @@ export const CustomToolbar = ({
         }`}
         onClick={() =>
           access.hasCreateAccess && addFn('hold')
+        }
+      />
+    }
+  />)}
+
+     {!hide.close && (
+  <CustomTooltip
+    content="Hold"
+    children={
+      <MessageSquareX 
+        className={`h-4 w-4 ${
+          access.hasCreateAccess
+            ? 'text-violet-600 hover:text-violet-700 cursor-pointer'
+            : 'text-gray-400 cursor-not-allowed'
+        }`}
+        onClick={() =>
+          access.hasCreateAccess && addFn('close')
+        }
+      />
+    }
+  />)}
+     {!hide.download&& (
+  <CustomTooltip
+    content="Hold"
+    children={
+      <Download 
+        className={`h-4 w-4 ${
+          access.hasCreateAccess
+            ? 'text-violet-600 hover:text-violet-700 cursor-pointer'
+            : 'text-gray-400 cursor-not-allowed'
+        }`}
+        onClick={() =>
+          access.hasCreateAccess && addFn('download')
         }
       />
     }

@@ -1,12 +1,10 @@
-import { baseUrl, ticketUrl } from './baseUrl';
+import { baseUrl, TicketApi, ticketUrl } from './baseUrl';
 import type {
   TicketconfigDTOType,
   TicketconfigUpdateDTOType,
-  TicketcreationDTOType
+  TicketcreationDTOType,
 } from '@/utils/Validators/schema/Ticketconfigschema';
-import type {
-TicketviewReassignDTOType
-} from '@/utils/Validators/schema/TicketviewSchema';
+import type { TicketviewReassignDTOType } from '@/utils/Validators/schema/TicketviewSchema';
 export enum TicketconfigQueries {
   GET_TICKET_CONFIG_USERID = 'getAllTicketconfig',
   GET_TICKET_COCUNT_USERID = 'getAllTicketlistcount',
@@ -14,10 +12,11 @@ export enum TicketconfigQueries {
   GET_TICKET_DETAILS = 'getticketDetails',
   GET_TICKET_HISTORY = 'getticketHistory',
   GET_TICKET_USERLIST = 'getticketuserlist',
+  GET_TICKET_CLOSE = 'UpdateTicketclose',
 }
 
 enum TicketconfigEndpoints {
-  getAllTicketconfig = import.meta.env.VITE_TICKET_LIST_BY_USERID,
+  getAllTicketconfig = import.meta.env.VITE_TICKET_LIST,
   getDownloadticket = import.meta.env.VITE_TICKET_DOWNLOAD_REPORT,
   getticketDetails = import.meta.env.VITE_TICKET_VIEW_DETAILS,
   getticketHistory = import.meta.env.VITE_TICKET_HISTORY,
@@ -28,14 +27,15 @@ enum TicketconfigEndpoints {
   TicketFilterchart = import.meta.env.VITE_TICKET_FILTER_CHART,
   UpdateTicketconfig = import.meta.env.VITE_TICKET_UPDATE,
   Ticketcreation = import.meta.env.VITE_TICKET_CREATION,
-    UpdateTicketreassign = import.meta.env.VITE_TICKET_REASSIGN,
-      UpdateTickethold = import.meta.env.VITE_TICKET_HOLD,
+  UpdateTicketreassign = import.meta.env.VITE_TICKET_REASSIGN,
+  UpdateTickethold = import.meta.env.VITE_TICKET_HOLD,
+  UpdateTicketclose = import.meta.env.VITE_TICKET_CLOSE,
   // getAllTicketconfig = import.meta.env.VITE_GET_PO_LOA,
 }
 const fetchgetallTicketconfig = async (id: number) => {
   try {
-    const response = await baseUrl.get(
-      `${TicketconfigEndpoints.getAllTicketconfig}/${id}`,
+    const response = await TicketApi.get(
+      `${TicketconfigEndpoints.getAllTicketconfig}?userId=${id}`,
     );
     return response.data;
   } catch (error: any) {
@@ -56,7 +56,7 @@ const fetchgetallTicketlistcocunt = async (id: number) => {
 };
 const fetchgetallTicketHistory = async (id: number) => {
   try {
-    const response = await baseUrl.get(
+    const response = await TicketApi.get(
       `${TicketconfigEndpoints.getticketHistory}/${id}`,
     );
     return response.data;
@@ -67,7 +67,7 @@ const fetchgetallTicketHistory = async (id: number) => {
 };
 const fetchgetallTicketuserlist = async (id: number) => {
   try {
-    const response = await baseUrl.get(
+    const response = await TicketApi.get(
       `${TicketconfigEndpoints.getticketuserlist}/${id}`,
     );
     return response.data;
@@ -78,7 +78,7 @@ const fetchgetallTicketuserlist = async (id: number) => {
 };
 const fetchgetallTicketdetails = async (id: number) => {
   try {
-    const response = await baseUrl.get(
+    const response = await TicketApi.get(
       `${TicketconfigEndpoints.getticketDetails}/${id}`,
     );
     return response.data;
@@ -100,7 +100,7 @@ const fetchgetallTicketdownload = async (id: number) => {
 };
 const AddNewTicketconfig = async (data: TicketconfigDTOType) => {
   try {
-    const response = await baseUrl.post(
+    const response = await TicketApi.post(
       `${TicketconfigEndpoints.AddTicketconfig}`,
       data,
     );
@@ -112,7 +112,7 @@ const AddNewTicketconfig = async (data: TicketconfigDTOType) => {
 };
 const TicketFilterlist = async (data: TicketconfigDTOType) => {
   try {
-    const response = await baseUrl.post(
+    const response = await TicketApi.post(
       `${TicketconfigEndpoints.TicketFilterlist}`,
       data,
     );
@@ -124,7 +124,7 @@ const TicketFilterlist = async (data: TicketconfigDTOType) => {
 };
 const TicketFilterchart = async (data: TicketconfigDTOType) => {
   try {
-    const response = await baseUrl.post(
+    const response = await TicketApi.post(
       `${TicketconfigEndpoints.TicketFilterchart}`,
       data,
     );
@@ -136,7 +136,7 @@ const TicketFilterchart = async (data: TicketconfigDTOType) => {
 };
 const TicketCreation = async (data: TicketcreationDTOType) => {
   try {
-    const response = await baseUrl.post(
+    const response = await TicketApi.post(
       `${TicketconfigEndpoints.Ticketcreation}`,
       data,
     );
@@ -148,7 +148,7 @@ const TicketCreation = async (data: TicketcreationDTOType) => {
 };
 const UpdateTicketconfigById = async (data: TicketconfigUpdateDTOType) => {
   try {
-    const response = await baseUrl.put(
+    const response = await TicketApi.put(
       `${TicketconfigEndpoints.UpdateTicketconfig}/${data.ticketId}`,
       data,
     );
@@ -160,7 +160,7 @@ const UpdateTicketconfigById = async (data: TicketconfigUpdateDTOType) => {
 };
 const UpdateTicketreassign = async (data: TicketviewReassignDTOType) => {
   try {
-    const response = await baseUrl.put(
+    const response = await TicketApi.put(
       `${TicketconfigEndpoints.UpdateTicketreassign}/${data.ticketId}`,
       data,
     );
@@ -172,8 +172,20 @@ const UpdateTicketreassign = async (data: TicketviewReassignDTOType) => {
 };
 const UpdateTickethold = async (data: TicketconfigUpdateDTOType) => {
   try {
-    const response = await baseUrl.put(
+    const response = await TicketApi.put(
       `${TicketconfigEndpoints.UpdateTickethold}/${data.ticketId}`,
+      data,
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('Error editing vendor:', error);
+    throw error;
+  }
+};
+const UpdateTicketClose = async (data: TicketconfigUpdateDTOType) => {
+  try {
+    const response = await TicketApi.put(
+      `${TicketconfigEndpoints.UpdateTicketclose}/${data.ticketId}`,
       data,
     );
     return response.data;
@@ -193,5 +205,8 @@ export const TicketconfigServices = {
   TicketFilterlist,
   TicketFilterchart,
   fetchgetallTicketlistcocunt,
-  fetchgetallTicketdownload,UpdateTicketreassign,UpdateTickethold
+  fetchgetallTicketdownload,
+  UpdateTicketreassign,
+  UpdateTickethold,
+  UpdateTicketClose,
 };

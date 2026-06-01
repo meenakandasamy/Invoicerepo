@@ -228,47 +228,11 @@ export function TicketcreateForm({
                           }
                           required={fieldItem.required}
                           onChange={(name, value) => {
-                            if (name === 'mobileNo') {
-                              const cleaned = value
-                                .replace(/[^0-9]/g, '')
-                                .slice(0, 10);
-                              fieldItem.onChange?.(name, cleaned, form);
-                              form.setFieldValue(name, cleaned);
-                            } else if (name === 'poc') {
-                              const cleaned = value.replace(/[^a-zA-Z ]/g, '');
-                              fieldItem.onChange?.(name, cleaned, form);
-                              form.setFieldValue(name, cleaned);
-                            } else if (name === 'panNo') {
-                              const cleaned = value
-                                .replace(/[^a-zA-Z0-9]/g, '')
-                                .slice(0, 10)
-                                .toUpperCase();
-                              fieldItem.onChange?.(name, cleaned, form);
-                              form.setFieldValue(name, cleaned);
-                            } else if (name === 'aadharNo') {
-                              const cleaned = value
-                                .replace(/[^0-9]/g, '')
-                                .slice(0, 12);
-                              fieldItem.onChange?.(name, cleaned, form);
-                              form.setFieldValue(name, cleaned);
-                            } else if (name === 'accountNo') {
-                              const cleaned = value
-                                .replace(/[^a-zA-Z0-9]/g, '')
-                                .toUpperCase()
-                                .slice(0, 34);
-                              fieldItem.onChange?.(name, cleaned, form);
-                              form.setFieldValue(name, cleaned);
-                            } else if (name === 'employeeId') {
-                              const cleaned = value.replace(/[^0-9]/g, '');
-                              fieldItem.onChange?.(name, cleaned, form);
-                              setPageField(label, name, value);
-                              form.setFieldValue(name, cleaned);
-                            }
-                            else {
+                          
                               fieldItem.onChange?.(name, value, form);
                               setPageField(label, name, value);
                               form.setFieldValue(name, value);
-                            }
+                            
                           }}
                           disabled={fieldItem.disabled}
                         />
@@ -449,6 +413,7 @@ export function TicketcreateForm({
                           type={fieldItem.type}
                           onChange={(name, filesWithBase64) => {
                             const fileData = filesWithBase64[0]; // { name: "...", base64: "..." }
+console.log(fileData);
 
                             if (fileData) {
                               // Set the Base64 to the primary path field for the backend

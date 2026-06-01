@@ -505,12 +505,12 @@ export const Ticketconfig = ({
     w-full
   `,
 
-    submitButton:
-      'h-11 px-8 rounded-xl bg-violet-600 text-white hover:bg-violet-600 transition',
+   submitButton:
+      'h-10 px-4 rounded-xl bg-violet-600 text-white hover:bg-violet-600 transition',
 
     cancelButton: `
-    h-11
-    px-8 
+    h-10
+    px-4
     rounded-xl
     border
     border-gray-300

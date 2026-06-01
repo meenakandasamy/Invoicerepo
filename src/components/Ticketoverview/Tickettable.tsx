@@ -1,5 +1,14 @@
 import React from 'react';
-import { Plus, UserRound, Play } from 'lucide-react';
+import {
+  Plus,
+  UserRound,
+  Pause,
+  CheckCircle,
+  Play,
+  XCircle,
+  RotateCcw,
+  Clock,
+} from 'lucide-react';
 
 import {
   Table,
@@ -18,29 +27,97 @@ interface TicketActivityTableProps {
 function TicketActivityTable({
   ticketHistory,
 }: TicketActivityTableProps) {
-  const getIcon = (activity: string) => {
-    if (activity?.toLowerCase().includes('created')) {
-      return (
-        <div className="bg-blue-500 p-2 rounded-full text-white">
-          <Plus size={14} />
-        </div>
-      );
-    }
+ const getIcon = (activity: string) => {
+  const text = activity?.toLowerCase();
 
-    if (activity?.toLowerCase().includes('assigned')) {
-      return (
-        <div className="bg-orange-500 p-2 rounded-full text-white">
-          <UserRound size={14} />
-        </div>
-      );
-    }
-
+  // Created
+  if (text.includes('created')) {
     return (
-      <div className="bg-green-500 p-2 rounded-full text-white">
-        <Play size={14} />
+      <div className="bg-blue-100 text-blue-600 p-2 rounded-full">
+        <Plus size={16} />
       </div>
     );
-  };
+  }
+
+  // Assigned / Reassigned
+  if (
+    text.includes('assigned') ||
+    text.includes('re-assigned')
+  ) {
+    return (
+      <div className="bg-orange-100 text-orange-600 p-2 rounded-full">
+        <UserRound size={16} />
+      </div>
+    );
+  }
+
+  // Hold
+  if (text.includes('hold')) {
+    return (
+      <div className="bg-yellow-100 text-yellow-600 p-2 rounded-full">
+        <Pause size={16} />
+      </div>
+    );
+  }
+
+  // Closed
+  if (text.includes('closed')) {
+    return (
+      <div className="bg-green-100 text-green-600 p-2 rounded-full">
+        <CheckCircle size={16} />
+      </div>
+    );
+  }
+
+  // In Progress
+  if (
+    text.includes('progress') ||
+    text.includes('started')
+  ) {
+    return (
+      <div className="bg-indigo-100 text-indigo-600 p-2 rounded-full">
+        <Play size={16} />
+      </div>
+    );
+  }
+
+  // Reopened
+  if (text.includes('reopen')) {
+    return (
+      <div className="bg-purple-100 text-purple-600 p-2 rounded-full">
+        <RotateCcw size={16} />
+      </div>
+    );
+  }
+
+  // Cancelled / Rejected
+  if (
+    text.includes('cancel') ||
+    text.includes('reject')
+  ) {
+    return (
+      <div className="bg-red-100 text-red-600 p-2 rounded-full">
+        <XCircle size={16} />
+      </div>
+    );
+  }
+
+  // Pending
+  if (text.includes('pending')) {
+    return (
+      <div className="bg-cyan-100 text-cyan-600 p-2 rounded-full">
+        <Clock size={16} />
+      </div>
+    );
+  }
+
+  // Default
+  return (
+    <div className="bg-gray-100 text-gray-600 p-2 rounded-full">
+      <Clock size={16} />
+    </div>
+  );
+};
 
   return (
     <Card className="py-2 mt-4">
