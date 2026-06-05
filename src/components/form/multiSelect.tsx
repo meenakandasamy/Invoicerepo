@@ -104,8 +104,11 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className={cn(' min-w-[17vw] p-0 z-[9999]', styles?.popover)}
-        >
+  className={cn(
+    'w-[var(--radix-popover-trigger-width)] p-0 z-[9999]',
+    styles?.popover
+  )}
+>
           <Command>
             {options.length > 0 ? (
               <>

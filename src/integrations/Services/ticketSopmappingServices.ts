@@ -1,5 +1,5 @@
 import { TicketApi,ticketUrl} from './baseUrl';
-import type {SopDTOType,SopUpdateDTOType} from '@/utils/Validators/schema/sopSchema';
+import type {SopmapSaveDTOType,SopmapUpdateDTOType} from '@/utils/Validators/schema/sopmappingSchema';
 export enum TicketSopmappingQueries {
   GET_TICKET_SOPMAPPING= 'getAllTicketSopmapping',
     GET_TICKET_SOP_DROPDOWN= 'getAllTSopdropdown',
@@ -9,8 +9,8 @@ export enum TicketSopmappingQueries {
 enum TicketSopmappingEndpoints {
   getAllTicketSopmapping = import.meta.env.VITE_SOP_MAPPING_GET,
     getAllTSopdropdown = import.meta.env.VITE_SOP_DROPDOWN_API,
-  AddSop = import.meta.env.VITE_SOP_API_POST,
-    UpdateSop = import.meta.env.VITE_SOP_API_PUT,
+  AddSopmapping = import.meta.env.VITE_SOP_MAPPING_POST,
+    UpdateSopmapping = import.meta.env.VITE_SOP_MAPPING_PUT,
   // getAllTicketApproval = import.meta.env.VITE_GET_PO_LOA,
 }
 const fetchgetallTicketSopmappig = async (Id:any) => {
@@ -38,10 +38,11 @@ const fetchGetallSopdropdown = async (ticketTypeId:any) => {
   }
 };
 
-const AddNewSop = async (data: SopDTOType ) => {
+const AddNewSopmapping = async (data: SopmapSaveDTOType ) => {
+  console.log(data,'data in service');
   try {
     const response = await TicketApi.post(
-      `${TicketSopmappingEndpoints.AddSop}`,
+      `${TicketSopmappingEndpoints.AddSopmapping}`,
       data,
     );
     return response.data;
@@ -51,10 +52,10 @@ const AddNewSop = async (data: SopDTOType ) => {
   }
 };
 
-const UpdateSopById = async (data:SopUpdateDTOType) => {
+const UpdateSopmappingById = async (data:SopmapUpdateDTOType) => {
   try {
     const response = await TicketApi.put(
-      `${TicketSopmappingEndpoints.UpdateSop}/${data.sopId}`,
+      `${TicketSopmappingEndpoints.UpdateSopmapping}/${data.sopTemplateId}`,
       data,
     );
     return response.data;
@@ -65,8 +66,8 @@ const UpdateSopById = async (data:SopUpdateDTOType) => {
 };
 export const TicketSopmappingServices = {
   fetchgetallTicketSopmappig,
-  AddNewSop,
-  UpdateSopById,
+  AddNewSopmapping,
+  UpdateSopmappingById,
   fetchGetallSopdropdown
 
 };

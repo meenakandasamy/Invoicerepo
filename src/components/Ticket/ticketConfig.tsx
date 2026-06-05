@@ -10,7 +10,7 @@ import type { BaseProps } from '@/types/common';
 import type { Row } from '@/types/table';
 import type { Field } from '@/types/form';
 import { Encrypt } from '@/utils/auth/encryptor';
-import  {downloadFile} from '@/components/common/downloadcommon'
+import { downloadFile } from '@/components/common/downloadcommon';
 import {
   EIRASAAS_API_QUERIES,
   EirasaasAPIs,
@@ -32,13 +32,15 @@ export const Ticketconfig = ({
   const [toBackend, setToBackend] = useState<boolean>(false);
   const [ticketTypes, setTicketTypes] = useState<Array<any>>([]);
   const [ticketCategory, setTicketCategory] = useState<Array<any>>([]);
+  const [tickcategorylist, setTickcategorylist] = useState<Array<any>>([]);
   const [ticketstate, setTicketstate] = useState<Array<any>>([]);
   const [ticketDataState, setTicketDataState] = useState<Array<any>>([]);
   const [ticketchart, setTicketchart] = useState<Array<any>>([]);
   const [userlist, setUserlist] = useState<Array<any>>([]);
   const [Sitelist, setSitelist] = useState<Array<any>>([]);
   const [SiteId, setSiteId] = useState<number | null>(0);
-    const [equipmentIdlist, setEquipmentlist] =useState<Array<any>>([]);
+    const [TickettypeId, setTickettypeId] = useState<number | null>(0);
+  const [equipmentIdlist, setEquipmentlist] = useState<Array<any>>([]);
 
   const queries = [
     {
@@ -75,11 +77,17 @@ export const Ticketconfig = ({
       setState: setSitelist,
       id: session.userId,
     },
-     {
+    {
       queryKey: EIRASAAS_API_QUERIES.GET_ALL_EQUIPMENT_LIST,
       api: EirasaasAPIs.FetchAllEquipmentlistbysiteId,
       setState: setEquipmentlist,
       id: SiteId,
+    },
+    {
+      queryKey: EIRASAAS_API_QUERIES.GET_ALL_EQUIPMENT_LIST,
+      api: EirasaasAPIs.FetchTicketCategory,
+      setState: setTickcategorylist,
+      id: TickettypeId,
     },
   ];
   const {
@@ -119,11 +127,11 @@ export const Ticketconfig = ({
   );
   const postTicketMutation = useMutationFn(
     TicketconfigServices.TicketCreation,
-  TicketconfigQueries.GET_TICKET_COCUNT_USERID,
+    TicketconfigQueries.GET_TICKET_COCUNT_USERID,
   );
   const putMutation = useMutationFn(
-   TicketconfigServices.UpdateTicketconfigById,
-  TicketconfigQueries.GET_TICKET_COCUNT_USERID,
+    TicketconfigServices.UpdateTicketconfigById,
+    TicketconfigQueries.GET_TICKET_COCUNT_USERID,
   );
   const HeadCells = [
     {
@@ -219,6 +227,7 @@ export const Ticketconfig = ({
     siteName: '',
     displayName: '',
     ticketTypeName: '',
+    ticketType: '',
     categoryName: '',
     ticketTypeId: 0,
     subject: '',
@@ -227,11 +236,15 @@ export const Ticketconfig = ({
     equipmentId: [],
     ticketCategory: 0,
     cycle: 0,
-    createdBy: 0,ticketId:0,fromDate:'',toDate:'',filterType:''
+    createdBy: 0,
+    ticketId: 0,
+    fromDate: '',
+    toDate: '',
+    filterType: '',
   };
-  
+
   const clickableColumnList = 'ticketCode';
- const handleViewticketPopup = async (row: Row | Promise<Row>) => {
+  const handleViewticketPopup = async (row: Row | Promise<Row>) => {
     const encryptedUrl = Encrypt({
       string: JSON.stringify({
         siteId: row.siteId,
@@ -246,26 +259,49 @@ export const Ticketconfig = ({
     console.log('handle Logpopup works', encryptedUrl);
     const url = `${window.location.origin}${baseUrl}/#/ticket_expenditure/ticket_overview?ticketKey=${encodedKey}`;
     window.open(url, '_blank');
- 
   };
   const [formFields, setFormFields] = useState<ticketFiledType>(defaultValues);
-  
+console.log(formFields,"")
   const fields: Array<Field> = [
     {
       name: 'siteName',
       label: 'Site Name',
       type: 'select',
-      disabled:edit,
+      disabled: edit,
       placeholder: 'Enter Site Name',
-       onChange: (name, value, form) => {
+      onChange: (name, value, form) => {
         form.setFieldValue(name, value);
+          form.setFieldValue("displayName", []);
         const selectSiteId = Sitelist.find(
           (type) => type.siteName === value,
         )?.siteId;
+        setFormFields({ ...formFields, siteName: value });
         setSiteId(selectSiteId);
       },
       required: true,
-       styles: {
+      styles: {
+        wrapper: 'flex flex-col gap-1',
+        label: 'text-sm font-medium text-gray-500',
+        input:
+          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
+      },
+    },
+    {
+      name: 'ticketType',
+      label: 'Ticket Type',
+      disabled: edit,
+      type: 'select',
+      placeholder: 'Enter Ticket Type',
+      required: true,
+      onChange: (name, value, form) => {
+        const selectSiteId = ticketTypes.find(
+          (type) => type.ticketTypeName === value,
+        )?.ticketTypeId;
+           form.setFieldValue("ticketCategory", "");
+        setTickettypeId(selectSiteId);
+        setFormFields({ ...formFields, ticketType: value });
+      },
+      styles: {
         wrapper: 'flex flex-col gap-1',
         label: 'text-sm font-medium text-gray-500',
         input:
@@ -275,37 +311,26 @@ export const Ticketconfig = ({
     {
       name: 'displayName',
       label: 'Equipment Name',
-      type: 'multiSelect',
-       disabled:edit,
+      type: formFields.ticketType ==='Maintenance'?'multiSelect':'select',
+      disabled: edit || !formFields.ticketType || !formFields.siteName,
       placeholder: 'Enter Equipment Name',
       required: true,
-       styles: {
-    wrapper: 'flex flex-col gap-1 w-full',
-    label: 'text-sm font-medium text-gray-500',
-    input:
-      'w-full h-11 px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-300',
-  },
-    },
-    {
-      name: 'ticketType',
-      label: 'Ticket Type', disabled:edit,
-      type: 'select',
-      placeholder: 'Enter Ticket Type',
-      required: true,
-       styles: {
-        wrapper: 'flex flex-col gap-1',
+      styles: {
+        wrapper: 'flex flex-col gap-1 w-full',
         label: 'text-sm font-medium text-gray-500',
         input:
-          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
+          'w-full h-11 px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-300',
       },
     },
+
     {
       name: 'ticketCategory',
       label: 'Ticket Category',
-      type: 'select', disabled:edit,
+      type: 'select',
+      disabled: edit,
       placeholder: 'Enter Ticket Category',
       required: true,
-         styles: {
+      styles: {
         wrapper: 'flex flex-col gap-1',
         label: 'text-sm font-medium text-gray-500',
         input:
@@ -331,7 +356,7 @@ export const Ticketconfig = ({
       type: 'select',
       placeholder: 'Enter Priority',
       required: true,
-       styles: {
+      styles: {
         wrapper: 'flex flex-col gap-1',
         label: 'text-sm font-medium text-gray-500',
         input:
@@ -344,12 +369,12 @@ export const Ticketconfig = ({
       type: 'select',
       placeholder: 'Enter Cycle',
       required: false,
-       styles: {
-    wrapper: 'flex flex-col gap-1 w-full',
-    label: 'text-sm font-medium text-gray-500',
-    input:
-      'w-full h-11 px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-300',
-  },
+      styles: {
+        wrapper: 'flex flex-col gap-1 w-full',
+        label: 'text-sm font-medium text-gray-500',
+        input:
+          'w-full h-11 px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-300',
+      },
     },
     {
       name: 'description',
@@ -358,11 +383,11 @@ export const Ticketconfig = ({
       placeholder: 'Enter Description',
       required: true,
       styles: {
-    wrapper: 'flex flex-col gap-1 w-full',
-    label: 'text-sm font-medium text-gray-500',
-    input:
-      'w-full h-11 px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-300',
-  },
+        wrapper: 'flex flex-col gap-1 w-full',
+        label: 'text-sm font-medium text-gray-500',
+        input:
+          'w-full h-11 px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-300',
+      },
     },
   ];
   const fielddata: Array<Field> = [
@@ -379,7 +404,7 @@ export const Ticketconfig = ({
       //   )?.siteId;
       //   setSiteId(selectSiteId);
       // },
-       styles: {
+      styles: {
         wrapper: 'flex flex-col gap-1',
         label: 'text-sm font-medium text-gray-500',
         input:
@@ -480,8 +505,7 @@ export const Ticketconfig = ({
     },
   ];
   const formStyles = {
-    container:
-      'fixed inset-0 z-50 flex items-center justify-center p-2',
+    container: 'fixed inset-0 z-50 flex items-center justify-center p-2',
 
     form: `
     w-full
@@ -505,7 +529,7 @@ export const Ticketconfig = ({
     w-full
   `,
 
-   submitButton:
+    submitButton:
       'h-10 px-4 rounded-xl bg-violet-600 text-white hover:bg-violet-600 transition',
 
     cancelButton: `
@@ -522,7 +546,7 @@ export const Ticketconfig = ({
     duration-200
   `,
   };
- 
+
   const handleOpen = () => {
     setIsOpen(true);
     setFormFields({
@@ -531,11 +555,13 @@ export const Ticketconfig = ({
   };
   const handleClose = () => {
     setIsOpen(false);
+    setTickettypeId(0)
+    setSiteId(0)
     setFormFields(defaultValues);
     setToBackend(false);
     setEdit(false);
   };
-   const handleReset = () => {
+  const handleReset = () => {
     // setIsOpen(false);
     setFormFields(defaultValues);
     setToBackend(false);
@@ -544,23 +570,23 @@ export const Ticketconfig = ({
   const options = {
     basedOn: ['Created Date', 'Scheduled On'],
     ticketType: ticketTypes.map((type) => type.ticketTypeName),
-    ticketCategory: ticketCategory.map((category) => category.categoryName),
+    ticketCategory: tickcategorylist.map((category) => category.categoryName),
     Category: ticketCategory.map((category) => category.categoryName),
     priority: ['High', 'Medium', 'Low'],
-     cycle: ['N/A', '1', '2','3','4','5'],
+    cycle: ['N/A', '1', '2', '3', '4', '5'],
     assigned: userlist.map((type) => type.userName),
     siteName: Sitelist.map((site) => site.siteName),
-    displayName:equipmentIdlist.map((equip)=>equip.displayName),
+    displayName: equipmentIdlist.map((equip) => equip.displayName),
     statusName: ticketstate.map((state) => state.statusName),
   };
 
   function handleOptionClick(option: string, row: any) {
     if (option === 'Edit') {
-      setSiteId(row?.siteId)
-    
+      setSiteId(row?.siteId);
+
       const data = {
-      ticketType:row?. ticketTypeName,
-     ticketCategory:row?.categoryName,
+        ticketType: row?.ticketTypeName,
+        ticketCategory: row?.categoryName,
         ...row,
       };
       setFormFields(data);
@@ -568,20 +594,16 @@ export const Ticketconfig = ({
       setEdit(true);
     }
   }
-async function handleDownload(row: any) {
-  try {
-    const response =
-      await TicketconfigServices.fetchgetallTicketdownload(
-        row?.ticketId
+  async function handleDownload(row: any) {
+    try {
+      const response = await TicketconfigServices.fetchgetallTicketdownload(
+        row?.ticketId,
       );
-    downloadFile(
-      response.data,
-      `Ticket_${row?.ticketId}.pdf`
-    );
-  } catch (error) {
-    console.error('Download failed:', error);
+      downloadFile(response.data, `Ticket_${row?.ticketId}.pdf`);
+    } catch (error) {
+      console.error('Download failed:', error);
+    }
   }
-}
   const includedDownloadColumns = HeadCells.filter(
     (headcell) => headcell.view === true,
   ).map((headcell) => headcell.id);
@@ -627,18 +649,18 @@ async function handleDownload(row: any) {
       },
     });
   }
-    function onSubmitdata(data: any) {
+  function onSubmitdata(data: any) {
     setToBackend(true);
-    ((data.equipmentId = equipmentIdlist.filter((site: any) =>
-      data.displayName.includes(site.displayName),
-    ).map((site: any) => site.equipmentId)),
-       (data.siteId = Sitelist.find(
+    ((data.equipmentId = equipmentIdlist
+      .filter((site: any) => data.displayName.includes(site.displayName))
+      .map((site: any) => site.equipmentId)),
+      (data.siteId = Sitelist.find(
         (head: any) => head.siteName === data.siteName,
       )?.siteId),
       (data.ticketCategory = ticketCategory.find(
         (head: any) => head.categoryName === data.ticketCategory,
       )?.categoryId),
-        (data.createdBy = session.userId),
+      (data.createdBy = session.userId),
       (data.priority =
         data.priority === 'High'
           ? 3
@@ -647,38 +669,38 @@ async function handleDownload(row: any) {
             : data.priority === 'Low'
               ? 1
               : undefined),
-     
-      postTicketMutation.mutate(data,{
-          onSuccess: () => {
-                setToBackend(false);
-            toast.success('Ticket Created successfully!');
-            handleClose();
-            setFormFields(defaultValues);
-          },
-          onError: (error: any) => {
-                setToBackend(false);
-            const errors=error.response.data.error
-            if (errors?.includes('unique_po_number')) {
-      toast.error('PO number already exists. Document already uploaded for this PO.');
-    }else{
-      toast.error(error.message);
-    }
-          },
-        }));
-   
+      postTicketMutation.mutate(data, {
+        onSuccess: () => {
+          setToBackend(false);
+          toast.success('Ticket Created successfully!');
+          handleClose();
+          setFormFields(defaultValues);
+        },
+        onError: (error: any) => {
+          setToBackend(false);
+          const errors = error.response.data.error;
+          if (errors?.includes('unique_po_number')) {
+            toast.error(
+              'PO number already exists. Document already uploaded for this PO.',
+            );
+          } else {
+            toast.error(error.message);
+          }
+        },
+      }));
   }
 
   function onUpdate(data: any) {
-   ((data.equipmentId = equipmentIdlist.filter((site: any) =>
-      data.displayName.includes(site.displayName),
-    ).map((site: any) => site.equipmentId)),
-       (data.siteId = Sitelist.find(
+    ((data.equipmentId = equipmentIdlist
+      .filter((site: any) => data.displayName.includes(site.displayName))
+      .map((site: any) => site.equipmentId)),
+      (data.siteId = Sitelist.find(
         (head: any) => head.siteName === data.siteName,
       )?.siteId),
       (data.ticketCategory = ticketCategory.find(
         (head: any) => head.categoryName === data.ticketCategory,
       )?.categoryId),
-        (data.createdBy = session.userId),
+      (data.createdBy = session.userId),
       (data.priority =
         data.priority === 'High'
           ? 3
@@ -687,72 +709,71 @@ async function handleDownload(row: any) {
             : data.priority === 'Low'
               ? 1
               : undefined),
-        putMutation.mutate(data, {
-          onSuccess: () => {
-            toast.success('Site mapped to Cost Centre successfully!');
-            handleClose();
-            setFormFields(defaultValues);
-          },
-          onError: (error: any) => {
-            const errors=error.response.data.error
-            if (errors?.includes('unique_po_number')) {
-      toast.error('PO number already exists. Document already uploaded for this PO.');
-    }else{
-      toast.error(error.message);
-    }
-          },
-        }));
+      putMutation.mutate(data, {
+        onSuccess: () => {
+          toast.success('Site mapped to Cost Centre successfully!');
+          handleClose();
+          setFormFields(defaultValues);
+        },
+        onError: (error: any) => {
+          const errors = error.response.data.error;
+          if (errors?.includes('unique_po_number')) {
+            toast.error(
+              'PO number already exists. Document already uploaded for this PO.',
+            );
+          } else {
+            toast.error(error.message);
+          }
+        },
+      }));
   }
 
   // ----- TABS STATE -----
 
   return (
     <div className="m-2.5">
-      {TicketconfigQuery.isLoading  ? (
-            <Loader />
-          ) : (
-      <section className="w-full h-full flex flex-col">
-        <>
-          <CustomTable
-            headcells={HeadCells}
-            rows={ticketDataState}
-            pageName={'Ticket Configuration'}
-            hide={{
-              add: false,
-              filter: false,
-              hidden: false,
-              download: false,
-            }}
-            onSubmit={onSubmit}
-            submitFunction={onSubmit}
-            field={fielddata}
-            option={options}
-            dataChart={ticketchart}
-            labels={'Ticket Config'}
-            toBackend={toBackend}
-         
-            access={{
-              hasCreateAccess: true,
-              hasUpdateAccess: hasUpdateAccess,
-            }}
-               onClick={handleViewticketPopup}
-            isdownload={true}
-            functions={{
-              addFn: handleOpen,
-              optionHandler: (option: any, row: any) =>
-                handleOptionClick(option, row),
-              handleDownloadAction:(row: any) =>
-                handleDownload( row)
-            }}
-            clickableColumn={clickableColumnList}
-            includedDownloadColumns={includedDownloadColumns}
-          />
-        </>
+      {TicketconfigQuery.isLoading ? (
+        <Loader />
+      ) : (
+        <section className="w-full h-full flex flex-col">
+          <>
+            <CustomTable
+              headcells={HeadCells}
+              rows={ticketDataState}
+              pageName={'Ticket Configuration'}
+              hide={{
+                add: false,
+                filter: false,
+                hidden: false,
+                download: false,
+              }}
+              onSubmit={onSubmit}
+              submitFunction={onSubmit}
+              field={fielddata}
+              option={options}
+              dataChart={ticketchart}
+              labels={'Ticket Config'}
+              toBackend={toBackend}
+              access={{
+                hasCreateAccess: true,
+                hasUpdateAccess: hasUpdateAccess,
+              }}
+              onClick={handleViewticketPopup}
+              isdownload={true}
+              functions={{
+                addFn: handleOpen,
+                optionHandler: (option: any, row: any) =>
+                  handleOptionClick(option, row),
+                handleDownloadAction: (row: any) => handleDownload(row),
+              }}
+              clickableColumn={clickableColumnList}
+              includedDownloadColumns={includedDownloadColumns}
+            />
+          </>
 
-        {/* COST HEADER TAB */}
-      </section>
-
-          )}
+          {/* COST HEADER TAB */}
+        </section>
+      )}
 
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
@@ -766,7 +787,7 @@ async function handleDownload(row: any) {
               onReset={handleReset}
               fields={fields}
               options={options}
-              buttonLabel={edit?'Update':'Create'}
+              buttonLabel={edit ? 'Update' : 'Create'}
               optionalbuttonLabel={'Reset'}
               styles={formStyles}
               label={'Add New Ticket'}

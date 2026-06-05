@@ -7,6 +7,7 @@ interface ticketFiledType {
     ticketTypeName: string;
     categoryName: string;
     ticketTypeId:number;
+    ticketType:string;
     subject: string;
     priority: string;
         description: string;

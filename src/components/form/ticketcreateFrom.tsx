@@ -534,7 +534,7 @@ console.log(fileData);
             {!hide.cancelButton && (
               <form.AppForm>
                 <form.buttonField
-                  label={optionalbuttonLabel||"Cancel"}
+                  label={optionalbuttonLabel||"Reset"}
                   className={clsx(
                     styles?.cancelButton||
                     'w-full sm:w-auto border border-red-500 text-red-500 rounded cursor-pointer',

@@ -43,9 +43,10 @@ console.log(SopList);
         
         return {
           ...item,
-          vendorType: Array.isArray(item.vendorType)
-            ? item.vendorType
-            : [item.vendorType],
+           sopName: SopList
+          .filter((sop: any) => item.sopIds.includes(sop.sopId))
+          .map((sop: any) => sop.sopName),
+          statusName: item.status === 1 ? 'Active' : 'Inactive',
         //   createdByName: userList.find(
         //     (user: any) => user.userId === item.createdBy,
         //   )?.firstName,

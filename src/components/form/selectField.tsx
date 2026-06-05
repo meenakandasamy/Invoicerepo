@@ -113,17 +113,20 @@ export function SelectField({
           style={{ zIndex: 9999 }}
         >
           {/* Search Input with Icon */}
-          <div className="relative px-2 py-1">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400 dark:text-gray-500" />
-            <Input
-              type="text"
-              id="search"
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className={`${disabled && 'cursor-not-allowed bg-gray-300'}w-full pl-9 pr-3 py-1.5 text-sm border-b border-gray-300 dark:border-gray-600 bg-white dark:bg-zinc-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-0 cursor-pointer`}
-            />
-          </div>
+          <div className="relative w-full px-2 py-1">
+  <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400 dark:text-gray-500" />
+
+  <Input
+    type="text"
+    id="search"
+    placeholder="Search..."
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+    className={`w-full pl-9 pr-3 py-1.5 text-sm border-b border-gray-300 dark:border-gray-600 bg-white dark:bg-zinc-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-0 ${
+      disabled ? 'cursor-not-allowed bg-gray-300' : 'cursor-pointer'
+    }`}
+  />
+</div>
 
           {/* Scrollable Options List */}
           <div className="max-h-48 overflow-y-auto pr-1">
