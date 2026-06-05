@@ -153,7 +153,7 @@ export function TicketcreateForm({
       <button
         type="button"
         onClick={onClose}
-        className="text-gray-400 hover:text-gray-600 transition"
+        className="text-gray-400 cursor-pointer  hover:text-gray-600 transition"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

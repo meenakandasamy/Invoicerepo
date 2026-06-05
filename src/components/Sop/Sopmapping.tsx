@@ -7,7 +7,6 @@ import type { JSX } from 'react';
 import type { BaseProps} from '@/types/common';
 import type { Row } from '@/types/table';
 import type { Field } from '@/types/form';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import {
   useDependentQueriesWithId,
@@ -20,6 +19,9 @@ import {
   TicketSopmappingServices,
 } from '@/integrations/Services/ticketSopmappingServices';
 import Loader from '@/utils/common/components/loader';
+import { useSopmappinglist } from '@/hooks/data/useSopmappinglist';
+import { useSoplist } from '@/hooks/data/useSoplist';
+import { TicketcreateForm } from '../form/ticketcreateFrom';
 
 interface PoloaProps extends BaseProps {}
 export const Sopmapping = ({
@@ -27,7 +29,11 @@ export const Sopmapping = ({
   hasUpdateAccess,
   session,
 }: PoloaProps): JSX.Element => {
-  const isOEM = session.userTypeName === 'OEM';
+  const sopQuery = useSoplist(session);
+      const sopDropdown = useMemo(
+    () => sopQuery.data ?? [],
+    [sopQuery.data],
+  );
   const [toBackend, setToBackend] = useState<boolean>(false);
   const [tabledata,settabledata] = useState<any>([]);
   const queries = [
@@ -48,7 +54,22 @@ export const Sopmapping = ({
     isLoading,
     status,
   } = useQueriesFn(queries);
-
+   enum METHOD {
+    GET_ALL = 'GET_ALL',
+  }
+  const SopmappingQuery = useSopmappinglist(
+    session,
+  );
+  const allsopmap = useMemo(
+    () =>
+      (SopmappingQuery.data ?? []).sort(
+        (a: any, b: any) =>
+          new Date(b.lastUpdatedDate).getTime() -
+          new Date(a.lastUpdatedDate).getTime(),
+      ),
+    [SopmappingQuery.data],
+  );
+console.log(allsopmap,'allsopmap');
   // const postMutation = useMutationFn(
   //   PoloaServices.AddNewpoloa,
   //   PoloaQueries.GET_ALL,
@@ -70,8 +91,6 @@ export const Sopmapping = ({
       view: true,
       filterable: true,
     },
-    { id: 'castHeader', label: 'Cost Header', view: true, filterable: true },
-    { id: 'castCenter', label: 'Cost Center', view: true, filterable: true },
    
     { id: 'action', label: 'Action', view: true, filterable: false },
   ];
@@ -79,25 +98,61 @@ export const Sopmapping = ({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
   const defaultValues = {
-    selectedVendorName: '',
-    vendorName: '',
-    poNumber: '',
-    uploadType: '',
-    castHeader: '',
-    castCenter: '',
-    document: '',
-    poId: '',
+    templateName: '',
+    sopName: '',
+    description: '',
+    status: '',
+    sopId: '',
   };
   const clickableColumnList: Array<string> = ['documentName'];
   const [formFields, setFormFields] = useState<poloaFieldType>(defaultValues);
   const fields: Array<Field> = [
     {
-      name: 'vendorName',
-      label: 'Vendor Email / Code',
+      name: 'templateName',
+      label: 'Template Name',
       type: 'text',
-      placeholder: 'Enter Vendor Email / Code',
+      placeholder: 'Enter Template Name',
+      required: true,
+        styles: {
+        wrapper: 'flex flex-col gap-1',
+        label: 'text-sm font-medium text-gray-500',
+        input:
+          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
+      },
+    },
+     {
+      name: 'sopName',
+      label: 'Sop Name',
+      type: 'multiSelect',
+      placeholder: 'Enter Sop Name',
+      required: true,
+       styles: {
+        wrapper: 'flex flex-col gap-1',
+        label: 'text-sm font-medium text-gray-500',
+        input:
+          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
+      },
+    },
+    {
+      name: 'description',
+      label: 'Description',
+      type: 'text',
+      placeholder: 'Enter Description',
       required: true,
       styles: {
+        wrapper: 'flex flex-col gap-1',
+        label: 'text-sm font-medium text-gray-500',
+        input:
+          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
+      },
+    },
+     {
+      name: 'status',
+      label: 'Status',
+      type: 'select',
+      placeholder: 'Enter Status',
+      required: true,
+        styles: {
         wrapper: 'flex flex-col gap-1',
         label: 'text-sm font-medium text-gray-500',
         input:
@@ -121,18 +176,50 @@ export const Sopmapping = ({
       console.log('Invalid document URL');
     }
   };
+  // const formStyles = {
+  //   pageName: 'Cost centre',
+  //   label: 'text-mm font-bold text-black dark:text-[var(--foreground)]',
+  //   container:
+  //     'flex items-center justify-center min-h-screen p-4 overflow-auto max-w-screen-xl mx-auto bg-transparent dark:bg-transparent',
+  //   form: 'w-[60%] max-h-[100vh] border rounded-xl backdrop-blur-md p-5 shadow-xl flex flex-col bg-white dark:bg-[var(--background)] overflow-y-auto',
+  //   submitButton:
+  //     'border bg-blue-500 text-white py-1 px-2 rounded cursor-pointer hover:bg-blue-600 hover:text-white dark:bg-[var(--primary)] dark:hover:bg-blue-500 dark:text-[var(--primary-foreground)]',
+  //   cancelButton:
+  //     'border bg-red-500 text-white py-1 px-2 rounded cursor-pointer hover:bg-red-600 hover:text-white dark:bg-[var(--destructive)] dark:hover:bg-red-500 dark:text-[var(--destructive-foreground)]',
+  // };
   const formStyles = {
-    pageName: 'Cost centre',
-    label: 'text-mm font-bold text-black dark:text-[var(--foreground)]',
     container:
-      'flex items-center justify-center min-h-screen p-4 overflow-auto max-w-screen-xl mx-auto bg-transparent dark:bg-transparent',
-    form: 'w-[60%] max-h-[100vh] border rounded-xl backdrop-blur-md p-5 shadow-xl flex flex-col bg-white dark:bg-[var(--background)] overflow-y-auto',
-    submitButton:
-      'border bg-blue-500 text-white py-1 px-2 rounded cursor-pointer hover:bg-blue-600 hover:text-white dark:bg-[var(--primary)] dark:hover:bg-blue-500 dark:text-[var(--primary-foreground)]',
-    cancelButton:
-      'border bg-red-500 text-white py-1 px-2 rounded cursor-pointer hover:bg-red-600 hover:text-white dark:bg-[var(--destructive)] dark:hover:bg-red-500 dark:text-[var(--destructive-foreground)]',
-  };
+      'fixed inset-0 z-50 flex items-center justify-center p-2',
 
+    form: `
+    w-full
+ max-w-[500px]
+    rounded-[28px]
+    bg-white
+    shadow-2xl
+    border
+    border-gray-200
+    overflow-hidden
+    flex
+    flex-col
+  `,
+
+    grid: `
+    grid
+    grid-cols-1
+    md:grid-cols-1
+     gap-x-5
+    gap-y-2
+    w-full
+  `,
+
+   submitButton:
+      'h-10 px-4 rounded-xl bg-violet-600 text-white hover:bg-violet-600 transition',
+
+    cancelButton: `
+    border bg-red-500 rounded-xl text-white py-1 px-2 rounded cursor-pointer hover:bg-red-600 hover:text-white dark:bg-[var(--destructive)] dark:hover:bg-red-500 dark:text-[var(--destructive-foreground)]
+  `,
+  };
   const handleOpen = () => {
     setIsOpen(true);
     setFormFields({
@@ -146,8 +233,17 @@ export const Sopmapping = ({
     setToBackend(false);
     setEdit(false);
   };
+   const handleReset = () => {
+    // setIsOpen(false);
+    setFormFields(defaultValues);
+    // setToBackend(false);
+    // setEdit(false);
+  };
   const options = {
     uploadType: ['PO', 'LOA'],
+    status: ['Active', 'Inactive'],
+      sopName: sopDropdown.map((sop) => sop.sopName),
+  
   };
 
   function handleOptionClick(option: string, row: any) {
@@ -232,7 +328,7 @@ const includedDownloadColumns = HeadCells.filter((headcell) =>
         <>
             <CustomTable
               headcells={HeadCells}
-              rows={tabledata}
+              rows={allsopmap}
               pageName={'SOP Mapping'}
               hide={{
                 add: false,
@@ -268,16 +364,17 @@ const includedDownloadColumns = HeadCells.filter((headcell) =>
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <Modal open={isOpen} onClose={handleClose}>
-            <CustomForm
+            <TicketcreateForm
               initialValues={formFields}
               submitFunction={(data) =>
                 edit ? onUpdate(data) : onSubmit(data)
               }
               onClose={handleClose}
+                 onReset={handleReset}
               fields={fields}
               options={options}
               styles={formStyles}
-              label={label}
+              label={'Add SOP Mapping'}
               toBackend={toBackend}
             />
           </Modal>

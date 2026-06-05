@@ -21,9 +21,7 @@ console.log(session);
       return response?.map((item: any) => {
         return {
           ...item,
-          vendorType: Array.isArray(item.vendorType)
-            ? item.vendorType
-            : [item.vendorType],
+         
             priority:item.priority===1?"Low":item.priority===2?"Medium":"High"
         //   createdByName: userList.find(
         //     (user: any) => user.userId === item.createdBy,

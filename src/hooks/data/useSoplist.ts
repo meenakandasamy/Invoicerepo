@@ -3,30 +3,24 @@ import { useUserList } from './useUserList';
 
 
 import {
-  PoloaQueries,
-  PoloaServices,
-} from '@/integrations/Services/PoloaService';
+  TicketSopQueries,
+  TicketSopServices,
+} from '@/integrations/Services/ticketSopServices';
 
 
-export const useSoplist = (session: Session, method: 'GET_ALL') => {
-  const { data: userList } = useUserList(session);
+export const useSoplist = (session: Session) => {
 
-;
 
-  const allDependenciesLoaded =
-    !!userList 
-   
+
 
   return useQuery({
-    queryKey: [PoloaQueries.GET_ALL],
+    queryKey: [TicketSopQueries.GET_TICKET_SOP],
     queryFn: async () => {
-      if (!allDependenciesLoaded) {
-        throw new Error('Dependent data not loaded yet');
-      }
+    
 
       let response: Array<any> | undefined = [];
 
-      response = await PoloaServices.fetchgetallpoloa();
+      response = await TicketSopServices.fetchgetallTicketSop(session.companyId);
 
       console.log(response, 'responseTest');
 
@@ -40,12 +34,7 @@ export const useSoplist = (session: Session, method: 'GET_ALL') => {
           vendorType: Array.isArray(item.vendorType)
             ? item.vendorType
             : [item.vendorType],
-          createdByName: userList.find(
-            (user: any) => user.userId === item.createdBy,
-          )?.firstName,
-          lastUpdatedByName: userList.find(
-            (user: any) => user.userId === item.lastUpdatedBy,
-          )?.firstName,
+        
         };
       });
     },
