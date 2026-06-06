@@ -12,7 +12,7 @@ export const useUserList = (session: Session) => {
     queryKey: [EIRASAAS_API_QUERIES.GET_USERS_BY_COMPANY_ID],
     queryFn: async () => {
       try {
-        const response = await EirasaasAPIs.FetchUsersByOrganizationId(Id);
+        const response = await EirasaasAPIs.FetchUsersByOrganizationId(session.userId);
         console.log(response, 'responseTest');
 
         return response;

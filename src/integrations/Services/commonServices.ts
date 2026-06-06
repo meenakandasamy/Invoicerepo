@@ -42,7 +42,7 @@ enum EirasaasEndPoints {
 
 }
 
-const GetSiteListDropdownByUser = async (userId: string) => {
+const GetSiteListDropdownByUser = async (userId:number) => {
   try {
     const response = await Eirasaas_BaseUrl.get(
       `${EirasaasEndPoints.GET_SITELIST_BY_USER}/${userId}`,
@@ -157,6 +157,16 @@ const FetchAlluserlistbySiteid = async (id: any) => {
   }
 };
 const FetchAllEquipmentlistbysiteId = async (id: any) => {
+  try {
+    const response = await Eirasaas_BaseUrl.get(
+      `${EirasaasEndPoints. GET_ALL_EQUIPMENT_LIST}/${id}`,
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching site dropdown:', error);
+  }
+};
+const FetchAllsitelistbyuserId = async (id: any) => {
   try {
     const response = await Eirasaas_BaseUrl.get(
       `${EirasaasEndPoints. GET_ALL_EQUIPMENT_LIST}/${id}`,

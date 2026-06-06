@@ -5,9 +5,9 @@ import {
   useRouterState,
 } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
-import {
+import {LayoutTemplate,Building,
   Building2,
-PersonStanding,TicketCheck
+PersonStanding,TicketCheck,
 
 } from 'lucide-react';
 
@@ -65,9 +65,17 @@ export const NavItems: Array<NavItem> = [
    {
     to: '/ticket/sopMapping',
     label: 'SOP Mapping',
-    icons: Building2,
+    icons: Building,
     sunlabel:'',
     activity: 'ticketConfiguration',
+    mode: 'menu',
+  },
+    {
+    to: '/ticket/templatemapping',
+    label: 'Template Mapping',
+    icons: LayoutTemplate,
+    sunlabel:'',
+    activity: 'ticketApproval',
     mode: 'menu',
   },
 ];

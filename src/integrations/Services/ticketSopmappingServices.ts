@@ -39,7 +39,6 @@ const fetchGetallSopdropdown = async (ticketTypeId:any) => {
 };
 
 const AddNewSopmapping = async (data: SopmapSaveDTOType ) => {
-  console.log(data,'data in service');
   try {
     const response = await TicketApi.post(
       `${TicketSopmappingEndpoints.AddSopmapping}`,
