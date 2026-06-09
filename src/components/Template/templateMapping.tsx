@@ -13,6 +13,7 @@ import {
 } from '@/integrations/Services/ticketSopmappingServices';
 import { useSoplist } from '@/hooks/data/useSoplist';
 import { useTemplatemappinglist } from '@/hooks/data/useTemplatelist';
+import { useTemplatedropdownList } from '@/hooks/data/usetemplatedropdownliast';
 
 interface TemplatemappingProps extends BaseProps {}
 export const Templatemapping = ({
@@ -24,10 +25,12 @@ export const Templatemapping = ({
   const sopDropdown = useMemo(() => sopQuery.data ?? [], [sopQuery.data]);
   const [toBackend, setToBackend] = useState<boolean>(false);
 
-  enum METHOD {
-    GET_ALL = 'GET_ALL',
-  }
   const SopmappingQuery = useTemplatemappinglist(session);
+   const templateQuery = useTemplatedropdownList(session);
+  const templateDropdown = useMemo(
+    () => templateQuery.data ?? [],
+    [templateQuery.data],
+  );
   const allsopmap = useMemo(
     () =>
       (SopmappingQuery.data ?? []).sort(
@@ -73,11 +76,11 @@ export const Templatemapping = ({
   const [edit, setEdit] = useState<boolean>(false);
   const defaultValues = {
     templateName: '',
-    siteName: '',
+    sopName: '',
     description: '',
     statusName: '',
   };
-  const clickableColumnList: Array<string> = ['documentName'];
+  const clickableColumnList = ['documentName'];
   const [formFields, setFormFields] =
     useState<TemplatemappingFieldType>(defaultValues);
   console.log(formFields, 'formFields');
@@ -202,7 +205,7 @@ export const Templatemapping = ({
     // setEdit(false);
   };
   const options = {
-    uploadType: ['PO', 'LOA'],
+templateName: templateDropdown.map((template) => template.templateName),
     statusName: ['Active', 'Inactive'],
     sopName: sopDropdown.map((sop) => sop.sopName),
   };

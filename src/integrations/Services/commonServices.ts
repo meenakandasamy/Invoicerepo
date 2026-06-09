@@ -184,7 +184,7 @@ const Reassignticket = async (data:TicketreassignDTOType) => {
 const FetchAllSopTemplatesdropdown = async (id: any) => {
   try {
     const response = await Eirasaas_BaseUrl.get(
-      `${EirasaasEndPoints.GET_SOP_TEMPLATE_DROPDOWN}/${id}`,
+      `${EirasaasEndPoints.GET_SOP_TEMPLATE_DROPDOWN}?companyId=${id}`,
     );
     return response.data;
   } catch (error) {
