@@ -1,22 +1,21 @@
-import { TicketApi,ticketUrl} from './baseUrl';
-import type {SopDTOType,SopUpdateDTOType} from '@/utils/Validators/schema/sopSchema';
-export enum TicketSopQueries {
-  GET_TICKET_SOP= 'getAllTicketApproval',
-    GET_TICKET_SOP_DROPDOWN= 'getAllTSopdropdown',
+import { TicketApi,} from './baseUrl';
+import type {TemplatemappingSaveDTOType, TemplatemappingUpdateDTOType } from '@/utils/Validators/schema/TemplatemappingSchema';
 
+export enum TemplatemappingQueries {
+  GET_TEMPLATE_MAPPING= 'getAllTemplatemap',
+    GET_TICKET_SOP_DROPDOWN= 'getAllTSopdropdown',
 }
-   const session=sessionStorage.getItem('session') ;
-enum TicketSopEndpoints {
-  getAllTicketSop = import.meta.env.VITE_TEMPLATE_MAPPING_GET,
-   
+
+enum TemplatemappingEndpoints {
+  getAllTemplatemap = import.meta.env.VITE_TEMPLATE_MAPPING_GET,
   AddTemplatemap = import.meta.env.VITE_TEMPLATE_MAPPING_POST,
     UpdateTemplatemap = import.meta.env.VITE_TEMPLATE_MAPPING_PUT,
-  // getAllTicketApproval = import.meta.env.VITE_GET_PO_LOA,
 }
-const fetchgetallTicketSop = async (Id:any) => { 
+
+const fetchgetallTemplatemap = async (Id:any) => { 
   try {
     const response = await TicketApi.get(
-      `${TicketSopEndpoints.getAllTicketSop}?companyId=${Id}`,
+      `${TemplatemappingEndpoints.getAllTemplatemap}?companyId=${Id}`,
     );
     return response.data;
   } catch (error: any) {
@@ -26,10 +25,10 @@ const fetchgetallTicketSop = async (Id:any) => {
 };
 
 
-const AddNewTemplatemap = async (data: SopDTOType ) => {
+const AddNewTemplatemap = async (data: TemplatemappingSaveDTOType ) => {
   try {
     const response = await TicketApi.post(
-      `${TicketSopEndpoints.AddTemplatemap}`,
+      `${TemplatemappingEndpoints.AddTemplatemap}`,
       data,
     );
     return response.data;
@@ -39,10 +38,10 @@ const AddNewTemplatemap = async (data: SopDTOType ) => {
   }
 };
 
-const UpdateTemplatemap = async (data:SopUpdateDTOType) => {
+const UpdateTemplatemap = async (data:TemplatemappingUpdateDTOType) => {
   try {
     const response = await TicketApi.put(
-      `${TicketSopEndpoints.UpdateTemplatemap}/${data.sopId}`,
+      `${TemplatemappingEndpoints.UpdateTemplatemap}/${data.sopId}`,
       data,
     );
     return response.data;
@@ -51,8 +50,8 @@ const UpdateTemplatemap = async (data:SopUpdateDTOType) => {
     throw error;
   }
 };
-export const TicketSopServices = {
-  fetchgetallTicketSop,
+export const TemplatemappingServices = {
+  fetchgetallTemplatemap,
   AddNewTemplatemap,
   UpdateTemplatemap
 

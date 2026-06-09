@@ -1,48 +1,33 @@
 import { useQuery } from '@tanstack/react-query';
+
 import { useUserList } from './useUserList';
 import { useSoplist } from './useSoplist';
+
 import { useSiteList } from './useSiteList';
-import {
-  TicketSopmappingQueries,
-  TicketSopmappingServices,
-} from '@/integrations/Services/ticketSopmappingServices';
-
-
+import { TemplatemappingQueries, TemplatemappingServices } from '@/integrations/Services/TemplatemapServices';
 export const useTemplatemappinglist = (session: Session) => {
-    const { data: SopList } = useSoplist(session);
     const { data: SiteList } = useSiteList(session);
          
-
-
-console.log(SopList);
-  const allDependenciesLoaded =
-//     !!userList 
-    !!SopList && !!SiteList;
-   
-console.log(SopList);
-
+  const allDependenciesLoaded =!!SiteList;
   return useQuery({
-    queryKey: [TicketSopmappingQueries.GET_TICKET_SOPMAPPING],
+    queryKey: [TemplatemappingQueries.GET_TEMPLATE_MAPPING],
     queryFn: async () => {
       if (!allDependenciesLoaded) {
         throw new Error('Dependent data not loaded yet');
       }
 
       let response: Array<any> | undefined = [];
-      response = await TicketSopmappingServices.fetchgetallTicketSopmappig(session.companyId);
+      response = await TemplatemappingServices.fetchgetallTemplatemap(session.companyId);
       return response?.map((item: any) => {
         return {
           ...item,
-           sopName: SopList
-          .filter((sop: any) => item.sopIds.includes(sop.sopId))
-          .map((sop: any) => sop.sopName),
+           siteName: SiteList
+          .filter((site: any) => item.siteIds.includes(site.siteId))
+          .map((site: any) => site.siteName),
+             templateName: SiteList
+          .filter((site: any) => item.siteIds.includes(site.siteId))
+          .map((site: any) => site.templateName),
           statusName: item.status === 1 ? 'Active' : 'Inactive',
-        //   createdByName: userList.find(
-        //     (user: any) => user.userId === item.createdBy,
-        //   )?.firstName,
-        //   lastUpdatedByName: userList.find(
-        //     (user: any) => user.userId === item.lastUpdatedBy,
-        //   )?.firstName,
         };
       });
     },

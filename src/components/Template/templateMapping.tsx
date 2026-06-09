@@ -3,19 +3,16 @@ import { toast } from 'sonner';
 import { Modal } from '@mui/material';
 import { CustomTable } from '../table/customTable';
 import { TicketcreateForm } from '../form/ticketcreateFrom';
-
 import type { JSX } from 'react';
 import type { BaseProps } from '@/types/common';
-import type { Row } from '@/types/table';
 import type { Field } from '@/types/form';
-
 import { useMutationFn } from '@/utils/common/queryUtils';
 import {
   TicketSopmappingQueries,
   TicketSopmappingServices,
 } from '@/integrations/Services/ticketSopmappingServices';
-import { useSopmappinglist } from '@/hooks/data/useSopmappinglist';
 import { useSoplist } from '@/hooks/data/useSoplist';
+import { useTemplatemappinglist } from '@/hooks/data/useTemplatelist';
 
 interface TemplatemappingProps extends BaseProps {}
 export const Templatemapping = ({
@@ -30,7 +27,7 @@ export const Templatemapping = ({
   enum METHOD {
     GET_ALL = 'GET_ALL',
   }
-  const SopmappingQuery = useSopmappinglist(session);
+  const SopmappingQuery = useTemplatemappinglist(session);
   const allsopmap = useMemo(
     () =>
       (SopmappingQuery.data ?? []).sort(
@@ -99,9 +96,9 @@ export const Templatemapping = ({
       },
     },
     {
-      name: 'sopName',
-      label: 'Sop Name',
-      type: 'multiSelect',
+      name: 'siteName',
+      label: 'Site Name',
+      type: 'text',
       placeholder: 'Enter Sop Name',
       required: true,
       styles: {
@@ -280,7 +277,7 @@ export const Templatemapping = ({
           <CustomTable
             headcells={HeadCells}
             rows={allsopmap}
-            pageName={'SOP Mapping'}
+            pageName={'Template Mapping'}
             hide={{
               add: false,
               filter: false,
@@ -324,7 +321,7 @@ export const Templatemapping = ({
               fields={fields}
               options={options}
               styles={formStyles}
-              label={'Add SOP Mapping'}
+              label={'Add Template Mapping'}
               toBackend={toBackend}
             />
           </Modal>

@@ -78,6 +78,14 @@ export const NavItems: Array<NavItem> = [
     activity: 'ticketApproval',
     mode: 'menu',
   },
+     {
+    to: '/ticket/calender',
+    label: 'Calender',
+    icons: LayoutTemplate,
+    sunlabel:'',
+    activity: 'ticketApproval',
+    mode: 'menu',
+  },
 ];
 
 export const Route = createRootRouteWithContext<AppRouterContext>()({

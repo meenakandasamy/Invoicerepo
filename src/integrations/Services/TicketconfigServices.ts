@@ -56,7 +56,7 @@ const fetchgetallTicketlistcocunt = async (id: number) => {
 };
 const fetchgetallTicketHistory = async (id: number) => {
   try {
-    const response = await TicketApi.get(
+    const response = await baseUrl.get(
       `${TicketconfigEndpoints.getticketHistory}/${id}`,
     );
     return response.data;
@@ -67,7 +67,7 @@ const fetchgetallTicketHistory = async (id: number) => {
 };
 const fetchgetallTicketuserlist = async (id: number) => {
   try {
-    const response = await TicketApi.get(
+    const response = await baseUrl.get(
       `${TicketconfigEndpoints.getticketuserlist}/${id}`,
     );
     return response.data;
@@ -78,7 +78,7 @@ const fetchgetallTicketuserlist = async (id: number) => {
 };
 const fetchgetallTicketdetails = async (id: number) => {
   try {
-    const response = await TicketApi.get(
+    const response = await baseUrl.get(
       `${TicketconfigEndpoints.getticketDetails}/${id}`,
     );
     return response.data;
@@ -89,7 +89,7 @@ const fetchgetallTicketdetails = async (id: number) => {
 };
 const fetchgetallTicketdownload = async (id: number) => {
   try {
-    const response = await ticketUrl.get(
+    const response = await baseUrl.get(
       `${TicketconfigEndpoints.getDownloadticket}/${id}`,
     );
     return response.data;
@@ -100,7 +100,7 @@ const fetchgetallTicketdownload = async (id: number) => {
 };
 const AddNewTicketconfig = async (data: TicketconfigDTOType) => {
   try {
-    const response = await TicketApi.post(
+    const response = await baseUrl.post(
       `${TicketconfigEndpoints.AddTicketconfig}`,
       data,
     );
@@ -112,7 +112,7 @@ const AddNewTicketconfig = async (data: TicketconfigDTOType) => {
 };
 const TicketFilterlist = async (data: TicketconfigDTOType) => {
   try {
-    const response = await TicketApi.post(
+    const response = await baseUrl.post(
       `${TicketconfigEndpoints.TicketFilterlist}`,
       data,
     );
@@ -124,7 +124,7 @@ const TicketFilterlist = async (data: TicketconfigDTOType) => {
 };
 const TicketFilterchart = async (data: TicketconfigDTOType) => {
   try {
-    const response = await TicketApi.post(
+    const response = await baseUrl.post(
       `${TicketconfigEndpoints.TicketFilterchart}`,
       data,
     );
@@ -136,7 +136,7 @@ const TicketFilterchart = async (data: TicketconfigDTOType) => {
 };
 const TicketCreation = async (data: TicketcreationDTOType) => {
   try {
-    const response = await TicketApi.post(
+    const response = await baseUrl.post(
       `${TicketconfigEndpoints.Ticketcreation}`,
       data,
     );
@@ -148,7 +148,7 @@ const TicketCreation = async (data: TicketcreationDTOType) => {
 };
 const UpdateTicketconfigById = async (data: TicketconfigUpdateDTOType) => {
   try {
-    const response = await TicketApi.put(
+    const response = await baseUrl.put(
       `${TicketconfigEndpoints.UpdateTicketconfig}/${data.ticketId}`,
       data,
     );
@@ -160,7 +160,7 @@ const UpdateTicketconfigById = async (data: TicketconfigUpdateDTOType) => {
 };
 const UpdateTicketreassign = async (data: TicketviewReassignDTOType) => {
   try {
-    const response = await TicketApi.put(
+    const response = await baseUrl.put(
       `${TicketconfigEndpoints.UpdateTicketreassign}/${data.ticketId}`,
       data,
     );
@@ -172,7 +172,7 @@ const UpdateTicketreassign = async (data: TicketviewReassignDTOType) => {
 };
 const UpdateTickethold = async (data: TicketconfigUpdateDTOType) => {
   try {
-    const response = await TicketApi.put(
+    const response = await baseUrl.put(
       `${TicketconfigEndpoints.UpdateTickethold}/${data.ticketId}`,
       data,
     );
@@ -184,7 +184,7 @@ const UpdateTickethold = async (data: TicketconfigUpdateDTOType) => {
 };
 const UpdateTicketClose = async (data: TicketconfigUpdateDTOType) => {
   try {
-    const response = await TicketApi.put(
+    const response = await baseUrl.put(
       `${TicketconfigEndpoints.UpdateTicketclose}/${data.ticketId}`,
       data,
     );
