@@ -109,6 +109,19 @@ console.log(value);
       {value||'-'}
     </span>
   );
+} else if (headcell.id === 'currentLevelstatus') {
+  const value = row?.[headcell.id];
+console.log(value);
+
+  displayValue = (
+    <span
+      className={`px-3 py-1 rounded-full text-xs font-medium inline-block ${getStatusStyles(
+        value,
+      )}`}
+    >
+      {value||'-'}
+    </span>
+  );
 }else{
           const value = row?.[headcell.id];
 

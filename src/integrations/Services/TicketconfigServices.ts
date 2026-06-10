@@ -112,7 +112,7 @@ const AddNewTicketconfig = async (data: TicketconfigDTOType) => {
 };
 const TicketFilterlist = async (data: TicketconfigDTOType) => {
   try {
-    const response = await baseUrl.post(
+    const response = await TicketApi.post(
       `${TicketconfigEndpoints.TicketFilterlist}`,
       data,
     );
@@ -135,8 +135,10 @@ const TicketFilterchart = async (data: TicketconfigDTOType) => {
   }
 };
 const TicketCreation = async (data: TicketcreationDTOType) => {
+  console.log(data);
+  
   try {
-    const response = await baseUrl.post(
+    const response = await TicketApi.post(
       `${TicketconfigEndpoints.Ticketcreation}`,
       data,
     );

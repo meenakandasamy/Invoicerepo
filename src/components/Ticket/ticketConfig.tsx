@@ -650,26 +650,57 @@ console.log(formFields,"")
     });
   }
   function onSubmitdata(data: any) {
-    setToBackend(true);
-    ((data.equipmentId = equipmentIdlist
-      .filter((site: any) => data.displayName.includes(site.displayName))
-      .map((site: any) => site.equipmentId)),
-      (data.siteId = Sitelist.find(
+    // setToBackend(true);
+    // ((data.equipmentId = equipmentIdlist
+    //   .filter((site: any) => data.displayName.includes(site.displayName))
+    //   .map((site: any) => site.equipmentId)),
+    //   (data.siteId = Sitelist.find(
+    //     (head: any) => head.siteName === data.siteName,
+    //   )?.siteId),
+    //   (data.ticketCategory = ticketCategory.find(
+    //     (head: any) => head.categoryName === data.ticketCategory,
+    //   )?.categoryId),
+    //   (data.createdBy = session.userId),
+    //   (data.priority =
+    //     data.priority === 'High'
+    //       ? 3
+    //       : data.priority === 'Medium'
+    //         ? 2
+    //         : data.priority === 'Low'
+    //           ? 1
+    //           : undefined),
+    const site= Sitelist.find(
         (head: any) => head.siteName === data.siteName,
-      )?.siteId),
-      (data.ticketCategory = ticketCategory.find(
+      )?.siteId
+      const euipmentId= equipmentIdlist
+      .filter((site: any) => data.displayName.includes(site.displayName))
+      .map((site: any) => site.equipmentId)
+      const ticketTypeId= ticketTypes.find(
+        (head: any) => head.ticketTypeName === data.ticketType,
+      )?.ticketTypeId
+       const ticketTypecategory= ticketCategory.find(
         (head: any) => head.categoryName === data.ticketCategory,
-      )?.categoryId),
-      (data.createdBy = session.userId),
-      (data.priority =
+      )?.categoryId
+    const datas={
+      siteId:site,
+      equipmentId:euipmentId,
+      ticketCategory:ticketTypecategory,
+      ticketTypeId:ticketTypeId,
+      createdBy : session.userId,
+      priority :
         data.priority === 'High'
           ? 3
           : data.priority === 'Medium'
             ? 2
             : data.priority === 'Low'
               ? 1
-              : undefined),
-      postTicketMutation.mutate(data, {
+              : undefined,
+              subject:data.subject,description:data.description,cycle:data.cycle
+
+    }
+    console.log(datas);
+    
+      postTicketMutation.mutate(datas, {
         onSuccess: () => {
           setToBackend(false);
           toast.success('Ticket Created successfully!');
@@ -687,7 +718,7 @@ console.log(formFields,"")
             toast.error(error.message);
           }
         },
-      }));
+      });
   }
 
   function onUpdate(data: any) {

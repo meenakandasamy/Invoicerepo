@@ -21,7 +21,7 @@ console.log(session);
       return response?.map((item: any) => {
         return {
           ...item,
-         
+         statusNames:item.statusName,
             priority:item.priority===1?"Low":item.priority===2?"Medium":"High"
         //   createdByName: userList.find(
         //     (user: any) => user.userId === item.createdBy,

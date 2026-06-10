@@ -78,14 +78,14 @@ export function DatePicker({
             selected={date || new Date(field.state.value)}
             onSelect={handleChange}
             required={true}
-            disabled={(day: Date) => {
-              if (!futureDate) {
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                return day > today;
-              }
-              return !!disabled;
-            }}
+            // disabled={(day: Date) => {
+            //   if (!futureDate) {
+            //     const today = new Date();
+            //     today.setHours(0, 0, 0, 0);
+            //     return day > today;
+            //   }
+            //   return !!disabled;
+            // }}
           />
         </PopoverContent>
       </Popover>
