@@ -3,9 +3,9 @@ export type Approvalist = {
   approverLevel:number;
 
 };
-export type Sitelist = {
-  siteId:number;
-siteName:string;
+export type Templatemappingdropdownlist = {
+  sopTemplateId:number;
+templateName:string;
 
 };
 export interface BaseProps {

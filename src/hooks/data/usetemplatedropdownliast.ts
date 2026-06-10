@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import type { Sitelist } from '@/types/common';
+import type { Templatemappingdropdownlist } from '@/types/common';
 import {
   EIRASAAS_API_QUERIES,
   EirasaasAPIs,
@@ -8,7 +8,7 @@ import {
 export const useTemplatedropdownList = (session: Session) => {
   const Id = session.companyId;
 
-  return useQuery<Array<Sitelist>, Error>({
+  return useQuery<Array<Templatemappingdropdownlist>, Error>({
     queryKey: [EIRASAAS_API_QUERIES.GET_SOP_TEMPLATE_DROPDOWN],
     queryFn: async () => {
       const response =

@@ -14,6 +14,8 @@ import {
 import { useSoplist } from '@/hooks/data/useSoplist';
 import { useTemplatemappinglist } from '@/hooks/data/useTemplatelist';
 import { useTemplatedropdownList } from '@/hooks/data/usetemplatedropdownliast';
+import { TemplatemappingQueries, TemplatemappingServices } from '@/integrations/Services/TemplatemapServices';
+import { useSiteList } from '@/hooks/data/useSiteList';
 
 interface TemplatemappingProps extends BaseProps {}
 export const Templatemapping = ({
@@ -21,16 +23,22 @@ export const Templatemapping = ({
   hasUpdateAccess,
   session,
 }: TemplatemappingProps): JSX.Element => {
-  const sopQuery = useSoplist(session);
-  const sopDropdown = useMemo(() => sopQuery.data ?? [], [sopQuery.data]);
+
+ 
   const [toBackend, setToBackend] = useState<boolean>(false);
 
   const SopmappingQuery = useTemplatemappinglist(session);
-   const templateQuery = useTemplatedropdownList(session);
+   const siteQuery = useSiteList(session);
+  const siteDropdown = useMemo(
+    () => siteQuery.data ?? [],
+    [siteQuery.data],
+  );
+  const templateQuery = useTemplatedropdownList(session);
   const templateDropdown = useMemo(
     () => templateQuery.data ?? [],
     [templateQuery.data],
   );
+
   const allsopmap = useMemo(
     () =>
       (SopmappingQuery.data ?? []).sort(
@@ -42,12 +50,12 @@ export const Templatemapping = ({
   );
 
   const postMutation = useMutationFn(
-    TicketSopmappingServices.AddNewSopmapping,
-    TicketSopmappingQueries.GET_TICKET_SOPMAPPING,
+    TemplatemappingServices.AddNewTemplatemap,
+    TemplatemappingQueries.GET_TEMPLATE_MAPPING,
   );
   const putMutation = useMutationFn(
-    TicketSopmappingServices.UpdateSopmappingById,
-    TicketSopmappingQueries.GET_TICKET_SOPMAPPING,
+    TemplatemappingServices.UpdateTemplatemap,
+    TemplatemappingQueries.GET_TEMPLATE_MAPPING,
   );
   const HeadCells = [
     {
@@ -76,7 +84,7 @@ export const Templatemapping = ({
   const [edit, setEdit] = useState<boolean>(false);
   const defaultValues = {
     templateName: '',
-    sopName: '',
+    siteName: '',
     description: '',
     statusName: '',
   };
@@ -88,7 +96,7 @@ export const Templatemapping = ({
     {
       name: 'templateName',
       label: 'Template Name',
-      type: 'text',
+      type: 'select',
       placeholder: 'Enter Template Name',
       required: true,
       styles: {
@@ -101,7 +109,7 @@ export const Templatemapping = ({
     {
       name: 'siteName',
       label: 'Site Name',
-      type: 'text',
+      type: 'multiSelect',
       placeholder: 'Enter Sop Name',
       required: true,
       styles: {
@@ -205,9 +213,10 @@ export const Templatemapping = ({
     // setEdit(false);
   };
   const options = {
-templateName: templateDropdown.map((template) => template.templateName),
+siteName: siteDropdown.map((site:any) => site.siteName),
+templateName: templateDropdown.map((template: any) => template.templateName),
     statusName: ['Active', 'Inactive'],
-    sopName: sopDropdown.map((sop) => sop.sopName),
+    
   };
 
   function handleOptionClick(option: string, row: any) {
@@ -225,10 +234,16 @@ templateName: templateDropdown.map((template) => template.templateName),
   function onSubmit(data: any) {
     console.log(data, 'data in submit');
     setToBackend(true);
-    ((data.sopIds = sopDropdown
-      .filter((sop: any) => data.sopName.includes(sop.sopName))
-      .map((sop: any) => sop.sopId)),
+    ((data.siteIds = siteDropdown
+      .filter((site: any) => data.siteName.includes(site.siteName))
+      .map((site: any) => site.siteId)),
+       ( data.sopTemplateId = templateDropdown.find(
+    (template: any) => template.templateName === data.templateName
+  )?.sopTemplateId),
+      
       (data.status = data.statusName === 'Active' ? 1 : 0),
+        (data.createdBy = session.userId),
+         (data.lastUpdatedBy = session.userId),
       postMutation.mutate(data, {
         onSuccess: () => {
           toast.success('SOP Mapping added successfully!');
@@ -246,10 +261,15 @@ templateName: templateDropdown.map((template) => template.templateName),
   }
 
   function onUpdate(data: any) {
-    ((data.sopIds = sopDropdown
-      .filter((sop: any) => data.sopName.includes(sop.sopName))
-      .map((sop: any) => sop.sopId)),
+    ((data.siteIds = siteDropdown
+      .filter((site: any) => data.siteName.includes(site.siteName))
+      .map((site: any) => site.siteId)),
+       ( data.sopTemplateId = templateDropdown.find(
+    (template: any) => template.templateName === data.templateName
+  )?.sopTemplateId),
+      
       (data.status = data.statusName === 'Active' ? 1 : 0),
+         (data.lastUpdatedBy = session.userId),
       putMutation.mutate(data, {
         onSuccess: () => {
           toast.success('Site mapped to Cost Centre successfully!');

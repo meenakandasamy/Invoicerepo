@@ -1,4 +1,4 @@
-import { Eirasaas_BaseUrl, baseUrl } from './baseUrl';
+import {Eirasaas_BaseUrl,TicketApi, baseUrl, } from './baseUrl';
 import type {
   TicketreassignDTOType
 } from '@/utils/Validators/schema/commonSchema';
@@ -183,7 +183,7 @@ const Reassignticket = async (data:TicketreassignDTOType) => {
 };
 const FetchAllSopTemplatesdropdown = async (id: any) => {
   try {
-    const response = await Eirasaas_BaseUrl.get(
+    const response = await TicketApi.get(
       `${EirasaasEndPoints.GET_SOP_TEMPLATE_DROPDOWN}?companyId=${id}`,
     );
     return response.data;

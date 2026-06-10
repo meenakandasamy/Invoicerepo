@@ -1,6 +1,6 @@
 interface TemplatemappingFieldType {
   templateName: string;
-  sopName: string;
+  siteName: string;
   description: string;
   statusName: string;
 }

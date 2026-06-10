@@ -1,5 +1,8 @@
 import { TicketApi,} from './baseUrl';
-import type {TemplatemappingSaveDTOType, TemplatemappingUpdateDTOType } from '@/utils/Validators/schema/TemplatemappingSchema';
+import type  {TemplatemappingSaveDTO,TemplatemappingUpdateDTO} from '@/models/TemplatemapDTO'
+import  {TemplatemappingSaveSchema, TemplatemappingUpdateSchema,} from '@/utils/Validators/schema/TemplatemappingSchema';
+import { Validator } from '@/utils/Validators/ValidatorData';
+
 
 export enum TemplatemappingQueries {
   GET_TEMPLATE_MAPPING= 'getAllTemplatemap',
@@ -14,6 +17,7 @@ enum TemplatemappingEndpoints {
 
 const fetchgetallTemplatemap = async (Id:any) => { 
   try {
+   
     const response = await TicketApi.get(
       `${TemplatemappingEndpoints.getAllTemplatemap}?companyId=${Id}`,
     );
@@ -25,7 +29,12 @@ const fetchgetallTemplatemap = async (Id:any) => {
 };
 
 
-const AddNewTemplatemap = async (data: TemplatemappingSaveDTOType ) => {
+const AddNewTemplatemap = async (data: TemplatemappingSaveDTO ) => {
+   const parsedData = Validator.parse(TemplatemappingSaveSchema, data);
+    if (!parsedData.success) {
+      console.error('Templatemapping details:', parsedData.error);
+      throw new Error(parsedData.error);
+    }
   try {
     const response = await TicketApi.post(
       `${TemplatemappingEndpoints.AddTemplatemap}`,
@@ -38,7 +47,12 @@ const AddNewTemplatemap = async (data: TemplatemappingSaveDTOType ) => {
   }
 };
 
-const UpdateTemplatemap = async (data:TemplatemappingUpdateDTOType) => {
+const UpdateTemplatemap = async (data:TemplatemappingUpdateDTO) => {
+  const parsedData = Validator.parse(TemplatemappingUpdateSchema, data);
+    if (!parsedData.success) {
+      console.error('Templatemapping details:', parsedData.error);
+      throw new Error(parsedData.error);
+    }
   try {
     const response = await TicketApi.put(
       `${TemplatemappingEndpoints.UpdateTemplatemap}/${data.sopId}`,

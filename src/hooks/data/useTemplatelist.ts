@@ -2,13 +2,15 @@ import { useQuery } from '@tanstack/react-query';
 
 import { useUserList } from './useUserList';
 import { useSoplist } from './useSoplist';
-
+import { useTemplatedropdownList } from './usetemplatedropdownliast';
 import { useSiteList } from './useSiteList';
 import { TemplatemappingQueries, TemplatemappingServices } from '@/integrations/Services/TemplatemapServices';
+
 export const useTemplatemappinglist = (session: Session) => {
     const { data: SiteList } = useSiteList(session);
+    const { data: TemplateList } = useTemplatedropdownList(session);
          
-  const allDependenciesLoaded =!!SiteList;
+  const allDependenciesLoaded =!!SiteList && !!TemplateList;
   return useQuery({
     queryKey: [TemplatemappingQueries.GET_TEMPLATE_MAPPING],
     queryFn: async () => {
@@ -22,11 +24,10 @@ export const useTemplatemappinglist = (session: Session) => {
         return {
           ...item,
            siteName: SiteList
-          .filter((site: any) => item.siteIds.includes(site.siteId))
-          .map((site: any) => site.siteName),
-             templateName: SiteList
-          .filter((site: any) => item.siteIds.includes(site.siteId))
-          .map((site: any) => site.templateName),
+          .find((site: any) => item.siteId===site.siteId)?.siteName || 'Unknown Site',
+           templateName: TemplateList
+          .find((template: any) => item.sopTemplateId===template.sopTemplateId)?.templateName || 'Unknown Template',
+         
           statusName: item.status === 1 ? 'Active' : 'Inactive',
         };
       });
