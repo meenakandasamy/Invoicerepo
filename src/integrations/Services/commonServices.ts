@@ -17,7 +17,8 @@ export enum EIRASAAS_API_QUERIES {
   GET_USER_LIST_SITEID = 'GetuserlistbysiteId',
   GET_ALL_STATE_LIST = 'GetAllstatelist',
   GET_ALL_EQUIPMENT_LIST="getEquipmentlistbysiteId",
-  GET_SOP_TEMPLATE_DROPDOWN="getSopTemplateDropdown"
+  GET_SOP_TEMPLATE_DROPDOWN="getSopTemplateDropdown",
+  GET_SOP_DROPDOWN_BY_SITEID="Getsitedropdown"
 }
 enum EirasaasEndPoints {
   GET_SITELIST_BY_USER = import.meta.env
@@ -40,7 +41,8 @@ enum EirasaasEndPoints {
   GET_USER_LIST_SITEID = import.meta.env.VITE_GET_USER_LIST_BY_SITE,
   GET_ALL_EQUIPMENT_LIST=import.meta.env.VITE_TICKET_EQUIPMET_BY_SITEID,
   GET_TICKET_REASSIGN=import.meta.env.VITE_APP_TICKET_REASSIGN_PUT,
-    GET_SOP_TEMPLATE_DROPDOWN=import.meta.env.VITE_SOP_TEMPLATE_DROPDOWN
+    GET_SOP_TEMPLATE_DROPDOWN=import.meta.env.VITE_SOP_TEMPLATE_DROPDOWN,
+    GET_SOP_DROPDOWN_BY_SITEID=import.meta.env.VITE_SOP_DROPDOWN_SITEID
 
 }
 
@@ -191,6 +193,16 @@ const FetchAllSopTemplatesdropdown = async (id: any) => {
     console.error('Error fetching site dropdown:', error);
   }
 };
+const FetchAllSopdropdownbysite = async (id: any) => {
+  try {
+    const response = await TicketApi.get(
+      `${EirasaasEndPoints.GET_SOP_DROPDOWN_BY_SITEID}?siteIds=${id}`,
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching site dropdown:', error);
+  }
+};
 export const EirasaasAPIs = {
   GetSiteListDropdownByCompany,
   GetSiteListDropdownByCustomer,
@@ -203,6 +215,6 @@ export const EirasaasAPIs = {
   FetchAllcategory,
   FetchAllstate,
   FetchAlluserlistbySiteid,
-  FetchAllEquipmentlistbysiteId,Reassignticket,FetchAllSopTemplatesdropdown
+  FetchAllEquipmentlistbysiteId,Reassignticket,FetchAllSopTemplatesdropdown,FetchAllSopdropdownbysite
   
 };

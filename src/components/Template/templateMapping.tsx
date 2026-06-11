@@ -109,8 +109,8 @@ export const Templatemapping = ({
     {
       name: 'siteName',
       label: 'Site Name',
-      type: 'multiSelect',
-      placeholder: 'Enter Sop Name',
+      type: edit?'select':'multiSelect',
+      placeholder: 'Enter Site Name',
       required: true,
       styles: {
         wrapper: 'flex flex-col gap-1',
@@ -119,19 +119,7 @@ export const Templatemapping = ({
           'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
       },
     },
-    {
-      name: 'description',
-      label: 'Description',
-      type: 'text',
-      placeholder: 'Enter Description',
-      required: true,
-      styles: {
-        wrapper: 'flex flex-col gap-1',
-        label: 'text-sm font-medium text-gray-500',
-        input:
-          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
-      },
-    },
+    
     {
       name: 'statusName',
       label: 'Status',
@@ -232,38 +220,36 @@ templateName: templateDropdown.map((template: any) => template.templateName),
     (headcell) => headcell.view === true,
   ).map((headcell) => headcell.id);
   function onSubmit(data: any) {
-    console.log(data, 'data in submit');
-    setToBackend(true);
-    ((data.siteIds = siteDropdown
-      .filter((site: any) => data.siteName.includes(site.siteName))
-      .map((site: any) => site.siteId)),
-       ( data.sopTemplateId = templateDropdown.find(
-    (template: any) => template.templateName === data.templateName
-  )?.sopTemplateId),
-      
-      (data.status = data.statusName === 'Active' ? 1 : 0),
-        (data.createdBy = session.userId),
-         (data.lastUpdatedBy = session.userId),
-      postMutation.mutate(data, {
-        onSuccess: () => {
-          toast.success('SOP Mapping added successfully!');
-          handleClose();
-          setFormFields(defaultValues);
-          setToBackend(false);
-        },
-        onError: (error: any) => {
-          console.log(error, 'error in submit');
-          setToBackend(false);
-          const errors = error.response?.data?.message;
-          toast.error(errors);
-        },
-      }));
-  }
+  const siteIds = siteDropdown
+    .filter((site: any) => data.siteName.includes(site.siteName))
+    .map((site: any) => site.siteId);
 
+  const payload = siteIds.map((siteId: number) => ({
+    ...data,
+    siteId: siteId,
+    sopTemplateId: templateDropdown.find(
+      (template: any) => template.templateName === data.templateName
+    )?.sopTemplateId,
+    status: data.statusName === 'Active' ? 1 : 0,
+    createdBy: session.userId,
+    lastUpdatedBy: session.userId,
+  }));
+  postMutation.mutate(payload, {
+    onSuccess: () => {
+      toast.success('Template Mapping added successfully!');
+      handleClose();
+      setFormFields(defaultValues);
+      setToBackend(false);
+    },
+    onError: (error: any) => {
+      setToBackend(false);
+      toast.error(error.response?.data?.message);
+    },
+  });
+}
   function onUpdate(data: any) {
-    ((data.siteIds = siteDropdown
-      .filter((site: any) => data.siteName.includes(site.siteName))
-      .map((site: any) => site.siteId)),
+    ((data.siteId = siteDropdown
+      .find((site: any) => site.siteName===data.siteName)?.siteId),
        ( data.sopTemplateId = templateDropdown.find(
     (template: any) => template.templateName === data.templateName
   )?.sopTemplateId),
@@ -272,7 +258,7 @@ templateName: templateDropdown.map((template: any) => template.templateName),
          (data.lastUpdatedBy = session.userId),
       putMutation.mutate(data, {
         onSuccess: () => {
-          toast.success('Site mapped to Cost Centre successfully!');
+          toast.success('Template Mapped update successfully !');
           handleClose();
           setFormFields(defaultValues);
         },
@@ -344,7 +330,7 @@ templateName: templateDropdown.map((template: any) => template.templateName),
               fields={fields}
               options={options}
               styles={formStyles}
-              label={'Add Template Mapping'}
+              label={edit ?'Update Template Mapping':'Add Template Mapping'}
               toBackend={toBackend}
             />
           </Modal>

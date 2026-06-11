@@ -43,10 +43,11 @@ const fetchgetallTicketconfig = async (id: number) => {
     throw error;
   }
 };
+
 const fetchgetallTicketlistcocunt = async (id: number) => {
   try {
-    const response = await baseUrl.get(
-      `${TicketconfigEndpoints.getAllTicketlistcount}/${id}`,
+    const response = await TicketApi.get(
+      `${TicketconfigEndpoints.getAllTicketlistcount}?userId=${id}`,
     );
     return response.data;
   } catch (error: any) {
@@ -54,6 +55,7 @@ const fetchgetallTicketlistcocunt = async (id: number) => {
     throw error;
   }
 };
+
 const fetchgetallTicketHistory = async (id: number) => {
   try {
     const response = await baseUrl.get(

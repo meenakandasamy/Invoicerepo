@@ -39,8 +39,9 @@ export const Ticketconfig = ({
   const [userlist, setUserlist] = useState<Array<any>>([]);
   const [Sitelist, setSitelist] = useState<Array<any>>([]);
   const [SiteId, setSiteId] = useState<number | null>(0);
-    const [TickettypeId, setTickettypeId] = useState<number | null>(0);
+  const [TickettypeId, setTickettypeId] = useState<number | null>(0);
   const [equipmentIdlist, setEquipmentlist] = useState<Array<any>>([]);
+  const [soplist, setSoplist] = useState<Array<any>>([]);
 
   const queries = [
     {
@@ -81,6 +82,12 @@ export const Ticketconfig = ({
       queryKey: EIRASAAS_API_QUERIES.GET_ALL_EQUIPMENT_LIST,
       api: EirasaasAPIs.FetchAllEquipmentlistbysiteId,
       setState: setEquipmentlist,
+      id: SiteId,
+    },
+    {
+      queryKey: EIRASAAS_API_QUERIES.GET_SOP_DROPDOWN_BY_SITEID,
+      api: EirasaasAPIs.FetchAllSopdropdownbysite,
+      setState: setSoplist,
       id: SiteId,
     },
     {
@@ -261,7 +268,7 @@ export const Ticketconfig = ({
     window.open(url, '_blank');
   };
   const [formFields, setFormFields] = useState<ticketFiledType>(defaultValues);
-console.log(formFields,"")
+  console.log(formFields, '');
   const fields: Array<Field> = [
     {
       name: 'siteName',
@@ -271,7 +278,7 @@ console.log(formFields,"")
       placeholder: 'Enter Site Name',
       onChange: (name, value, form) => {
         form.setFieldValue(name, value);
-          form.setFieldValue("displayName", []);
+        form.setFieldValue('displayName', []);
         const selectSiteId = Sitelist.find(
           (type) => type.siteName === value,
         )?.siteId;
@@ -297,7 +304,7 @@ console.log(formFields,"")
         const selectSiteId = ticketTypes.find(
           (type) => type.ticketTypeName === value,
         )?.ticketTypeId;
-           form.setFieldValue("ticketCategory", "");
+        form.setFieldValue('ticketCategory', '');
         setTickettypeId(selectSiteId);
         setFormFields({ ...formFields, ticketType: value });
       },
@@ -311,7 +318,7 @@ console.log(formFields,"")
     {
       name: 'displayName',
       label: 'Equipment Name',
-      type: formFields.ticketType ==='Maintenance'?'multiSelect':'select',
+      type: formFields.ticketType === 'Maintenance' ? 'multiSelect' : 'select',
       disabled: edit || !formFields.ticketType || !formFields.siteName,
       placeholder: 'Enter Equipment Name',
       required: true,
@@ -327,7 +334,7 @@ console.log(formFields,"")
       name: 'ticketCategory',
       label: 'Ticket Category',
       type: 'select',
-      disabled: edit,
+      disabled: edit||!formFields.ticketType,
       placeholder: 'Enter Ticket Category',
       required: true,
       styles: {
@@ -355,6 +362,20 @@ console.log(formFields,"")
       label: 'Priority',
       type: 'select',
       placeholder: 'Enter Priority',
+      required: true,
+      styles: {
+        wrapper: 'flex flex-col gap-1',
+        label: 'text-sm font-medium text-gray-500',
+        input:
+          'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
+      },
+    },
+    {
+      name: 'sopName',
+      label: 'Sop Name',
+      type: 'select',
+      disabled: !formFields.siteName,
+      placeholder: 'Enter Sop Name',
       required: true,
       styles: {
         wrapper: 'flex flex-col gap-1',
@@ -397,13 +418,6 @@ console.log(formFields,"")
       type: 'multiSelect',
       placeholder: 'Site Name',
       required: true,
-      // onChange: (name, value, form) => {
-      //   form.setFieldValue(name, value);
-      //   const selectSiteId = Sitelist.find(
-      //     (type) => type.siteName === value,
-      //   )?.siteId;
-      //   setSiteId(selectSiteId);
-      // },
       styles: {
         wrapper: 'flex flex-col gap-1',
         label: 'text-sm font-medium text-gray-500',
@@ -555,17 +569,15 @@ console.log(formFields,"")
   };
   const handleClose = () => {
     setIsOpen(false);
-    setTickettypeId(0)
-    setSiteId(0)
+    setTickettypeId(0);
+    setSiteId(0);
     setFormFields(defaultValues);
     setToBackend(false);
     setEdit(false);
   };
   const handleReset = () => {
-    // setIsOpen(false);
     setFormFields(defaultValues);
     setToBackend(false);
-    // setEdit(false);
   };
   const options = {
     basedOn: ['Created Date', 'Scheduled On'],
@@ -574,6 +586,7 @@ console.log(formFields,"")
     Category: ticketCategory.map((category) => category.categoryName),
     priority: ['High', 'Medium', 'Low'],
     cycle: ['N/A', '1', '2', '3', '4', '5'],
+    sopName: soplist.map((type) => type.sopName),
     assigned: userlist.map((type) => type.userName),
     siteName: Sitelist.map((site) => site.siteName),
     displayName: equipmentIdlist.map((equip) => equip.displayName),
@@ -669,25 +682,25 @@ console.log(formFields,"")
     //         : data.priority === 'Low'
     //           ? 1
     //           : undefined),
-    const site= Sitelist.find(
-        (head: any) => head.siteName === data.siteName,
-      )?.siteId
-      const euipmentId= equipmentIdlist
+    const site = Sitelist.find(
+      (head: any) => head.siteName === data.siteName,
+    )?.siteId;
+    const euipmentId = equipmentIdlist
       .filter((site: any) => data.displayName.includes(site.displayName))
-      .map((site: any) => site.equipmentId)
-      const ticketTypeId= ticketTypes.find(
-        (head: any) => head.ticketTypeName === data.ticketType,
-      )?.ticketTypeId
-       const ticketTypecategory= ticketCategory.find(
-        (head: any) => head.categoryName === data.ticketCategory,
-      )?.categoryId
-    const datas={
-      siteId:site,
-      equipmentId:euipmentId,
-      ticketCategory:ticketTypecategory,
-      ticketTypeId:ticketTypeId,
-      createdBy : session.userId,
-      priority :
+      .map((site: any) => site.equipmentId);
+    const ticketTypeId = ticketTypes.find(
+      (head: any) => head.ticketTypeName === data.ticketType,
+    )?.ticketTypeId;
+    const ticketTypecategory = ticketCategory.find(
+      (head: any) => head.categoryName === data.ticketCategory,
+    )?.categoryId;
+    const datas = {
+      siteId: site,
+      equipmentId: euipmentId,
+      ticketCategory: ticketTypecategory,
+      ticketTypeId: ticketTypeId,
+      createdBy: session.userId,
+      priority:
         data.priority === 'High'
           ? 3
           : data.priority === 'Medium'
@@ -695,30 +708,31 @@ console.log(formFields,"")
             : data.priority === 'Low'
               ? 1
               : undefined,
-              subject:data.subject,description:data.description,cycle:data.cycle
-
-    }
+      subject: data.subject,
+      description: data.description,
+      cycle: data.cycle,
+    };
     console.log(datas);
-    
-      postTicketMutation.mutate(datas, {
-        onSuccess: () => {
-          setToBackend(false);
-          toast.success('Ticket Created successfully!');
-          handleClose();
-          setFormFields(defaultValues);
-        },
-        onError: (error: any) => {
-          setToBackend(false);
-          const errors = error.response.data.error;
-          if (errors?.includes('unique_po_number')) {
-            toast.error(
-              'PO number already exists. Document already uploaded for this PO.',
-            );
-          } else {
-            toast.error(error.message);
-          }
-        },
-      });
+
+    postTicketMutation.mutate(datas, {
+      onSuccess: () => {
+        setToBackend(false);
+        toast.success('Ticket Created successfully!');
+        handleClose();
+        setFormFields(defaultValues);
+      },
+      onError: (error: any) => {
+        setToBackend(false);
+        const errors = error.response.data.error;
+        if (errors?.includes('unique_po_number')) {
+          toast.error(
+            'PO number already exists. Document already uploaded for this PO.',
+          );
+        } else {
+          toast.error(error.message);
+        }
+      },
+    });
   }
 
   function onUpdate(data: any) {

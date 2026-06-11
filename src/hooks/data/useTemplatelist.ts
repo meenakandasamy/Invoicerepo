@@ -23,8 +23,7 @@ export const useTemplatemappinglist = (session: Session) => {
       return response?.map((item: any) => {
         return {
           ...item,
-           siteName: SiteList
-          .find((site: any) => item.siteId===site.siteId)?.siteName || 'Unknown Site',
+ 
            templateName: TemplateList
           .find((template: any) => item.sopTemplateId===template.sopTemplateId)?.templateName || 'Unknown Template',
          

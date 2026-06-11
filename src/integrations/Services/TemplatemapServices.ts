@@ -46,18 +46,15 @@ const AddNewTemplatemap = async (data: TemplatemappingSaveDTO ) => {
     throw error;
   }
 };
+console.log(TicketApi,"TicketApi");
 
 const UpdateTemplatemap = async (data:TemplatemappingUpdateDTO) => {
-  const parsedData = Validator.parse(TemplatemappingUpdateSchema, data);
-    if (!parsedData.success) {
-      console.error('Templatemapping details:', parsedData.error);
-      throw new Error(parsedData.error);
-    }
   try {
-    const response = await TicketApi.put(
-      `${TemplatemappingEndpoints.UpdateTemplatemap}/${data.sopId}`,
+      const response = await TicketApi.put(
+      `${TemplatemappingEndpoints.UpdateTemplatemap}/${data.sopTemplateMapId}`,
       data,
     );
+   
     return response.data;
   } catch (error: any) {
     console.error('Error editing vendor:', error);

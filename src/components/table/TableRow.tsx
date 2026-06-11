@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { format } from 'date-fns';
+import { Wrench, Zap } from 'lucide-react';
 import { TableCell, TableRow } from '../ui/table';
 import type { HeadCell, Row } from '@/types/table';
 
@@ -23,6 +24,18 @@ export const TableRowComponent = ({
     headcellId: string,
   ) => string | { backgroundColor?: string; color?: string } | undefined;
 }) => {
+  const getTicketTypeStyles = (type: string) => {
+  switch (type?.toLowerCase()) {
+    case 'maintenance':
+      return 'bg-violet-100 text-violet-600 border border-violet-200';
+
+    case 'operation':
+      return 'bg-emerald-100 text-emerald-700 border border-emerald-200';
+
+    default:
+      return 'bg-slate-100 text-slate-600 border border-slate-200';
+  }
+};
 const getStatusStyles = (status: string) => {
   switch (true) {
     case status?.includes('Approved'):
@@ -59,7 +72,7 @@ const getStatusStyles = (status: string) => {
 
         // Base styles
         const cellStyle: React.CSSProperties = {
-          ...(isClickable ? { cursor: 'pointer', color: '#2563eb' } : {}),
+          ...(isClickable ? { cursor: 'pointer', color: '#7008E' } : {}),
         };
 
         // Apply color coding logic if enabled
@@ -77,7 +90,7 @@ const getStatusStyles = (status: string) => {
         }
 
         const cellClass = `px-4 py-2 text-center max-w-[400px] whitespace-pre-wrap break-words ${isClickable
-          ? 'cursor-pointer text-blue-600 hover:text-blue-700 hover:underline'
+          ? 'cursor-pointer text-violet-600 hover:text-violet-700 hover:underline'
           : ''
           }`;
 
@@ -109,17 +122,21 @@ console.log(value);
       {value||'-'}
     </span>
   );
-} else if (headcell.id === 'currentLevelstatus') {
+} else if (headcell.id === 'ticketTypeName') {
   const value = row?.[headcell.id];
-console.log(value);
 
   displayValue = (
     <span
-      className={`px-3 py-1 rounded-full text-xs font-medium inline-block ${getStatusStyles(
+      className={`px-3 py-1 rounded-md text-sm font-medium inline-flex items-center gap-1 ${getTicketTypeStyles(
         value,
       )}`}
     >
-      {value||'-'}
+      {value === 'Maintenance' ? (
+        <Wrench size={14} />
+      ) : (
+        <Zap size={14} />
+      )}
+      {value}
     </span>
   );
 }else{

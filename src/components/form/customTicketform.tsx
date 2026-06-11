@@ -109,7 +109,7 @@ export function CustomTicketform({
         <div className="overflow-y-auto overflow-x-hidden dark:bg-background flex-1  md:p-2">
           <div
             className={
-              'grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-3 w-full'
+              'grid grid-cols-1 sm:grid-cols-4 gap-4 md:gap-3 w-full'
             }
           >
             {fields.map((fieldItem: Field) => {

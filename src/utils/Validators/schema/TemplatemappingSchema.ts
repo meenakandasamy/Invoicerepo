@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Base schema (for reuse, not exported directly)
 const BaseTemplatemappingSchema = z.object({
-  siteIds: z.array(z.number()),
+  siteId: z.number(),
   sopTemplateId: z.number(),
   description: z.string(),
   status: z.number(),
@@ -11,9 +11,9 @@ const BaseTemplatemappingSchema = z.object({
   sopTemplateMapId: z.number().optional(),
 });
 
-export const TemplatemappingSaveSchema = BaseTemplatemappingSchema;
+export const TemplatemappingSaveSchema =z.array( BaseTemplatemappingSchema)
 
-export const TemplatemappingUpdateSchema = BaseTemplatemappingSchema.partial();
+export const TemplatemappingUpdateSchema = BaseTemplatemappingSchema.partial()
 
 // ✅ Types
 export type TemplatemappingSaveDTOType = z.infer<
