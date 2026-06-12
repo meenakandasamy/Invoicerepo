@@ -375,7 +375,7 @@ export const Ticketconfig = ({
       name: 'sopName',
       label: 'Sop Name',
       type: 'select',
-      disabled:edit,
+      disabled: !formFields.siteName,
       placeholder: 'Enter Sop Name',
       required: true,
       styles: {

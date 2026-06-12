@@ -81,9 +81,9 @@ export default function AdvancedTicketChart({
      FORMAT DATA
   ---------------------------------------- */
   const formattedData: ChartDataItem[] = useMemo(() => {
-    if (!chartData?.ticketTypes) return [];
+    if (!chartData?.ticketStateTypes) return [];
 
-    return Object.entries(chartData.ticketTypes).map(
+    return Object.entries(chartData.ticketStateTypes).map(
       ([statusName, values]) => ({
         statusName,
         ...values,
@@ -96,7 +96,7 @@ export default function AdvancedTicketChart({
   ---------------------------------------- */
   if (formattedData.length === 0) {
     return (
-      <div className="flex h-[300px] items-center justify-center rounded-2xl border border-slate-200 bg-white text-sm text-slate-500 shadow-sm">
+      <div className="flex  items-center justify-center rounded-2xl border border-slate-200 bg-white text-sm text-slate-500 shadow-sm">
         No chart data available.
       </div>
     );
@@ -112,7 +112,7 @@ export default function AdvancedTicketChart({
       </div>
 
       {/* Chart */}
-      <div className="h-[320px] w-full [&_*:focus]:outline-none [&_*:focus]:ring-0">
+      <div className="h-[220px] w-full [&_*:focus]:outline-none [&_*:focus]:ring-0">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={formattedData}
@@ -190,40 +190,45 @@ export default function AdvancedTicketChart({
             />
 
             {/* Assigned */}
-            <Bar
-              dataKey="AssignedTicket"
-              name="Assigned"
-              fill="#6366F1"
-              radius={[8, 8, 0, 0]}
-              maxBarSize={40}
-            />
+           <Bar
+  dataKey="AssignedTicket"
+  name="Open"
+  fill="#2196F3"
+  radius={[6, 6, 0, 0]}
+  maxBarSize={45}
+/>
 
-            {/* Unfinished */}
-            <Bar
-              dataKey="unfinishedTicket"
-              name="Unfinished"
-              fill="#22C55E"
-              radius={[8, 8, 0, 0]}
-              maxBarSize={40}
-            />
+<Bar
+  dataKey="createdTicket"
+  name="Created"
+  fill="#FB8C00"
+  radius={[6, 6, 0, 0]}
+  maxBarSize={45}
+/>
 
-            {/* Created */}
-            <Bar
-              dataKey="createdTicket"
-              name="Created"
-              fill="#F97316"
-              radius={[8, 8, 0, 0]}
-              maxBarSize={40}
-            />
+<Bar
+  dataKey="inProgressTicketCount"
+  name="In Progress"
+  fill="#7C4DFF"
+  radius={[6, 6, 0, 0]}
+  maxBarSize={45}
+/>
 
-            {/* In Progress */}
-            <Bar
-              dataKey="inProgressTicketCount"
-              name="In Progress"
-              fill="#8B5CF6"
-              radius={[8, 8, 0, 0]}
-              maxBarSize={40}
-            />
+<Bar
+  dataKey="finishedTicket"
+  name="Finished"
+  fill="#22C55E"
+  radius={[6, 6, 0, 0]}
+  maxBarSize={45}
+/>
+
+<Bar
+  dataKey="unfinishedTicket"
+  name="Unfinished"
+  fill="#EF4444"
+  radius={[6, 6, 0, 0]}
+  maxBarSize={45}
+/>
           </BarChart>
         </ResponsiveContainer>
       </div>

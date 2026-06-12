@@ -22,6 +22,7 @@ import type { HeadCell, Row, TableProps } from '@/types/table';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import AdvancedTicketChart from '@/components/Chart/barticketchart'
+import TicketStatuscard from '@/components/Chart/ticketstatuscard'
 import TicketSummaryCards from '@/components/Chart/Ticketcard'
 import {
   DropdownMenu,
@@ -465,7 +466,7 @@ disabled={
           </Card>
         </div>
 {(labels === 'Ticket Approval' || labels === 'Ticket Config') && (
-  <div className="grid w-full grid-cols-1 gap-4 py-2 xl:grid-cols-2 items-stretch">
+  <div className="grid w-full  items-stretch pb-4">
     
     {/* Left Column - Form Container */}
     <div className="flex flex-col h-full min-w-0">
@@ -479,13 +480,16 @@ disabled={
         />
       </div>
     </div>
-
+ <div><TicketStatuscard ticketcard={dataChart}/></div>
     {/* Right Column */}
-    <div className="flex flex-col h-full min-w-0">
+    <div className="flex flex-col h-full min-w-0 mt-2">
       
       {labels === 'Ticket Config' && (
+        <div>
+       
         <div className="h-full w-full rounded-2xl border bg-white shadow-sm dark:bg-neutral-950 p-4 flex items-center justify-center">
           <AdvancedTicketChart chartData={dataChart} />
+        </div>
         </div>
       )}
 

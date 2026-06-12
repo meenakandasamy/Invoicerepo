@@ -106,7 +106,7 @@ export function CustomTicketform({
         // style={{ maxHeight: '90vh' }}
       >
         {/* Scrollable Form Fields */}
-        <div className="overflow-y-auto overflow-x-hidden dark:bg-background flex-1  md:p-2">
+        <div className="overflow-y-auto overflow-x-hidden dark:bg-background flex-1">
           <div
             className={
               'grid grid-cols-1 sm:grid-cols-4 gap-4 md:gap-3 w-full'
@@ -429,8 +429,20 @@ export function CustomTicketform({
             {!hide.cancelButton && (
               <form.AppForm>
                 <form.buttonField
-                  label="Cancel"
-                  className={'h-9 px-5 rounded-xl border border-slate-300 hover:bg-slate-50 transition'}
+                  label="Reset"
+                                  className="
+h-11
+px-8
+rounded-xl
+
+text-block
+font-medium
+shadow-md
+
+hover:shadow-lg
+transition-all
+duration-200
+"
                   buttonType="reset"
                   onClick={() => {
                     form.reset();
@@ -443,8 +455,20 @@ export function CustomTicketform({
               <form.AppForm>
                 <form.buttonField
                   toBackend={toBackend}
-                  label={buttonLabel || 'Submit'}
-                  className={'h-9 px-5 rounded-xl bg-violet-600 text-white hover:bg-violet-700 transition'}
+                  label={buttonLabel || 'Apply Filter'}
+                 className="
+h-11
+px-8
+rounded-xl
+bg-violet-600
+text-white
+font-medium
+shadow-md
+hover:bg-violet-700
+hover:shadow-lg
+transition-all
+duration-200
+"
                   buttonType="submit"
                 />
               </form.AppForm>
