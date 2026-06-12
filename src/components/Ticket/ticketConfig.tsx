@@ -248,6 +248,7 @@ export const Ticketconfig = ({
     fromDate: '',
     toDate: '',
     filterType: '',
+    sopId:0
   };
 
   const clickableColumnList = 'ticketCode';
@@ -374,7 +375,7 @@ export const Ticketconfig = ({
       name: 'sopName',
       label: 'Sop Name',
       type: 'select',
-      disabled: !formFields.siteName,
+      disabled:edit,
       placeholder: 'Enter Sop Name',
       required: true,
       styles: {
@@ -663,25 +664,7 @@ export const Ticketconfig = ({
     });
   }
   function onSubmitdata(data: any) {
-    // setToBackend(true);
-    // ((data.equipmentId = equipmentIdlist
-    //   .filter((site: any) => data.displayName.includes(site.displayName))
-    //   .map((site: any) => site.equipmentId)),
-    //   (data.siteId = Sitelist.find(
-    //     (head: any) => head.siteName === data.siteName,
-    //   )?.siteId),
-    //   (data.ticketCategory = ticketCategory.find(
-    //     (head: any) => head.categoryName === data.ticketCategory,
-    //   )?.categoryId),
-    //   (data.createdBy = session.userId),
-    //   (data.priority =
-    //     data.priority === 'High'
-    //       ? 3
-    //       : data.priority === 'Medium'
-    //         ? 2
-    //         : data.priority === 'Low'
-    //           ? 1
-    //           : undefined),
+    setToBackend(true);
     const site = Sitelist.find(
       (head: any) => head.siteName === data.siteName,
     )?.siteId;
@@ -694,6 +677,7 @@ export const Ticketconfig = ({
     const ticketTypecategory = ticketCategory.find(
       (head: any) => head.categoryName === data.ticketCategory,
     )?.categoryId;
+    const sopId=soplist.find((sop:any)=>sop.sopName===data.sopName)?.sopId
     const datas = {
       siteId: site,
       equipmentId: euipmentId,
@@ -711,9 +695,8 @@ export const Ticketconfig = ({
       subject: data.subject,
       description: data.description,
       cycle: data.cycle,
+      sopId:sopId
     };
-    console.log(datas);
-
     postTicketMutation.mutate(datas, {
       onSuccess: () => {
         setToBackend(false);
@@ -723,14 +706,8 @@ export const Ticketconfig = ({
       },
       onError: (error: any) => {
         setToBackend(false);
-        const errors = error.response.data.error;
-        if (errors?.includes('unique_po_number')) {
-          toast.error(
-            'PO number already exists. Document already uploaded for this PO.',
-          );
-        } else {
           toast.error(error.message);
-        }
+        
       },
     });
   }
@@ -754,21 +731,15 @@ export const Ticketconfig = ({
             : data.priority === 'Low'
               ? 1
               : undefined),
+              (data.sopId=soplist.find((sop:any)=>sop.sopName===data.sopName)?.sopId),
       putMutation.mutate(data, {
         onSuccess: () => {
-          toast.success('Site mapped to Cost Centre successfully!');
+          toast.success('Ticket Updated successfully!');
           handleClose();
           setFormFields(defaultValues);
         },
         onError: (error: any) => {
-          const errors = error.response.data.error;
-          if (errors?.includes('unique_po_number')) {
-            toast.error(
-              'PO number already exists. Document already uploaded for this PO.',
-            );
-          } else {
-            toast.error(error.message);
-          }
+            toast.error(error.message); 
         },
       }));
   }

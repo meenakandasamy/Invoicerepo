@@ -6,7 +6,7 @@ import {
 } from '@/integrations/Services/commonServices';
 
 export const useSiteList = (session: Session) => {
-  const userId = session.companyId;
+  const userId = session.userId;
 
   return useQuery<Array<Sitelist>, Error>({
     queryKey: [EIRASAAS_API_QUERIES.GET_SITELIST_BY_USER],

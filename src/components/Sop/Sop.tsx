@@ -462,7 +462,7 @@ setFormFields({...formFields,'ticketType':value})
             if (step.fieldTypes.includes('Image')) {
               fields.push({
                 type: 'IMAGE',
-                imageRequired: step.previousAfter === 'Yes',
+                afterImage: step.previousAfter === 'Yes',
                 imageCount: step.textCount || 1,
               });
             }
@@ -565,7 +565,7 @@ setFormFields({...formFields,'ticketType':value})
             if (step.fieldTypes.includes('Image')) {
               fields.push({
                 type: 'IMAGE',
-                imageRequired: step.previousAfter === 'Yes',
+                afterImage: step.previousAfter === 'Yes',
                 imageCount: step.textCount || 1,
               });
             }
@@ -830,7 +830,8 @@ setFormFields({...formFields,'ticketType':value})
                               <th className="p-4 text-left">#</th>
 
                               <th className="p-4 text-left min-w-[250px]">
-                                Header (Sub Step)
+                                Header (Sub Step)  <span className="text-red-500">*</span>
+
                               </th>
 
                               <th className="p-4 text-left min-w-[320px]">
@@ -838,7 +839,7 @@ setFormFields({...formFields,'ticketType':value})
                               </th>
 
                               <th className="p-4 text-left min-w-[220px]">
-                                After Image
+                                Image
                               </th>
                               <th className="p-4 text-left min-w-[160px]">
                                 Mandatory

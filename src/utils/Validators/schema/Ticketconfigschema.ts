@@ -23,6 +23,7 @@ const BaseTicketcreationSchema = z.object({
   subject: z.string(),
   cycle: z.number().optional,
   createdBy: z.number(),
+  sopId:z.number()
 
 });
 
