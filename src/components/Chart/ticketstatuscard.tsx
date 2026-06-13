@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 
 interface TicketSummaryProps {
-  ticketcard: 
+  ticketcard: any
 
 }
 
@@ -14,45 +14,47 @@ export default function TicketStatuscard({
   ticketcard,
  
 }: TicketSummaryProps) {
-    console.log(ticketcard);
+    const data = ticketcard.totalTickets
+console.log(data);
+// const total=data.holdTicketCount+data.inProgressTicketCount+data.closeTicketCount
     
   const stats = [
-    {
-      title: "Total Tickets",
-      value: totalTickets,
-      subtitle: "All time",
-      icon: Ticket,
-      bg: "bg-purple-50",
-      iconBg: "bg-purple-100",
-      text: "text-purple-600",
-    },
-    {
-      title: "Open Tickets",
-      value: openTickets,
-      subtitle: "Currently open",
-      icon: BellRing,
-      bg: "bg-blue-50",
-      iconBg: "bg-blue-100",
-      text: "text-blue-600",
-    },
-    {
-      title: "In Progress",
-      value: inProgressTickets,
-      subtitle: "Actively in progress",
-      icon: Clock3,
-      bg: "bg-orange-50",
-      iconBg: "bg-orange-100",
-      text: "text-orange-500",
-    },
-    {
-      title: "Completed",
-      value: completedTickets,
-      subtitle: "Successfully completed",
-      icon: CheckCircle2,
-      bg: "bg-green-50",
-      iconBg: "bg-green-100",
-      text: "text-green-600",
-    },
+    // {
+    //   title: "Total Tickets",
+    //   value: total,
+    //   subtitle: "All time",
+    //   icon: Ticket,
+    //   bg: "bg-purple-50",
+    //   iconBg: "bg-purple-100",
+    //   text: "text-purple-600",
+    // },
+    // {
+    //   title: "Hold Tickets",
+    //   value:data.holdTicketCount,
+    //   subtitle: "Currently open",
+    //   icon: BellRing,
+    //   bg: "bg-blue-50",
+    //   iconBg: "bg-blue-100",
+    //   text: "text-blue-600",
+    // },
+    // {
+    //   title: "In Progress",
+    //   value: data.inProgressTicketCount,
+    //   subtitle: "Actively in progress",
+    //   icon: Clock3,
+    //   bg: "bg-orange-50",
+    //   iconBg: "bg-orange-100",
+    //   text: "text-orange-500",
+    // },
+    // {
+    //   title: "Completed",
+    //   value: ticketcard.closeTicketCount,
+    //   subtitle: "Successfully completed",
+    //   icon: CheckCircle2,
+    //   bg: "bg-green-50",
+    //   iconBg: "bg-green-100",
+    //   text: "text-green-600",
+    // },
   ];
 
   return (
