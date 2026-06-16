@@ -1,18 +1,16 @@
 import React, { useMemo } from 'react';
 import {
+  ResponsiveContainer,
   BarChart,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid,
-  Legend,
-  ResponsiveContainer,
   Tooltip,
+  Legend,
+  Cell,
 } from 'recharts';
 
-/* ---------------------------------------
-   TYPES
----------------------------------------- */
 interface TicketMetrics {
   finishedTicket: number;
   AssignedTicket: number;
@@ -27,59 +25,46 @@ interface ChartDataItem extends TicketMetrics {
 
 interface AdvancedTicketChartProps {
   chartData: {
-    ticketTypes: Record<string, TicketMetrics>;
+    ticketStateTypes: Record<string, TicketMetrics>;
   };
 }
 
-/* ---------------------------------------
-   CUSTOM TOOLTIP
----------------------------------------- */
 const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    const item = payload[0];
+  if (!active || !payload?.length) return null;
 
-    return (
-      <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-2xl">
-        {/* Title */}
-        <p className="mb-2 text-sm font-semibold text-slate-800">
-          {label}
-        </p>
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-1 shadow-xl">
+      <p className="mb-2 text-sm font-semibold text-slate-700">
+        {label}
+      </p>
 
-        {/* Tooltip Content */}
-        <div className="flex items-center justify-between gap-5">
+      {payload.map((item: any) => (
+        <div
+          key={item.dataKey}
+          className="flex items-center justify-between gap-4 py-1"
+        >
           <div className="flex items-center gap-2">
-            <div
+            <span
               className="h-3 w-3 rounded-full"
-              style={{
-                backgroundColor: item.color,
-              }}
+              style={{ background: item.color }}
             />
-
-            <span className="text-xs font-medium text-slate-600">
+            <span className="text-xs text-slate-600">
               {item.name}
             </span>
           </div>
 
-          <span className="text-xs font-bold text-slate-900">
+          <span className="text-xs font-semibold text-slate-800">
             {item.value}
           </span>
         </div>
-      </div>
-    );
-  }
-
-  return null;
+      ))}
+    </div>
+  );
 };
 
-/* ---------------------------------------
-   MAIN COMPONENT
----------------------------------------- */
 export default function AdvancedTicketChart({
   chartData,
 }: AdvancedTicketChartProps) {
-  /* ---------------------------------------
-     FORMAT DATA
-  ---------------------------------------- */
   const formattedData: ChartDataItem[] = useMemo(() => {
     if (!chartData?.ticketStateTypes) return [];
 
@@ -91,60 +76,53 @@ export default function AdvancedTicketChart({
     );
   }, [chartData]);
 
-  /* ---------------------------------------
-     EMPTY STATE
-  ---------------------------------------- */
-  if (formattedData.length === 0) {
+  if (!formattedData.length) {
     return (
-      <div className="flex  items-center justify-center rounded-2xl border border-slate-200 bg-white text-sm text-slate-500 shadow-sm">
-        No chart data available.
+      <div className="flex h-[220px] items-center justify-center rounded-2xl border ">
+        No chart data available
       </div>
     );
   }
 
   return (
-    <div className="w-full">
-      {/* Header */}
-      <div className="mb-4">
-        <h2 className="text-lg font-semibold text-slate-800">
-          Status Specific Chart
-        </h2>
-      </div>
+    <div className="w-full rounded-3xl border ">
+      <h2 className="mb-5 text-lg font-semibold text-slate-800">
+        Status Specific Chart
+      </h2>
 
-      {/* Chart */}
-      <div className="h-[220px] w-full [&_*:focus]:outline-none [&_*:focus]:ring-0">
+      <div className="h-[220px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={formattedData}
             margin={{
               top: 20,
-              right: 10,
-              left: -10,
-              bottom: 0,
+              right: 30,
+              left: 20,
+              bottom: 20,
             }}
-            barGap={8}
-            barCategoryGap="20%"
+            barCategoryGap="45%"
           >
-            {/* Grid */}
             <CartesianGrid
-              strokeDasharray="3 3"
               vertical={false}
-              stroke="#E2E8F0"
+              stroke="#E5E7EB"
+              strokeDasharray="3 3"
             />
 
-            {/* X Axis */}
             <XAxis
               dataKey="statusName"
               axisLine={false}
               tickLine={false}
+              padding={{
+                left: 30,
+                right: 30,
+              }}
               tick={{
                 fill: '#475569',
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: 500,
               }}
             />
 
-            {/* Y Axis */}
             <YAxis
               axisLine={false}
               tickLine={false}
@@ -154,81 +132,73 @@ export default function AdvancedTicketChart({
               }}
             />
 
-            {/* Tooltip */}
-            <Tooltip
-              shared={false}
-              offset={15}
-              wrapperStyle={{
-                outline: 'none',
-              }}
-              cursor={{
-                fill: 'rgba(148,163,184,0.08)',
-              }}
-              content={<CustomTooltip />}
-            />
+            <Tooltip content={<CustomTooltip />} />
 
-            {/* Legend */}
             <Legend
               verticalAlign="bottom"
               align="center"
               iconType="circle"
-              iconSize={10}
               wrapperStyle={{
-                paddingTop: 25,
-                fontSize: '13px',
-                fontWeight: 500,
+                paddingTop: '15px',
               }}
             />
 
-            {/* Finished */}
+            {/* Bottom */}
+            <Bar
+              dataKey="createdTicket"
+              name="Created"
+              stackId="tickets"
+              fill="#FB8C00"
+              barSize={50}
+              radius={[0, 0, 12, 12]}
+              stroke="#fff"
+              strokeWidth={3}
+            />
+
+            {/* Middle */}
+            <Bar
+              dataKey="AssignedTicket"
+              name="Open"
+              stackId="tickets"
+              fill="#2196F3"
+              stroke="#fff"
+              strokeWidth={3}
+            />
+
+            <Bar
+              dataKey="inProgressTicketCount"
+              name="In Progress"
+              stackId="tickets"
+              fill="#7C4DFF"
+              stroke="#fff"
+              strokeWidth={3}
+            />
+
+            <Bar
+              dataKey="unfinishedTicket"
+              name="Unfinished"
+              stackId="tickets"
+              fill="#EF4444"
+              stroke="#fff"
+              strokeWidth={3}
+            />
+
+            {/* Top */}
             <Bar
               dataKey="finishedTicket"
               name="Finished"
-              fill="#38BDF8"
-              radius={[8, 8, 0, 0]}
-              maxBarSize={40}
-            />
-
-            {/* Assigned */}
-           <Bar
-  dataKey="AssignedTicket"
-  name="Open"
-  fill="#2196F3"
-  radius={[6, 6, 0, 0]}
-  maxBarSize={45}
-/>
-
-<Bar
-  dataKey="createdTicket"
-  name="Created"
-  fill="#FB8C00"
-  radius={[6, 6, 0, 0]}
-  maxBarSize={45}
-/>
-
-<Bar
-  dataKey="inProgressTicketCount"
-  name="In Progress"
-  fill="#7C4DFF"
-  radius={[6, 6, 0, 0]}
-  maxBarSize={45}
-/>
-
-<Bar
-  dataKey="finishedTicket"
-  name="Finished"
-  fill="#22C55E"
-  radius={[6, 6, 0, 0]}
-  maxBarSize={45}
-/>
-
-<Bar
-  dataKey="unfinishedTicket"
-  name="Unfinished"
-  fill="#EF4444"
-  radius={[6, 6, 0, 0]}
-  maxBarSize={45}
-/>
+              stackId="tickets"
+              fill="#22C55E"
+              stroke="#fff"
+              strokeWidth={3}
+            >
+              {formattedData.map((_, index) => (
+                <Cell
+                  key={index}
+                  radius={[12, 12, 0, 0]}
+                />
+              ))}
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </div>

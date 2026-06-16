@@ -562,7 +562,7 @@ export function TicketcreateForm({
         {/* Sticky Footer */}
         <div className="sticky bottom-0 bg-white z-10 pt-4 pb-2 border-t dark:bg-background border-gray-200">
           <div className="flex flex-col sm:flex-row justify-end gap-3 px-4">
-            {!hide.cancelButton && (
+            {optionalbuttonLabel !=='' && (
               <form.AppForm>
                 <form.buttonField
                   label={optionalbuttonLabel || 'Reset'}

@@ -42,6 +42,7 @@ export const Ticketconfig = ({
   const [TickettypeId, setTickettypeId] = useState<number | null>(0);
   const [equipmentIdlist, setEquipmentlist] = useState<Array<any>>([]);
   const [soplist, setSoplist] = useState<Array<any>>([]);
+  const [assign,setAssign]=useState<boolean>(false)
 
   const queries = [
     {
@@ -128,6 +129,7 @@ export const Ticketconfig = ({
     TicketconfigServices.TicketFilterlist,
     null,
   );
+  
   const postTicketchartMutation = useMutationFn(
     TicketconfigServices.TicketFilterchart,
     null,
@@ -135,6 +137,11 @@ export const Ticketconfig = ({
   const postTicketMutation = useMutationFn(
     TicketconfigServices.TicketCreation,
     TicketconfigQueries.GET_TICKET_COCUNT_USERID,
+  );
+  const putassignMutation = useMutationFn(
+    TicketconfigServices.UpdateTicketassign,
+    TicketconfigQueries.GET_TICKET_DETAILS,
+    //  TicketconfigQueries.GET_TICKET_DETAILS,
   );
   const putMutation = useMutationFn(
     TicketconfigServices.UpdateTicketconfigById,
@@ -248,11 +255,23 @@ export const Ticketconfig = ({
     fromDate: '',
     toDate: '',
     filterType: '',
-    sopId:0
+    sopId:0,
+      timeslot:'00:00',date:'',remarks:'',assigned:''
   };
 
   const clickableColumnList = 'ticketCode';
-  const handleViewticketPopup = async (row: Row | Promise<Row>) => {
+  const handleViewticketPopup = async (row: Row | Promise<Row>,id:string) => {
+  if(id=== 'assignedBy'){
+    setAssign(true)
+    setIsOpen(true)
+    setSiteId(row.siteId)
+  setFormFields((prev) => ({
+  ...prev,
+  ...row,
+  timeslot: '00:00',
+}));
+  }else{
+    
     const encryptedUrl = Encrypt({
       string: JSON.stringify({
         siteId: row.siteId,
@@ -266,11 +285,63 @@ export const Ticketconfig = ({
     const baseUrl = import.meta.env.VITE_BASE_URL;
     console.log('handle Logpopup works', encryptedUrl);
     const url = `${window.location.origin}${baseUrl}/#/ticket_expenditure/ticket_overview?ticketKey=${encodedKey}`;
-    window.open(url, '_blank');
+    window.open(url, '_blank');}
   };
   const [formFields, setFormFields] = useState<ticketFiledType>(defaultValues);
   console.log(formFields, '');
-  const fields: Array<Field> = [
+  const fields: Array<Field> = assign?[ 
+          {
+            name: 'date',
+            label: 'Date',
+            type: 'date',
+            placeholder: 'Date',
+            required: true,
+            styles: {
+              wrapper: 'flex flex-col gap-1',
+              label: 'text-sm font-medium text-gray-500',
+              input:
+                'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
+            },
+          },
+          {
+            name: 'assigned',
+            label: 'Assigned To',
+            type: 'select',
+            placeholder: 'Assigned To',
+            required: true,
+            styles: {
+              wrapper: 'flex flex-col gap-1',
+              label: 'text-sm font-medium text-gray-500',
+              input:
+                'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
+            },
+          },
+          {
+            name: 'timeslot',
+            label: 'Time Slot',
+            type: 'time',
+            placeholder: 'Time Slot',
+            required: false,
+            styles: {
+              wrapper: 'flex flex-col gap-1',
+              label: 'text-sm font-medium text-gray-500',
+              input:
+                'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
+            },
+          },
+          {
+            name: 'remarks',
+            label: 'Remark',
+            type: 'text',
+            placeholder: 'Remark',
+            required: true,
+            styles: {
+              wrapper: 'flex flex-col gap-1',
+              label: 'text-sm font-medium text-gray-500',
+              input:
+                'w-full h-9 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300',
+            },
+          }]:[
     {
       name: 'siteName',
       label: 'Site Name',
@@ -412,6 +483,7 @@ export const Ticketconfig = ({
       },
     },
   ];
+
   const fielddata: Array<Field> = [
     {
       name: 'siteName',
@@ -564,6 +636,7 @@ export const Ticketconfig = ({
 
   const handleOpen = () => {
     setIsOpen(true);
+      setAssign(false)
     setFormFields({
       ...formFields,
     });
@@ -572,6 +645,7 @@ export const Ticketconfig = ({
     setIsOpen(false);
     setTickettypeId(0);
     setSiteId(0);
+    setAssign(false)
     setFormFields(defaultValues);
     setToBackend(false);
     setEdit(false);
@@ -658,7 +732,7 @@ export const Ticketconfig = ({
     postTicketchartMutation.mutate(data, {
       onSuccess: (e: any) => {
         setTicketchart(e);
-
+setAssign(false)
         setToBackend(false);
       },
     });
@@ -703,6 +777,7 @@ export const Ticketconfig = ({
         toast.success('Ticket Created successfully!');
         handleClose();
         setFormFields(defaultValues);
+          setAssign(false)
       },
       onError: (error: any) => {
         setToBackend(false);
@@ -711,7 +786,36 @@ export const Ticketconfig = ({
       },
     });
   }
-
+function onUpdatedata(data: any) {
+  console.log(data,"data");
+  
+    setToBackend(true);
+   const datas = {
+        // ...data,
+        assignedTo: userlist.find(
+          (head: any) => head.userName === data.assigned,
+        )?.userId,
+        scheduleOn:
+    
+          new Date(data.date).toISOString().split('T')[0] + ' ' + data.timeslot,    remarks:data.remarks,
+        ticketId: data?.ticketId,
+        lastUpdatedBy: session.userId,
+      };
+    putassignMutation.mutate(datas, {
+      onSuccess: () => {
+        setToBackend(false);
+        toast.success('Ticket Assigned successfully!');
+        handleClose();
+        setFormFields(defaultValues);
+          setAssign(false)
+      },
+      onError: (error: any) => {
+        setToBackend(false);
+          toast.error(error.message);
+        
+      },
+    });
+  }
   function onUpdate(data: any) {
     ((data.equipmentId = equipmentIdlist
       .filter((site: any) => data.displayName.includes(site.displayName))
@@ -737,6 +841,7 @@ export const Ticketconfig = ({
           toast.success('Ticket Updated successfully!');
           handleClose();
           setFormFields(defaultValues);
+            setAssign(false)
         },
         onError: (error: any) => {
             toast.error(error.message); 
@@ -762,6 +867,7 @@ export const Ticketconfig = ({
                 filter: false,
                 hidden: false,
                 download: false,
+               
               }}
               onSubmit={onSubmit}
               submitFunction={onSubmit}
@@ -797,16 +903,17 @@ export const Ticketconfig = ({
             <TicketcreateForm
               initialValues={formFields}
               submitFunction={(data) =>
-                edit ? onUpdate(data) : onSubmitdata(data)
+                edit ? onUpdate(data) :assign?onUpdatedata(data): onSubmitdata(data)
               }
               onClose={handleClose}
               onReset={handleReset}
               fields={fields}
               options={options}
-              buttonLabel={edit ? 'Update' : 'Create'}
-              optionalbuttonLabel={'Reset'}
+             
+              buttonLabel={edit ? 'Update' :assign?'Assign': 'Create'}
+              optionalbuttonLabel={assign?'':'Reset'}
               styles={formStyles}
-              label={'Add New Ticket'}
+              label={assign?'Assign Ticket':'Add New Ticket'}
               toBackend={toBackend}
             />
           </Modal>

@@ -28,6 +28,7 @@ enum TicketconfigEndpoints {
   UpdateTicketconfig = import.meta.env.VITE_TICKET_UPDATE,
   Ticketcreation = import.meta.env.VITE_TICKET_CREATION,
   UpdateTicketreassign = import.meta.env.VITE_TICKET_REASSIGN,
+  UpdateTicketassign = import.meta.env.VITE_TICKET_ASSIGN,
   UpdateTickethold = import.meta.env.VITE_TICKET_HOLD,
   UpdateTicketclose = import.meta.env.VITE_TICKET_CLOSE,
   // getAllTicketconfig = import.meta.env.VITE_GET_PO_LOA,
@@ -126,7 +127,7 @@ const TicketFilterlist = async (data: TicketconfigDTOType) => {
 };
 const TicketFilterchart = async (data: TicketconfigDTOType) => {
   try {
-    const response = await baseUrl.post(
+    const response = await TicketApi.post(
       `${TicketconfigEndpoints.TicketFilterchart}`,
       data,
     );
@@ -174,6 +175,18 @@ const UpdateTicketreassign = async (data: TicketviewReassignDTOType) => {
     throw error;
   }
 };
+const UpdateTicketassign = async (data: TicketviewReassignDTOType) => {
+  try {
+    const response = await baseUrl.put(
+      `${TicketconfigEndpoints.UpdateTicketassign}/${data.ticketId}`,
+      data,
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('Error editing vendor:', error);
+    throw error;
+  }
+};
 const UpdateTickethold = async (data: TicketconfigUpdateDTOType) => {
   try {
     const response = await baseUrl.put(
@@ -210,7 +223,7 @@ export const TicketconfigServices = {
   TicketFilterchart,
   fetchgetallTicketlistcocunt,
   fetchgetallTicketdownload,
-  UpdateTicketreassign,
+  UpdateTicketreassign,UpdateTicketassign,
   UpdateTickethold,
   UpdateTicketClose,
 };

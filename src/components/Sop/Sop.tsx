@@ -34,11 +34,13 @@ export const Sop = ({
   const [ticketCategory, setTicketCategory] = useState<Array<any>>([]);
   const [dropdowndata, setDropdowndata] = useState<Array<any>>([]);
   const [ticketTypeId, setticketTypeId] = useState<number>(2);
+  const [serviceReport, setServiceReport] = useState(false);
   const [categoryId, setCategoryId] = useState<number>(0);
   const [sections, setSections] = useState([
     {
       id: 1,
       sectionName: '',
+    isServiceReport:false,
       steps: [
         {
           id: 1,
@@ -604,26 +606,41 @@ setFormFields({...formFields,'ticketType':value})
   }
 
   // ----- TABS STATE -----
-  const addSection = () => {
-    setSections((prev: any) => [
-      ...prev,
+const addSection = () => {
+  const newSection = {
+    id: Date.now(),
+    sectionName: '',
+    isServiceReport: false,
+    steps: [
       {
-        id: prev.length + 1,
-        sectionName: '',
-        steps: [
-          {
-            id: 1,
-            header: '',
-            fieldTypes: [],
-            options: dropdowndata,
-            previousAfter: 'No',
-            remarks: '',
-          },
-        ],
+        id: 1,
+        header: '',
+        fieldTypes: [],
+        options: dropdowndata,
+        previousAfter: 'No',
+        remarks: false,
+        mandatory: false,
+        selectValues: [],
       },
-    ]);
+    ],
   };
 
+  setSections((prev: any) => {
+    const serviceReportIndex = prev.findIndex(
+      (section: any) => section.isServiceReport,
+    );
+
+    // Service Report exists -> insert before it
+    if (serviceReportIndex !== -1) {
+      const updated = [...prev];
+      updated.splice(serviceReportIndex, 0, newSection);
+      return updated;
+    }
+
+    // No Service Report -> add normally
+    return [...prev, newSection];
+  });
+};
   const removeSection = (sectionId: number) => {
     setSections((prev) => prev.filter((s) => s.id !== sectionId));
   };
@@ -768,24 +785,67 @@ setFormFields({...formFields,'ticketType':value})
               extraContent={
                 <div className="space-y-6">
                   {/* ADD SECTION */}
-                  <div className="flex justify-end">
-                    <button
-                      type="button"
-                      onClick={addSection}
-                      className="
-          h-11 px-5
-          rounded-2xl
-          border border-violet-200
-          bg-violet-50
-          text-violet-700
-          font-medium
-          hover:bg-violet-100
-          transition
-        "
-                    >
-                      + Add Section
-                    </button>
-                  </div>
+                 <div className="flex items-center justify-between mb-4">
+  {/* Service Report Checkbox */}
+  <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+   <input
+  type="checkbox"
+  checked={serviceReport}
+  onChange={(e) => {
+    const checked = e.target.checked;
+    setServiceReport(checked);
+
+    if (checked) {
+      setSections((prev: any) => [
+        ...prev,
+        {
+          id: Date.now(),
+          sectionName: 'Service Report',
+          isServiceReport: true,
+          steps: [
+            {
+              id: 1,
+              header: 'Service Report Details',
+              fieldTypes: [],
+              options: dropdowndata,
+              previousAfter: 'No',
+              remarks: false,
+              mandatory: false,
+              selectValues: [],
+            },
+          ],
+        },
+      ]);
+    } else {
+      setSections((prev: any) =>
+        prev.filter((section: any) => !section.isServiceReport),
+      );
+    }
+  }}
+  
+  className="h-4 w-4 accent-violet-600 cursor-pointer"
+/>
+    Service Report
+  </label>
+
+  {/* Add Section Button */}
+  <button
+    type="button"
+    onClick={addSection}
+    className="
+      h-11 px-5
+      rounded-2xl
+      border border-violet-200
+      bg-violet-50
+      text-violet-700
+      font-medium
+      hover:bg-violet-100
+      transition cursor-pointer
+    "
+  >
+    + Add Section
+  </button>
+</div>
 
                   {/* SECTION LIST */}
                   {sections.map((section, sectionIndex) => (
@@ -803,6 +863,7 @@ setFormFields({...formFields,'ticketType':value})
                           <input
                             type="text"
                             value={section.sectionName}
+                              disabled={section.isServiceReport}
                             onChange={(e) =>
                               handleSectionChange(
                                 section.id,
@@ -866,6 +927,7 @@ setFormFields({...formFields,'ticketType':value})
                                   <input
                                     type="text"
                                     value={step.header}
+                                           disabled={section.isServiceReport}
                                     onChange={(e) =>
                                       handleStepChange(
                                         section.id,
@@ -899,6 +961,7 @@ setFormFields({...formFields,'ticketType':value})
                                             checked={step.fieldTypes.includes(
                                               type,
                                             )}
+                                            className='accent-violet-700'
                                             onChange={(e) => {
                                               const updated = e.target.checked
                                                 ? [...step.fieldTypes, type]
@@ -1091,7 +1154,7 @@ setFormFields({...formFields,'ticketType':value})
                                       {['Yes', 'No'].map((option) => (
                                         <label
                                           key={option}
-                                          className="flex items-center gap-2"
+                                          className="flex items-center gap-2 accent-violet-700"
                                         >
                                           <input
                                             type="radio"
@@ -1175,22 +1238,21 @@ setFormFields({...formFields,'ticketType':value})
                                   </button>
                                 </td>
                                 {/* REMARKS */}
-                                <td className="p-3">
-                                  <input
-                                    type="text"
-                                    value={step.remarks}
-                                    onChange={(e) =>
-                                      handleStepChange(
-                                        section.id,
-                                        step.id,
-                                        'remarks',
-                                        e.target.value,
-                                      )
-                                    }
-                                    placeholder="Enter Remarks"
-                                    className="border rounded-lg px-4 py-2 w-full"
-                                  />
-                                </td>
+                              <td className="p-3">
+  <input
+    type="checkbox"
+    checked={step.remarks}
+    onChange={(e) =>
+      handleStepChange(
+        section.id,
+        step.id,
+        'remarks',
+        e.target.checked
+      )
+    }
+    className="h-5 w-5 accent-violet-700"
+  />
+</td>
 
                                 {/* ACTION */}
                                 <td className="p-4">
@@ -1209,13 +1271,15 @@ setFormFields({...formFields,'ticketType':value})
 
                         {/* ADD SUB STEP */}
                         <div className="p-4 border-t">
-                          <button
-                            type="button"
-                            onClick={() => addSubStep(section.id)}
-                            className="text-violet-700 hover:text-violet-800 font-medium"
-                          >
-                            + Add Sub Step
-                          </button>
+                         {!section.isServiceReport && (
+  <button
+    type="button"
+    onClick={() => addSubStep(section.id)}
+    className="text-violet-700 hover:text-violet-800 font-medium cursor-pointer"
+  >
+    + Add Sub Step
+  </button>
+)}
                         </div>
                       </div>
                     </div>

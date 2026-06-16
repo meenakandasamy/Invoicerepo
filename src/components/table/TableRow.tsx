@@ -51,6 +51,21 @@ const getStatusStyles = (status: string) => {
       return '-';
   }
 };
+const getPriorityStyles = (priority: string) => {
+  switch (priority?.toLowerCase()) {
+    case 'high':
+      return 'bg-red-100 text-red-600 border border-red-200';
+
+    case 'medium':
+      return 'bg-orange-100 text-orange-600 border border-orange-200';
+
+    case 'low':
+      return 'bg-blue-100 text-blue-600 border border-blue-200';
+
+    default:
+      return 'bg-slate-100 text-slate-600 border border-slate-200';
+  }
+};
   return (
     <TableRow>
       {headcells.map((headcell) => {
@@ -139,6 +154,35 @@ console.log(value);
       {value}
     </span>
   );
+}else if (headcell.id === 'priority') {
+  const value = row?.[headcell.id];
+
+  displayValue = (
+    <span
+      className={`px-3 py-1 rounded-full text-xs font-medium inline-block ${getPriorityStyles(
+        value,
+      )}`}
+    >
+      {value || '-'}
+    </span>
+  );
+}else if (headcell.id === 'assignedBy') {
+  const value = row?.[headcell.id];
+
+  displayValue =
+    value === null || value === undefined || value === '' ? (
+      <span
+        className="text-violet-700  hover:underline cursor-pointer font-medium"
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick?.(row, headcell.id);
+        }}
+      >
+        Assign
+      </span>
+    ) : (
+      value
+    );
 }else{
           const value = row?.[headcell.id];
 

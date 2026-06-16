@@ -53,7 +53,7 @@ export default function CustomBreadcrumbs() {
            
               <Home
                 size={16}
-                className="transition-transform color-slate-600 group-hover:scale-110"
+                className="transition-transform color-slate-600 group-hover:scale-110 text-violet-700"
               />
               {/* <span>Home</span> */}
         

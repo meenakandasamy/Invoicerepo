@@ -16,49 +16,50 @@ export default function TicketStatuscard({
 }: TicketSummaryProps) {
     const data = ticketcard.totalTickets
 console.log(data);
-// const total=data.holdTicketCount+data.inProgressTicketCount+data.closeTicketCount
+const total=data.holdTicketCount+data.inProgressTicketCount+data.closeTicketCount
     
   const stats = [
-    // {
-    //   title: "Total Tickets",
-    //   value: total,
-    //   subtitle: "All time",
-    //   icon: Ticket,
-    //   bg: "bg-purple-50",
-    //   iconBg: "bg-purple-100",
-    //   text: "text-purple-600",
-    // },
-    // {
-    //   title: "Hold Tickets",
-    //   value:data.holdTicketCount,
-    //   subtitle: "Currently open",
-    //   icon: BellRing,
-    //   bg: "bg-blue-50",
-    //   iconBg: "bg-blue-100",
-    //   text: "text-blue-600",
-    // },
-    // {
-    //   title: "In Progress",
-    //   value: data.inProgressTicketCount,
-    //   subtitle: "Actively in progress",
-    //   icon: Clock3,
-    //   bg: "bg-orange-50",
-    //   iconBg: "bg-orange-100",
-    //   text: "text-orange-500",
-    // },
-    // {
-    //   title: "Completed",
-    //   value: ticketcard.closeTicketCount,
-    //   subtitle: "Successfully completed",
-    //   icon: CheckCircle2,
-    //   bg: "bg-green-50",
-    //   iconBg: "bg-green-100",
-    //   text: "text-green-600",
-    // },
+    {
+      title: "Total Tickets",
+      value: total,
+      subtitle: "All time",
+      icon: Ticket,
+      bg: "bg-purple-50",
+      iconBg: "bg-purple-100",
+      text: "text-purple-600",
+    },
+     {
+      title: "In Progress",
+      value: data.inProgressTicketCount,
+      subtitle: "Actively in progress",
+      icon: Clock3,
+      bg: "bg-orange-50",
+      iconBg: "bg-orange-100",
+      text: "text-orange-500",
+    },
+    {
+      title: "Hold Tickets",
+      value:data.holdTicketCount,
+      subtitle: "Currently open",
+      icon: BellRing,
+      bg: "bg-blue-50",
+      iconBg: "bg-blue-100",
+      text: "text-blue-600",
+    },
+   
+    {
+      title: "Completed",
+      value: data.closeTicketCount,
+      subtitle: "Successfully completed",
+      icon: CheckCircle2,
+      bg: "bg-green-50",
+      iconBg: "bg-green-100",
+      text: "text-green-600",
+    },
   ];
 
   return (
-    <div className="p-6 bg-white rounded-2xl border border-gray-200 shadow-sm">
+    <div className="p-4 bg-white rounded-2xl border border-gray-200 shadow-sm">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {stats.map((item) => {
           const Icon = item.icon;

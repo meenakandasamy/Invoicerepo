@@ -54,6 +54,7 @@ function RouteComponent() {
     assigned: '',
     timeslot: '00:00',
     remarks: '',
+    ticketId:0
   };
   const decryptedUrl = Decrypt({
     encryptedString: search.ticketKey,

@@ -480,18 +480,30 @@ disabled={
         />
       </div>
     </div>
- <div><TicketStatuscard ticketcard={dataChart}/></div>
+ {/* <div><TicketStatuscard ticketcard={dataChart}/></div> */}
     {/* Right Column */}
     <div className="flex flex-col h-full min-w-0 mt-2">
       
-      {labels === 'Ticket Config' && (
-        <div>
-       
-        <div className="h-full w-full rounded-2xl border bg-white shadow-sm dark:bg-neutral-950 p-4 flex items-center justify-center">
-          <AdvancedTicketChart chartData={dataChart} />
-        </div>
-        </div>
-      )}
+  {labels === 'Ticket Config' && (
+  <div className="flex gap-4 h-full items-stretch">
+    
+    {/* Left Section */}
+    <div className="w-[35%] h-full">
+      <TicketStatuscard ticketcard={dataChart} />
+    </div>
+
+    {/* Middle Section */}
+    <div className="w-[35%] h-full rounded-2xl border bg-white shadow-sm dark:bg-neutral-950 p-4">
+      <AdvancedTicketChart chartData={dataChart} />
+    </div>
+
+    {/* Right Section */}
+    <div className="w-[30%] h-full rounded-2xl border bg-white shadow-sm dark:bg-neutral-950 p-4">
+      <AdvancedTicketChart chartData={dataChart} />
+    </div>
+
+  </div>
+)}
 
       {labels === 'Ticket Approval' && (
         <div className="h-full w-full rounded-2xl border bg-white shadow-sm dark:bg-neutral-950 p-4 flex items-center justify-center">
@@ -529,6 +541,7 @@ disabled={
                         headcells={handledHeadCells}
                         optionPopup={optionPopup}
                         onClick={onClick}
+             
                         clickableColumn={clickableColumn}
                         colorCode={colorCode}
                         colorCodeLogic={colorCodeLogic}

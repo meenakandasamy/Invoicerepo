@@ -14,12 +14,13 @@ interface ticketFiledType {
     equipmentId: Array<number>;
     ticketCategory:number,
     cycle:number,createdBy:number
+    timeslot:string
 }
 interface viewticketFiledType {
   timeslot: string;
     remarks: string;
     assigned: string;
- 
+ ticketId:number;
     date: string;
 
 
