@@ -52,7 +52,13 @@ const getStatusStyles = (status: string) => {
   }
 };
 const getPriorityStyles = (priority: string) => {
+      console.log(priority);
   switch (priority?.toLowerCase()) {
+    
+          
+   case 'active':
+      return 'bg-green-100 text-green-600 border border-green-200';
+
     case 'high':
       return 'bg-red-100 text-red-600 border border-red-200';
 
@@ -61,7 +67,19 @@ const getPriorityStyles = (priority: string) => {
 
     case 'low':
       return 'bg-blue-100 text-blue-600 border border-blue-200';
+   case 'assigned':
+      return 'bg-[#E0F2FE] text-[#38BDF8] border border-[#38BDF8]';
 
+    case 'in progress':
+    case 'inprogress':
+      return 'bg-orange-100 text-orange-600 border border-orange-200';
+
+    case 'finished':
+      return 'bg-green-100 text-green-600 border border-green-200';
+
+
+    case 'unfinished':
+      return 'bg-red-100 text-red-600 border border-red-200';
     default:
       return 'bg-slate-100 text-slate-600 border border-slate-200';
   }
@@ -154,7 +172,7 @@ console.log(value);
       {value}
     </span>
   );
-}else if (headcell.id === 'priority') {
+}else if (headcell.id === 'priority'||headcell.id === 'statusName') {
   const value = row?.[headcell.id];
 
   displayValue = (

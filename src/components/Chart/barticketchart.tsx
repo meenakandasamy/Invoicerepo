@@ -1,26 +1,13 @@
 import React, { useMemo } from 'react';
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  Cell,
-} from 'recharts';
+import Chart from 'react-apexcharts';
+import type { ApexOptions } from 'apexcharts';
 
 interface TicketMetrics {
   finishedTicket: number;
-  AssignedTicket: number;
+  assignedTicket: number;
   unfinishedTicket: number;
   inProgressTicketCount: number;
   createdTicket: number;
-}
-
-interface ChartDataItem extends TicketMetrics {
-  statusName: string;
 }
 
 interface AdvancedTicketChartProps {
@@ -29,179 +16,238 @@ interface AdvancedTicketChartProps {
   };
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (!active || !payload?.length) return null;
-
-  return (
-    <div className="rounded-xl border border-slate-200 bg-white p-1 shadow-xl">
-      <p className="mb-2 text-sm font-semibold text-slate-700">
-        {label}
-      </p>
-
-      {payload.map((item: any) => (
-        <div
-          key={item.dataKey}
-          className="flex items-center justify-between gap-4 py-1"
-        >
-          <div className="flex items-center gap-2">
-            <span
-              className="h-3 w-3 rounded-full"
-              style={{ background: item.color }}
-            />
-            <span className="text-xs text-slate-600">
-              {item.name}
-            </span>
-          </div>
-
-          <span className="text-xs font-semibold text-slate-800">
-            {item.value}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-};
-
 export default function AdvancedTicketChart({
   chartData,
 }: AdvancedTicketChartProps) {
-  const formattedData: ChartDataItem[] = useMemo(() => {
+  console.log(chartData);
+  
+  const formattedData = useMemo(() => {
     if (!chartData?.ticketStateTypes) return [];
 
-    return Object.entries(chartData.ticketStateTypes).map(
-      ([statusName, values]) => ({
+    const order = [ 'Open','Hold','Close'];
+
+    return Object.entries(chartData.ticketStateTypes)
+      .map(([statusName, values]) => ({
         statusName,
         ...values,
-      })
-    );
+      }))
+      .sort((a, b) => {
+        const aIndex = order.indexOf(a.statusName);
+        const bIndex = order.indexOf(b.statusName);
+
+        return (
+          (aIndex === -1 ? Number.MAX_SAFE_INTEGER : aIndex) -
+          (bIndex === -1 ? Number.MAX_SAFE_INTEGER : bIndex)
+        );
+      });
   }, [chartData]);
+
+  const categories = formattedData.map(
+    (item) => item.statusName
+  );
+
+  const series = [
+    {
+      name: 'Created',
+      data: formattedData.map(
+        (item) => item.createdTicket
+      ),
+    },
+    {
+      name: 'Assigned',
+      data: formattedData.map(
+        (item) => item.assignedTicket
+      ),
+    },
+    {
+      name: 'In Progress',
+      data: formattedData.map(
+        (item) => item.inProgressTicketCount
+      ),
+    },
+    {
+      name: 'Unfinished',
+      data: formattedData.map(
+        (item) => item.unfinishedTicket
+      ),
+    },
+    {
+      name: 'Finished',
+      data: formattedData.map(
+        (item) => item.finishedTicket
+      ),
+    },
+  ];
+
+  const maxValue = Math.max(
+    ...series.flatMap((item) => item.data),
+    0
+  );
+
+  const yAxisMax = Math.ceil(maxValue / 10) * 10 || 10;
+
+  const options: ApexOptions = {
+    chart: {
+      type: 'bar',
+      toolbar: {
+        show: true,
+      },
+      //  fontFamily: 'Inter, sans-serif',
+   
+      animations: {
+        enabled: true,
+      },
+    },
+
+    colors: [
+      '#F97316',
+      '#38BDF8',
+      '#5B4DD8',
+      '#E5E7EB',
+      '#22C55E',
+    ],
+
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        columnWidth: '50%',
+        borderRadius: 8,
+        borderRadiusApplication: 'end',
+        distributed: false,
+      },
+    },
+
+    fill: {
+      type: 'pattern',
+      opacity: 1,
+      pattern: {
+        style: 'horizontalLines',
+        width: 15,
+        height: 15,
+        strokeWidth: 20,
+      },
+    },
+
+    stroke: {
+      show: true,
+      width: 2,
+      colors: ['#FFFFFF'],
+    },
+
+    dataLabels: {
+      enabled: false,
+    },
+
+    xaxis: {
+      categories,
+      axisBorder: {
+        show: false,
+      },
+      axisTicks: {
+        show: false,
+      },
+      labels: {
+        style: {
+         colors: '#334155',
+      fontSize: '12px',
+      fontFamily: 'Inter, sans-serif',
+      fontWeight: 600,
+        },
+      },
+    },
+
+    yaxis: {
+      min: 0,
+      max: yAxisMax,
+      tickAmount: 4,
+      labels: {
+        style: {
+          colors: ['#94A3B8'],
+          fontSize: '12px',
+        },
+      },
+    },
+
+    grid: {
+      borderColor: '#E2E8F0',
+      strokeDashArray: 4,
+      padding: {
+        left: 10,
+        right: 10,
+      },
+      xaxis: {
+        lines: {
+          show: false,
+        },
+      },
+      yaxis: {
+        lines: {
+          show: true,
+        },
+      },
+    },
+
+    legend: {
+      position: 'bottom',
+      horizontalAlign: 'center',
+      fontSize: '12px',
+      itemMargin: {
+        horizontal: 16,
+      },
+      markers: {
+        width: 10,
+        height: 10,
+        radius: 999,
+      },
+    },
+
+    tooltip: {
+      shared: true,
+      intersect: false,
+      theme: 'light',
+    },
+
+    states: {
+      hover: {
+        filter: {
+          type: 'none',
+        },
+      },
+    },
+  };
 
   if (!formattedData.length) {
     return (
-      <div className="flex h-[220px] items-center justify-center rounded-2xl border ">
+      <div className="flex h-[320px] items-center justify-center rounded-3xl border border-slate-200 bg-white">
         No chart data available
       </div>
     );
   }
 
   return (
-    <div className="w-full rounded-3xl border ">
-      <h2 className="mb-5 text-lg font-semibold text-slate-800">
-        Status Specific Chart
-      </h2>
+    <div className="h-full rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="mb-5 flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-semibold text-slate-800">
+            Status Specific Chart
+          </h2>
 
-      <div className="h-[220px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={formattedData}
-            margin={{
-              top: 20,
-              right: 30,
-              left: 20,
-              bottom: 20,
-            }}
-            barCategoryGap="45%"
-          >
-            <CartesianGrid
-              vertical={false}
-              stroke="#E5E7EB"
-              strokeDasharray="3 3"
-            />
+          <p className="mt-1 text-sm text-slate-500">
+            Ticket status overview
+          </p>
+        </div>
 
-            <XAxis
-              dataKey="statusName"
-              axisLine={false}
-              tickLine={false}
-              padding={{
-                left: 30,
-                right: 30,
-              }}
-              tick={{
-                fill: '#475569',
-                fontSize: 13,
-                fontWeight: 500,
-              }}
-            />
-
-            <YAxis
-              axisLine={false}
-              tickLine={false}
-              tick={{
-                fill: '#94A3B8',
-                fontSize: 12,
-              }}
-            />
-
-            <Tooltip content={<CustomTooltip />} />
-
-            <Legend
-              verticalAlign="bottom"
-              align="center"
-              iconType="circle"
-              wrapperStyle={{
-                paddingTop: '15px',
-              }}
-            />
-
-            {/* Bottom */}
-            <Bar
-              dataKey="createdTicket"
-              name="Created"
-              stackId="tickets"
-              fill="#FB8C00"
-              barSize={50}
-              radius={[0, 0, 12, 12]}
-              stroke="#fff"
-              strokeWidth={3}
-            />
-
-            {/* Middle */}
-            <Bar
-              dataKey="AssignedTicket"
-              name="Open"
-              stackId="tickets"
-              fill="#2196F3"
-              stroke="#fff"
-              strokeWidth={3}
-            />
-
-            <Bar
-              dataKey="inProgressTicketCount"
-              name="In Progress"
-              stackId="tickets"
-              fill="#7C4DFF"
-              stroke="#fff"
-              strokeWidth={3}
-            />
-
-            <Bar
-              dataKey="unfinishedTicket"
-              name="Unfinished"
-              stackId="tickets"
-              fill="#EF4444"
-              stroke="#fff"
-              strokeWidth={3}
-            />
-
-            {/* Top */}
-            <Bar
-              dataKey="finishedTicket"
-              name="Finished"
-              stackId="tickets"
-              fill="#22C55E"
-              stroke="#fff"
-              strokeWidth={3}
-            >
-              {formattedData.map((_, index) => (
-                <Cell
-                  key={index}
-                  radius={[12, 12, 0, 0]}
-                />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+        <button className="rounded-lg p-2 text-slate-400 hover:bg-slate-100">
+          ⋮
+        </button>
       </div>
+
+      <Chart
+        options={options}
+        series={series}
+        type="bar"
+        height={300}
+      />
     </div>
   );
 }

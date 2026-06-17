@@ -122,6 +122,7 @@ export const CustomTable = ({
   };
 
   const activeRows = isFilterActive ? filteredRowsByFilter : rows;
+console.log(activeRows);
 
   const searchedRows = activeRows.filter((row) =>
     headcells.some((cell) => {
@@ -485,24 +486,15 @@ disabled={
     <div className="flex flex-col h-full min-w-0 mt-2">
       
   {labels === 'Ticket Config' && (
-  <div className="flex gap-4 h-full items-stretch">
-    
-    {/* Left Section */}
-    <div className="w-[35%] h-full">
-      <TicketStatuscard ticketcard={dataChart} />
-    </div>
-
-    {/* Middle Section */}
-    <div className="w-[35%] h-full rounded-2xl border bg-white shadow-sm dark:bg-neutral-950 p-4">
-      <AdvancedTicketChart chartData={dataChart} />
-    </div>
-
-    {/* Right Section */}
-    <div className="w-[30%] h-full rounded-2xl border bg-white shadow-sm dark:bg-neutral-950 p-4">
-      <AdvancedTicketChart chartData={dataChart} />
-    </div>
-
+  <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
+  <div className="xl:col-span-5">
+    <TicketStatuscard ticketcard={dataChart} />
   </div>
+
+  <div className="xl:col-span-7">
+    <AdvancedTicketChart chartData={dataChart} />
+  </div>
+</div>
 )}
 
       {labels === 'Ticket Approval' && (

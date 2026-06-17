@@ -84,7 +84,7 @@ export const Sopmapping = ({
     sopName: '',
     description: '',
     status: '',
-    // statusName:'',
+    statusName:'Active',
     sopIds: '',
   };
   const clickableColumnList: Array<string> = ['documentName'];
@@ -136,6 +136,7 @@ export const Sopmapping = ({
       label: 'Status',
       type: 'select',
       placeholder: 'Enter Status',
+      disabled:!edit,
       required: true,
       styles: {
         wrapper: 'flex flex-col gap-1',
@@ -331,7 +332,7 @@ export const Sopmapping = ({
               fields={fields}
               options={options}
               styles={formStyles}
-              label={'Add SOP Mapping'}
+              label={edit ?'Update SOP Mapping':'Add SOP Mapping'}
               toBackend={toBackend}
             />
           </Modal>

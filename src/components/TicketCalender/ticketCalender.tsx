@@ -19,6 +19,27 @@ export const Ticketcalender = ({
 }: any) => {
    const siteQuery = useSiteList(session);
  const [search, setSearch] = useState('');
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+  const handlePreviousMonth = () => {
+    setCurrentDate(
+      new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - 1,
+        1
+      )
+    );
+  };
+
+  const handleNextMonth = () => {
+    setCurrentDate(
+      new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() + 1,
+        1
+      )
+    );
+  };
   const siteList = useMemo(
     () =>
       (siteQuery.data ?? [])
@@ -29,8 +50,6 @@ export const Ticketcalender = ({
     [siteQuery.data, search],
   );
 const sitelistdata=siteQuery.data
-console.log(sitelistdata);
-
   const [selectedSite, setSelectedSite] = useState('');
  
   const [selectedSiteId, setSelectedSiteId] = useState<number>(0)
@@ -75,7 +94,8 @@ console.log(sitelistdata);
       <div className="py-2">
         <Card>
           <CardContent className="p-2">
-            <div className="w-64">
+            <div  className="flex justify-between items-center">
+            <div className="w-64 ">
               <Select
                 value={selectedSite}
                 onValueChange={(value) => handlesite(value)}
@@ -112,8 +132,34 @@ console.log(sitelistdata);
                       </div>
                     )}
                   </div>
+
+                  
                 </SelectContent>
               </Select>
+            </div>
+    <div className="flex items-center justify-center gap-6 py-2">
+      <button
+        onClick={handlePreviousMonth}
+        className="px-2 py-1 border rounded"
+      >
+        ←
+      </button>
+
+      <span className="font-semibold text-lg w-[100%] ">
+        {currentDate.toLocaleString("default", {
+          month: "long",
+          year: "numeric",
+        })}
+      </span>
+
+      <button
+        onClick={handleNextMonth}
+        className="px-2 py-1 border rounded"
+      >
+        →
+      </button>
+    </div>
+            
             </div>
           </CardContent>
         </Card>

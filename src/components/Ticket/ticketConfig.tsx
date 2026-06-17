@@ -43,6 +43,7 @@ export const Ticketconfig = ({
   const [equipmentIdlist, setEquipmentlist] = useState<Array<any>>([]);
   const [soplist, setSoplist] = useState<Array<any>>([]);
   const [assign,setAssign]=useState<boolean>(false)
+console.log(ticketDataState);
 
   const queries = [
     {
@@ -403,7 +404,7 @@ export const Ticketconfig = ({
     },
 
     {
-      name: 'ticketCategory',
+      name: 'ticketCategorys',
       label: 'Ticket Category',
       type: 'select',
       disabled: edit||!formFields.ticketType,
@@ -657,8 +658,8 @@ export const Ticketconfig = ({
   const options = {
     basedOn: ['Created Date', 'Scheduled On'],
     ticketType: ticketTypes.map((type) => type.ticketTypeName),
-    ticketCategory: tickcategorylist.map((category) => category.categoryName),
-    Category: ticketCategory.map((category) => category.categoryName),
+    ticketCategorys: tickcategorylist.map((category) => category.categoryName),
+    ticketCategory: ticketCategory.map((category) => category.categoryName),
     priority: ['High', 'Medium', 'Low'],
     cycle: ['N/A', '1', '2', '3', '4', '5'],
     sopName: soplist.map((type) => type.sopName),
@@ -724,7 +725,19 @@ export const Ticketconfig = ({
         : null),
       postTicketlistMutation.mutate(data, {
         onSuccess: (e: any) => {
-          setTicketDataState(e);
+           const updatedData = e.map((item: any) => ({
+    ...item,
+    priority:
+      item.priority === 1
+        ? "Low"
+        : item.priority === 2
+        ? "Medium"
+        : "High",
+  }));
+
+  console.log(updatedData);
+
+  setTicketDataState(updatedData);
 
           setToBackend(false);
         },
@@ -749,7 +762,7 @@ setAssign(false)
       (head: any) => head.ticketTypeName === data.ticketType,
     )?.ticketTypeId;
     const ticketTypecategory = ticketCategory.find(
-      (head: any) => head.categoryName === data.ticketCategory,
+      (head: any) => head.categoryName === data.ticketCategorys,
     )?.categoryId;
     const sopId=soplist.find((sop:any)=>sop.sopName===data.sopName)?.sopId
     const datas = {
@@ -913,7 +926,7 @@ function onUpdatedata(data: any) {
               buttonLabel={edit ? 'Update' :assign?'Assign': 'Create'}
               optionalbuttonLabel={assign?'':'Reset'}
               styles={formStyles}
-              label={assign?'Assign Ticket':'Add New Ticket'}
+              label={assign?'Assign Ticket':edit?'Update Ticket':'Add New Ticket'}
               toBackend={toBackend}
             />
           </Modal>
